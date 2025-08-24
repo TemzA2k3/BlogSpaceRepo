@@ -1,31 +1,17 @@
-import { useState } from 'react'
-import './App.css'
-
-function App() {
-  const [count, setCount] = useState(0)
-
+export const App = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-        </a>
-        <a href="https://react.dev" target="_blank">
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-md">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">
+          Tailwind CSS работает!
+        </h1>
+        <p className="text-gray-600">
+          Если вы видите этот текст с красивым стилем, значит Tailwind CSS успешно установлен.
         </p>
+        <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Кнопка
+        </button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
-
-export default App
