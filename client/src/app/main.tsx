@@ -7,7 +7,6 @@ import { router } from './providers/router/router'
 import './styles/index.css'
 
 
-
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <RouterProvider router={router} />
