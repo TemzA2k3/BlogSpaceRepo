@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
 
 export const HeaderNavLinks = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="flex gap-8 items-center">
       <Link 
@@ -20,34 +24,34 @@ export const HeaderNavLinks = () => {
         <div className="inline-flex justify-start items-center gap-9">
           <div className="inline-flex flex-col justify-start items-start">
             <Link
-              className="self-stretch justify-start text-neutral-900 text-sm font-medium leading-tight px-2 py-1 rounded-lg transition-transform duration-200 hover:scale-105"
+              className="self-stretch justify-start text-neutral-900 text-sm font-medium leading-tight px-2 py-1 rounded-lg transition-colors duration-200 hover:scale-105"
               to="/"
             >
-              Home
+              {t("header.home")}
             </Link>
           </div>
           <div className="inline-flex flex-col justify-start items-start">
             <Link
-              className="self-stretch justify-start text-neutral-900 text-sm font-medium leading-tight px-2 py-1 rounded-lg transition-transform duration-200 hover:scale-105"
+              className="self-stretch justify-start text-neutral-900 text-sm font-medium leading-tight px-2 py-1 rounded-lg transition-colors duration-200 hover:scale-105"
               to="/"
             >
-              Explore
+              {t("header.explore")}
             </Link>
           </div>
           <div className="inline-flex flex-col justify-start items-start">
             <Link
-              className="self-stretch justify-start text-neutral-900 text-sm font-medium leading-tight px-2 py-1 rounded-lg transition-transform duration-200 hover:scale-105"
+              className="self-stretch justify-start text-neutral-900 text-sm font-medium leading-tight px-2 py-1 rounded-lg transition-colors duration-200 hover:scale-105"
               to="/"
             >
-              Notifications
+              {t("header.notifications")}
             </Link>
           </div>
           <div className="inline-flex flex-col justify-start items-start">
             <Link
-              className="self-stretch justify-start text-neutral-900 text-sm font-medium leading-tight px-2 py-1 rounded-lg transition-transform duration-200 hover:scale-105"
+              className="self-stretch justify-start text-neutral-900 text-sm font-medium leading-tight px-2 py-1 rounded-lg transition-colors duration-200 hover:scale-105"
               to="/"
             >
-              Messages
+              {t("header.messages")}
             </Link>
           </div>
         </div>

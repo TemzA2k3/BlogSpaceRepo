@@ -1,0 +1,18 @@
+{
+  "header": {
+    "home": "Home",
+    "explore": "Explore",
+    "notifications": "Notifications",
+    "messages": "Messages",
+    "logIn": "Log In",
+    "signUp": "Sign Up"
+  },
+  "footer": {
+    "label": "Share your thoughts and discover amazing stories from people around the world.",
+    "home": "Home",
+    "explore": "Explore",
+    "about": "About",
+    "contact": "Contact",
+    "follow": "Follow us"
+  }
+}

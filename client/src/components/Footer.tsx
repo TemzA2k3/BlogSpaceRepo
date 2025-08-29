@@ -1,8 +1,11 @@
 import type { FC } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 
 export const Footer: FC = () => {
+  const { t } = useTranslation()
+
   return (
     <footer className="bg-gray-100 text-gray-900 px-10 py-10 border-t border-[#E5E8EB]">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between gap-8">
@@ -15,14 +18,12 @@ export const Footer: FC = () => {
             <h2 className="text-lg font-bold">BlogSpace</h2>
           </div>
           <p className="text-gray-700 text-sm max-w-xs">
-            Share your thoughts and discover amazing stories from people around
-            the world.
+            {t("footer.label")}
           </p>
         </div>
 
-        {/* Center */}
         <nav className="flex flex-wrap justify-center gap-6 items-start">
-          {["Home", "Explore", "About", "Contact"].map((item) => (
+          {[t("footer.home"), t("footer.explore"), t("footer.about"), t("footer.contact")].map((item) => (
             <Link
               key={item}
               to="/"
@@ -33,9 +34,8 @@ export const Footer: FC = () => {
           ))}
         </nav>
 
-        {/* Right: Social buttons */}
         <div className="flex flex-col gap-4">
-          <span className="text-gray-700 text-sm font-semibold">Follow us</span>
+          <span className="text-gray-700 text-sm font-semibold">{t("footer.follow")}</span>
           <div className="flex gap-3">
             {["facebook", "twitter", "instagram"].map((icon) => (
               <a

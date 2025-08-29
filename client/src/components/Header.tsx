@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { HeaderNavLinks } from "./HeaderNavLinks";
 import { ToggleTheme } from "./ToogleTheme";
@@ -8,6 +9,8 @@ import { Button } from "../shared/components/Button";
 
 
 export const Header = () => {
+  const { t } = useTranslation();
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
@@ -18,17 +21,15 @@ export const Header = () => {
           <ToggleTheme />
           <LanguageSwitcher />
 
-          {/* Auth Section */}
           {isLoggedIn ? (
             <LoggedUserPreview setIsLoggedIn={() => setIsLoggedIn(false)} />
           ) : (
-
             <div className="flex gap-3">
               <Button variant="secondary" onClick={() => setIsLoggedIn(true)}>
-                Login
+                {t("header.logIn")}
               </Button>
 
-              <Button variant="primary">Sign Up</Button>
+              <Button variant="primary">{t("header.signUp")}</Button>
             </div>
           )}
         </div>

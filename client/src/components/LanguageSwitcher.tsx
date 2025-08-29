@@ -1,26 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLanguage } from "../hooks/useLanguage";
 
 export const LanguageSwitcher = () => {
-  const [currentLang, setCurrentLang] = useState("en");
+  const { currentLanguage, changeLanguage } = useLanguage();
+  
   const [showLangDropdown, setShowLangDropdown] = useState(false);
 
-  const switchLanguage = (lang: string) => {
-    setCurrentLang(lang);
+  const switchLanguage = (lang: "en" | "ru") => {
+    changeLanguage(lang);
     setShowLangDropdown(false);
-    // Here you would implement actual localization logic
   };
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest(".language-switcher")) {
+        setShowLangDropdown(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
   return (
-    <div className="relative">
+    <div className="relative language-switcher">
       <button
         onClick={() => setShowLangDropdown(!showLangDropdown)}
         className="h-10 px-3 cursor-pointer bg-white rounded-xl border border-gray-200 flex items-center gap-2 transition-transform duration-200 hover:scale-105"
       >
         <i className="fas fa-globe text-gray-600 text-sm"></i>
         <span className="text-xs font-semibold text-gray-700">
-          {currentLang.toUpperCase()}
+          {currentLanguage.toUpperCase()}
         </span>
       </button>
+
       {showLangDropdown && (
         <div className="absolute right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl z-10 min-w-[140px] overflow-hidden animate-in slide-in-from-top-2 duration-200">
           <button
