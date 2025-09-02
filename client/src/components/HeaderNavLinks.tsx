@@ -22,30 +22,48 @@ export const HeaderNavLinks = () => {
       </Link>
       <nav className="max-w-4xl mx-auto px-4 py-4 flex gap-4">
         <div className="inline-flex justify-start items-center gap-4">
-          <div className="inline-flex flex-col justify-start items-start">
+          {/* <div className="inline-flex flex-col justify-start items-start">
             <Link
               className="self-stretch justify-start text-neutral-900 text-sm font-medium leading-tight px-2 py-1 rounded-lg transition-colors duration-200 hover:scale-105"
               to="/"
             >
               {t("header.home")}
             </Link>
-          </div>
+          </div> */}
           <div className="inline-flex flex-col justify-start items-start">
             <Link
               className="self-stretch justify-start text-neutral-900 text-sm font-medium leading-tight px-2 py-1 rounded-lg transition-colors duration-200 hover:scale-105"
-              to="/"
+              to="/posts"
+            >
+              {t("header.posts")}
+            </Link>
+          </div>
+
+          <div className="inline-flex flex-col justify-start items-start">
+            <Link
+              className="self-stretch justify-start text-neutral-900 text-sm font-medium leading-tight px-2 py-1 rounded-lg transition-colors duration-200 hover:scale-105"
+              to="/articles"
+            >
+              {t("header.articles")}
+            </Link>
+          </div>
+
+          <div className="inline-flex flex-col justify-start items-start">
+            <Link
+              className="self-stretch justify-start text-neutral-900 text-sm font-medium leading-tight px-2 py-1 rounded-lg transition-colors duration-200 hover:scale-105"
+              to="/explore"
             >
               {t("header.explore")}
             </Link>
           </div>
-          <div className="inline-flex flex-col justify-start items-start">
+          {/* <div className="inline-flex flex-col justify-start items-start">
             <Link
               className="self-stretch justify-start text-neutral-900 text-sm font-medium leading-tight px-2 py-1 rounded-lg transition-colors duration-200 hover:scale-105"
               to="/"
             >
               {t("header.notifications")}
             </Link>
-          </div>
+          </div> */}
           <div className="inline-flex flex-col justify-start items-start">
             <Link
               className="self-stretch justify-start text-neutral-900 text-sm font-medium leading-tight px-2 py-1 rounded-lg transition-colors duration-200 hover:scale-105"

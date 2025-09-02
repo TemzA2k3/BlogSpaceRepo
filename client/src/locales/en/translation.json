@@ -1,6 +1,8 @@
 {
   "header": {
     "home": "Home",
+    "articles": "Articles",
+    "posts": "Posts",
     "explore": "Explore",
     "notifications": "Notifications",
     "messages": "Messages",

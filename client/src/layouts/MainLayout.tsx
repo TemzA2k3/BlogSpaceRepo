@@ -9,7 +9,7 @@ export const MainLayout: FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Header />
-      <main className="flex-1 max-w-4xl mx-auto px-4 py-8">
+      <main className="flex-1 px-40 py-5">
         <Outlet />
       </main>
       <Footer />

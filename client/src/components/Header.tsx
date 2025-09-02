@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { HeaderNavLinks } from "./HeaderNavLinks";
 import { ToggleTheme } from "./ToogleTheme";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { Notifications } from "./Notifications";
 import { LoggedUserPreview } from "./LoggedUserPreview";
 import { Button } from "../shared/components/Button";
 
@@ -20,7 +21,7 @@ export const Header = () => {
         <div className="flex items-center gap-4">
           <ToggleTheme />
           <LanguageSwitcher />
-
+          <Notifications />
           {isLoggedIn ? (
             <LoggedUserPreview setIsLoggedIn={() => setIsLoggedIn(false)} />
           ) : (
