@@ -6,7 +6,7 @@
     "explore": "Explore",
     "notifications": "Notifications",
     "messages": "Messages",
-    "logIn": "Log In",
+    "signIn": "Sign In",
     "signUp": "Sign Up"
   },
   "footer": {
@@ -16,5 +16,22 @@
     "about": "About",
     "contact": "Contact",
     "follow": "Follow us"
+  },
+  "auth": {
+    "unauthorizedUserText": "Don’t have an account?",
+    "authorizedUserText": "Already have an account?"
+  },
+  "forms": {
+    "fName": "First Name",
+    "fNamePlaceholder": "Enter your first name",
+    "lName": "Last Name",
+    "lNamePlaceholder": "Enter your last name",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "processingSignUp": "Signing up...",
+    "processingSignIn": "Signing in...",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?"
   }
 }

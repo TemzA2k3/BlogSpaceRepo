@@ -7,6 +7,7 @@ import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Notifications } from "./Notifications";
 import { LoggedUserPreview } from "./LoggedUserPreview";
 import { Button } from "../shared/components/Button";
+import { Link } from "react-router-dom";
 
 
 export const Header = () => {
@@ -26,11 +27,18 @@ export const Header = () => {
             <LoggedUserPreview setIsLoggedIn={() => setIsLoggedIn(false)} />
           ) : (
             <div className="flex gap-3">
-              <Button variant="secondary" onClick={() => setIsLoggedIn(true)}>
-                {t("header.logIn")}
-              </Button>
-
-              <Button variant="primary">{t("header.signUp")}</Button>
+                <Link to="/signin">
+                    <Button variant="secondary">
+                        {t("header.signIn")}
+                    </Button>
+                </Link>
+              
+                <Link to='/signup'>
+                    <Button variant="primary">
+                        {t("header.signUp")}
+                    </Button>
+                </Link>
+              
             </div>
           )}
         </div>

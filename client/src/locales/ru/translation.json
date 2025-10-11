@@ -6,7 +6,7 @@
     "explore": "Обзор",
     "notifications": "Уведомления",
     "messages": "Сообщения",
-    "logIn": "Войти",
+    "signIn": "Войти",
     "signUp": "Зарегистрироваться"
   },
   "footer": {
@@ -16,5 +16,22 @@
     "about": "О нас",
     "contact": "Связаться с нами",
     "follow": "Подписывайтесь"
-  }
+  },
+  "auth": {
+    "unauthorizedUserText": "Нет аккаунта?",
+    "authorizedUserText": "Уже есть аккаунт?"
+  },
+  "forms": {
+  "fName": "Имя",
+  "fNamePlaceholder": "Введите ваше имя",
+  "lName": "Фамилия",
+  "lNamePlaceholder": "Введите вашу фамилию",
+  "email": "Электронная почта",
+  "password": "Пароль",
+  "confirmPassword": "Подтвердите пароль",
+  "processingSignUp": "Регистрация...",
+  "processingSignIn": "Вход...",
+  "rememberMe": "Запомнить меня",
+  "forgotPassword": "Забыли пароль?"
+}
 }
