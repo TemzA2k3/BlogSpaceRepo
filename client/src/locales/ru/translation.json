@@ -36,6 +36,10 @@
     "signInToAccount": "Войти в свой аккаунт",
     "signInToAccountDescription": "Введите имейл и пароль для входа в аккаунт",
     "signUpToAccount": "Создайте аккаунт",
-    "signUpToAccountDescription": "Зарегистрируйтесь, чтобы начать читать, публиковать и общаться с другими"
+    "signUpToAccountDescription": "Зарегистрируйтесь, чтобы начать читать, публиковать и общаться с другими",
+    "invalidEmail": "Введен неправильный email!",
+    "required": "Поля, отмеченные '*' - обязательные!",
+    "passwordMinLength": "Минимальная длина пароля {{count}} символов!",
+    "loginSuccess": "Успешный вход!"
   }
 }

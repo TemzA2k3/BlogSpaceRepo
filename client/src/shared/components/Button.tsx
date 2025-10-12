@@ -1,12 +1,13 @@
 import type { FC, ReactNode } from "react";
 
 type ButtonProps = {
-  children: ReactNode;
-  onClick?: () => void;
-  variant?: "primary" | "secondary" | "outline";
-  className?: string;
-  disabled?: boolean;
-};
+    children: ReactNode;
+    onClick?: () => void;
+    variant?: "primary" | "secondary" | "outline";
+    className?: string;
+    disabled?: boolean;
+    type?: "button" | "submit" | "reset";
+  };
 
 export const Button: FC<ButtonProps> = ({
   children,
@@ -14,6 +15,7 @@ export const Button: FC<ButtonProps> = ({
   variant = "primary",
   className = "",
   disabled = false,
+  type = "button",
 }) => {
   const baseClasses =
     "px-6 h-10 rounded-xl font-semibold flex cursor-pointer items-center justify-center transition-transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed";
@@ -33,7 +35,7 @@ export const Button: FC<ButtonProps> = ({
 
   return (
     <button
-      type="button"
+      type={type}
       onClick={onClick}
       className={`${baseClasses} ${variantClasses} ${className}`}
       disabled={disabled}

@@ -36,6 +36,10 @@
     "signInToAccount": "Sign in to your account",
     "signInToAccountDescription": "Enter your email and password to access your account",
     "signUpToAccount": "Create your account",
-    "signUpToAccountDescription": "Sign up to start reading, posting, and connecting with others"
+    "signUpToAccountDescription": "Sign up to start reading, posting, and connecting with others",
+    "invalidEmail": "Invalid email address!",
+    "required": "Fields marked with '*' are required!",
+    "passwordMinLength": "Password must be at least {{count}} characters long!",
+    "loginSuccess": "Successful login!"
   }
 }
