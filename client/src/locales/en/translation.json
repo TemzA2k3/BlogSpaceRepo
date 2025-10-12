@@ -32,6 +32,10 @@
     "processingSignUp": "Signing up...",
     "processingSignIn": "Signing in...",
     "rememberMe": "Remember me",
-    "forgotPassword": "Forgot password?"
+    "forgotPassword": "Forgot password?",
+    "signInToAccount": "Sign in to your account",
+    "signInToAccountDescription": "Enter your email and password to access your account",
+    "signUpToAccount": "Create your account",
+    "signUpToAccountDescription": "Sign up to start reading, posting, and connecting with others"
   }
 }

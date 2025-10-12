@@ -5,7 +5,6 @@ import "./translation/i18n";
 import './styles/index.css'
 import { App } from '../components/App';
 
-
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App/>
