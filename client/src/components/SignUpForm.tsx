@@ -1,126 +1,161 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useFormik } from "formik";
+
 import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
-import { register } from "../store/slices/authSlice";
+import { register, clearAuthStatus } from "../store/slices/authSlice";
 import { Button } from "../shared/components/Button";
+import { useAlert } from "../app/providers/alert/AlertProvider";
+import { initialSignUpValues, getValidationSignUpSchema } from "../shared/utils/authValidation";
 
 export const SignUpForm = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector((state) => state.auth);
+  const { loading, error, success } = useAppSelector((state) => state.auth);
+  const { showAlert } = useAlert();
+  const validationSchema = getValidationSignUpSchema(t);
 
-  const [fname, setFname] = useState("");
-  const [lname, setLname] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const formik = useFormik({
+    initialValues: initialSignUpValues,
+    validationSchema,
+    onSubmit: (values) => {
+      dispatch(register({
+        firstName: values.fname,
+        lastName: values.lname,
+        email: values.email,
+        password: values.password,
+      }));
+    },
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      alert(t("forms.passwordMismatch"));
-      return;
-    }
-    dispatch(register({ fname, lname, email, password }));
-  };
+  // Показываем глобальный алерт при изменении error/success
+  useEffect(() => {
+    if (error) showAlert(error, "error");
+    else if (success) showAlert(t("forms.registrationSuccess"), "success");
+
+    if (error || success) dispatch(clearAuthStatus());
+  }, [error, success, showAlert, dispatch, t]);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-
+    <form onSubmit={formik.handleSubmit} className="space-y-5">
       {/* First Name */}
       <div>
-        <label
-          htmlFor="fname"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        >
+        <label htmlFor="fname" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           {t("forms.fName")}
         </label>
         <input
           type="text"
           id="fname"
-          autoComplete="fname"
+          name="fname"
           placeholder={t("forms.fNamePlaceholder")}
-          value={fname}
-          onChange={(e) => setFname(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-gray-50 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-300"
+          value={formik.values.fname}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          className={`w-full px-4 py-2 border rounded-lg text-sm transition-colors duration-300 
+            ${formik.touched.fname && formik.errors.fname
+              ? "border-red-500 focus:ring-red-500"
+              : "border-gray-300 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500"
+            } bg-gray-50 dark:bg-gray-700 dark:text-gray-100`}
         />
+        {formik.touched.fname && formik.errors.fname && (
+          <div className="text-red-500 text-xs mt-1">{formik.errors.fname}</div>
+        )}
       </div>
 
       {/* Last Name */}
       <div>
-        <label
-          htmlFor="lname"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        >
+        <label htmlFor="lname" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           {t("forms.lName")}
         </label>
         <input
           type="text"
           id="lname"
-          autoComplete="lname"
+          name="lname"
           placeholder={t("forms.lNamePlaceholder")}
-          value={lname}
-          onChange={(e) => setLname(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-gray-50 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-300"
+          value={formik.values.lname}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          className={`w-full px-4 py-2 border rounded-lg text-sm transition-colors duration-300 
+            ${formik.touched.lname && formik.errors.lname
+              ? "border-red-500 focus:ring-red-500"
+              : "border-gray-300 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500"
+            } bg-gray-50 dark:bg-gray-700 dark:text-gray-100`}
         />
+        {formik.touched.lname && formik.errors.lname && (
+          <div className="text-red-500 text-xs mt-1">{formik.errors.lname}</div>
+        )}
       </div>
 
       {/* Email */}
       <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        >
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           {t("forms.email")}
         </label>
         <input
           type="email"
           id="email"
-          autoComplete="email"
+          name="email"
           placeholder="you@example.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-gray-50 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-300"
+          value={formik.values.email}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          className={`w-full px-4 py-2 border rounded-lg text-sm transition-colors duration-300 
+            ${formik.touched.email && formik.errors.email
+              ? "border-red-500 focus:ring-red-500"
+              : "border-gray-300 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500"
+            } bg-gray-50 dark:bg-gray-700 dark:text-gray-100`}
         />
+        {formik.touched.email && formik.errors.email && (
+          <div className="text-red-500 text-xs mt-1">{formik.errors.email}</div>
+        )}
       </div>
 
       {/* Password */}
       <div>
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        >
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           {t("forms.password")}
         </label>
         <input
           type="password"
           id="password"
-          autoComplete="new-password"
+          name="password"
           placeholder="********"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-gray-50 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-300"
+          value={formik.values.password}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          className={`w-full px-4 py-2 border rounded-lg text-sm transition-colors duration-300 
+            ${formik.touched.password && formik.errors.password
+              ? "border-red-500 focus:ring-red-500"
+              : "border-gray-300 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500"
+            } bg-gray-50 dark:bg-gray-700 dark:text-gray-100`}
         />
+        {formik.touched.password && formik.errors.password && (
+          <div className="text-red-500 text-xs mt-1">{formik.errors.password}</div>
+        )}
       </div>
 
       {/* Confirm Password */}
       <div>
-        <label
-          htmlFor="confirm-password"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        >
+        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           {t("forms.confirmPassword")}
         </label>
         <input
           type="password"
-          id="confirm-password"
-          autoComplete="new-password"
+          id="confirmPassword"
+          name="confirmPassword"
           placeholder="********"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-gray-50 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-300"
+          value={formik.values.confirmPassword}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          className={`w-full px-4 py-2 border rounded-lg text-sm transition-colors duration-300 
+            ${formik.touched.confirmPassword && formik.errors.confirmPassword
+              ? "border-red-500 focus:ring-red-500"
+              : "border-gray-300 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500"
+            } bg-gray-50 dark:bg-gray-700 dark:text-gray-100`}
         />
+        {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+          <div className="text-red-500 text-xs mt-1">{formik.errors.confirmPassword}</div>
+        )}
       </div>
 
       {/* Submit Button */}

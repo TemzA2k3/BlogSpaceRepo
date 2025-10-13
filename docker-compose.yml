@@ -1,0 +1,50 @@
+services:
+  db:
+    image: postgres:15
+    container_name: blogspacerepo-db
+    restart: always
+    env_file:
+      - .env               # общий .env для БД
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  server:
+    build: ./server
+    container_name: blogspacerepo-server
+    restart: always
+    command: npm run start:dev
+    working_dir: /app
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    ports:
+      - "${SERVER_PORT}:8080"
+    env_file:
+      - ./server/.env      # серверные переменные
+    depends_on:
+      - db
+
+  client:
+    build: ./client
+    container_name: blogspacerepo-client
+    restart: always
+    command: npm run dev
+    working_dir: /app
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    ports:
+      - "${CLIENT_PORT}:3000"
+    env_file:
+      - ./client/.env      # клиентские переменные
+    depends_on:
+      - server
+
+volumes:
+  pgdata:

@@ -5,7 +5,7 @@ import { useFormik } from "formik";
 
 import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
 import { login, clearAuthStatus } from "../store/slices/authSlice";
-import { getValidationSchema, initialValues } from "../shared/utils/SignInValidation";
+import { getValidationSignInSchema, initialSignInValues } from "../shared/utils/authValidation";
 import { Button } from "../shared/components/Button";
 import { useAlert } from "../app/providers/alert/AlertProvider";
 
@@ -15,10 +15,10 @@ export const SignInForm: React.FC = () => {
   const { loading, error, success } = useAppSelector((state) => state.auth);
   const { showAlert } = useAlert();
 
-  const validationSchema = getValidationSchema(t);
+  const validationSchema = getValidationSignInSchema(t);
 
   const formik = useFormik({
-    initialValues,
+    initialValues: initialSignInValues,
     validationSchema,
     onSubmit: (values) => {
       dispatch(login({ email: values.email, password: values.password }));

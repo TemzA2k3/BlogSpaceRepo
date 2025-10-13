@@ -17,13 +17,8 @@ export const Alert: FC<AlertProps> = ({
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Показать алерт
     setVisible(true);
-
-    // Через duration скрыть его (анимация)
     const hideTimer = window.setTimeout(() => setVisible(false), duration);
-
-    // После анимации удалить компонент
     const removeTimer = window.setTimeout(onClose, duration + 300);
 
     return () => {

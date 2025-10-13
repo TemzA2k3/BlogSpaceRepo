@@ -1,4 +1,13 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
+import { apiRequest } from "../../shared/api/apiClient";
+
+interface SendUserData { 
+    firstName: string; 
+    lastName: string; 
+    email: string; 
+    password: string 
+}
 
 interface User {
   name: string;
@@ -15,13 +24,13 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
-  token: null,
+  token: Cookies.get("token") || null,
   loading: false,
   success: false,
   error: null,
 };
 
-// Асинхронный логин
+// ==== LOGIN ====
 export const login = createAsyncThunk(
   "auth/login",
   async (
@@ -29,49 +38,57 @@ export const login = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await fetch("https://example.com/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const data = await apiRequest<{ user: User; token: string }>("/login", "POST", {
+        body: { email, password },
       });
-      const data = await res.json();
-      if (!res.ok) return rejectWithValue(data.message || "Ошибка входа");
-      return data; // { user, token }
-    } catch (err) {
-      console.log(err);
-      return rejectWithValue("Ошибка сети");
+
+      // сохраняем токен в cookies
+      Cookies.set("token", data.token, {
+        expires: 7,
+        secure: true,
+        sameSite: "strict",
+      });
+
+      return data;
+    } catch (err: any) {
+      return rejectWithValue(err.message || "Ошибка входа");
     }
   }
 );
 
-// Асинхронная регистрация
+// ==== REGISTER ====
 export const register = createAsyncThunk(
   "auth/register",
   async (
     {
-      fname,
-      lname,
+      firstName,
+      lastName,
       email,
       password,
-    }: { fname: string; lname: string; email: string; password: string },
+    }: SendUserData,
     { rejectWithValue }
   ) => {
+    console.log(firstName, lastName, email, password);
+    
     try {
-      const res = await fetch("https://example.com/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fname, lname, email, password }),
+      const data = await apiRequest<{ user: User; token: string }>("/auth/register", "POST", {
+        body: { firstName, lastName, email, password },
       });
-      const data = await res.json();
-      if (!res.ok) return rejectWithValue(data.message || "Ошибка регистрации");
-      return data; // { user, token }
-    } catch (err) {
-      console.log(err);
-      return rejectWithValue("Ошибка сети");
+
+      Cookies.set("token", data.token, {
+        expires: 7,
+        secure: true,
+        sameSite: "strict",
+      });
+
+      return data;
+    } catch (err: any) {
+      return rejectWithValue(err.message || "Ошибка регистрации");
     }
   }
 );
 
+// ==== SLICE ====
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -79,6 +96,7 @@ const authSlice = createSlice({
     logout(state) {
       state.user = null;
       state.token = null;
+      Cookies.remove("token");
     },
     clearAuthStatus(state) {
       state.error = null;
@@ -86,39 +104,35 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // login
+    // LOGIN
     builder.addCase(login.pending, (state) => {
       state.loading = true;
       state.error = null;
+      state.success = false;
     });
-    builder.addCase(
-      login.fulfilled,
-      (state, action: PayloadAction<{ user: User; token: string }>) => {
-        state.loading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
-        state.success = true;
-      }
-    );
+    builder.addCase(login.fulfilled, (state, action: PayloadAction<{ user: User; token: string }>) => {
+      state.loading = false;
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+      state.success = true;
+    });
     builder.addCase(login.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });
 
-    // register
+    // REGISTER
     builder.addCase(register.pending, (state) => {
       state.loading = true;
       state.error = null;
+      state.success = false;
     });
-    builder.addCase(
-      register.fulfilled,
-      (state, action: PayloadAction<{ user: User; token: string }>) => {
-        state.loading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
-        state.success = true;
-      }
-    );
+    builder.addCase(register.fulfilled, (state, action: PayloadAction<{ user: User; token: string }>) => {
+      state.loading = false;
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+      state.success = true;
+    });
     builder.addCase(register.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;

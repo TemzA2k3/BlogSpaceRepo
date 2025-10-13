@@ -22,13 +22,14 @@
     "authorizedUserText": "Уже есть аккаунт?"
   },
   "forms": {
-    "fName": "Имя",
+    "error": "Ошибка",
+    "fName": "Имя*",
     "fNamePlaceholder": "Введите ваше имя",
-    "lName": "Фамилия",
+    "lName": "Фамилия*",
     "lNamePlaceholder": "Введите вашу фамилию",
-    "email": "Электронная почта",
-    "password": "Пароль",
-    "confirmPassword": "Подтвердите пароль",
+    "email": "Электронная почта*",
+    "password": "Пароль*",
+    "confirmPassword": "Подтвердите пароль*",
     "processingSignUp": "Регистрация...",
     "processingSignIn": "Вход...",
     "rememberMe": "Запомнить меня",
@@ -40,6 +41,8 @@
     "invalidEmail": "Введен неправильный email!",
     "required": "Поля, отмеченные '*' - обязательные!",
     "passwordMinLength": "Минимальная длина пароля {{count}} символов!",
+    "passwordMismatch": "Пароли не совпадают!",
+    "nameMinLength": "Минимальная длина имени или фамилии {{count}} символов!",
     "loginSuccess": "Успешный вход!"
   }
 }

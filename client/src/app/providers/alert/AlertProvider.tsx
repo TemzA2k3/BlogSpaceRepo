@@ -3,7 +3,7 @@ import { createContext, useContext, useState, type FC, type ReactNode } from "re
 import { Alert } from "../../../shared/components/Alert";
 
 type AlertContextType = {
-  showAlert: (message: string, type?: "success" | "error", duration?: number) => void;
+  showAlert: (message: string, type?: "success" | "error" , duration?: number) => void;
 };
 
 const AlertContext = createContext<AlertContextType | undefined>(undefined);

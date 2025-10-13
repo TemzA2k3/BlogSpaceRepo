@@ -22,13 +22,14 @@
     "authorizedUserText": "Already have an account?"
   },
   "forms": {
-    "fName": "First Name",
+    "error": "Error",
+    "fName": "First Name*",
     "fNamePlaceholder": "Enter your first name",
-    "lName": "Last Name",
+    "lName": "Last Name*",
     "lNamePlaceholder": "Enter your last name",
-    "email": "Email",
-    "password": "Password",
-    "confirmPassword": "Confirm Password",
+    "email": "Email*",
+    "password": "Password*",
+    "confirmPassword": "Confirm Password*",
     "processingSignUp": "Signing up...",
     "processingSignIn": "Signing in...",
     "rememberMe": "Remember me",
@@ -40,6 +41,8 @@
     "invalidEmail": "Invalid email address!",
     "required": "Fields marked with '*' are required!",
     "passwordMinLength": "Password must be at least {{count}} characters long!",
+    "passwordMismatch": "Passwords do not match!",
+    "nameMinLength": "Name must be at least {{count}} characters long!",
     "loginSuccess": "Successful login!"
   }
 }
