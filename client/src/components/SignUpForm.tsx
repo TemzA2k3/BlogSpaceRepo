@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 
@@ -13,6 +14,7 @@ export const SignUpForm = () => {
   const dispatch = useAppDispatch();
   const { loading, error, success } = useAppSelector((state) => state.auth);
   const { showAlert } = useAlert();
+  const navigate = useNavigate();
   const validationSchema = getValidationSignUpSchema(t);
 
   const formik = useFormik({
@@ -31,7 +33,10 @@ export const SignUpForm = () => {
   // Показываем глобальный алерт при изменении error/success
   useEffect(() => {
     if (error) showAlert(error, "error");
-    else if (success) showAlert(t("forms.registrationSuccess"), "success");
+    else if (success) {
+        showAlert(t("forms.registrationSuccess"), "success");
+        navigate("/signin")
+    } 
 
     if (error || success) dispatch(clearAuthStatus());
   }, [error, success, showAlert, dispatch, t]);

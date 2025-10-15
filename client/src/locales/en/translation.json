@@ -43,6 +43,7 @@
     "passwordMinLength": "Password must be at least {{count}} characters long!",
     "passwordMismatch": "Passwords do not match!",
     "nameMinLength": "Name must be at least {{count}} characters long!",
+    "registrationSuccess": "Registation was succesessful!",
     "loginSuccess": "Successful login!"
   }
 }

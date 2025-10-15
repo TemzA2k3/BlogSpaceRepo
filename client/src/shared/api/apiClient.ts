@@ -1,7 +1,4 @@
-import Cookies from "js-cookie";
-
-import { API_BASE_URL } from "../constants/constants"
-
+import { API_BASE_URL } from "../constants/constants";
 
 type RequestMethod = "GET" | "POST" | "PUT" | "DELETE";
 
@@ -19,11 +16,6 @@ export async function apiRequest<T>(
     "Content-Type": "application/json",
     ...(options.headers as Record<string, string> || {}),
   };
-
-  if (options.auth) {
-    const token = Cookies.get("token");
-    if (token) headers["Authorization"] = `Bearer ${token}`;
-  }
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     method,

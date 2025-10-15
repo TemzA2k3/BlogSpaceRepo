@@ -1,22 +1,32 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
-import Cookies from "js-cookie";
 import { apiRequest } from "../../shared/api/apiClient";
 
-interface SendUserData { 
-    firstName: string; 
-    lastName: string; 
-    email: string; 
-    password: string 
+interface SendUserData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
 }
 
 interface User {
-  name: string;
+    id: number;
+    firstName: string;
+    lastName: string;
+    userName: string;
+    email: string;
+    role: string;
+    avatar: string | null;
+    isBlocked: boolean;
+}
+
+interface LoginUserData {
   email: string;
+  password: string;
+  remember: boolean;
 }
 
 interface AuthState {
   user: User | null;
-  token: string | null;
   loading: boolean;
   success: boolean;
   error: string | null;
@@ -24,7 +34,6 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
-  token: Cookies.get("token") || null,
   loading: false,
   success: false,
   error: null,
@@ -34,69 +43,47 @@ const initialState: AuthState = {
 export const login = createAsyncThunk(
   "auth/login",
   async (
-    { email, password }: { email: string; password: string },
+    { email, password, remember }: LoginUserData,
     { rejectWithValue }
   ) => {
     try {
-      const data = await apiRequest<{ user: User; token: string }>("/login", "POST", {
-        body: { email, password },
+      const data = await apiRequest<{ user: User }>("/auth/login", "POST", {
+        body: { email, password, remember },
+        credentials: "include",
       });
-
-      // сохраняем токен в cookies
-      Cookies.set("token", data.token, {
-        expires: 7,
-        secure: true,
-        sameSite: "strict",
-      });
-
       return data;
     } catch (err: any) {
-      return rejectWithValue(err.message || "Ошибка входа");
+      return rejectWithValue(err.message || "Login error");
     }
   }
 );
 
 // ==== REGISTER ====
 export const register = createAsyncThunk(
-  "auth/register",
-  async (
-    {
-      firstName,
-      lastName,
-      email,
-      password,
-    }: SendUserData,
-    { rejectWithValue }
-  ) => {
-    console.log(firstName, lastName, email, password);
-    
-    try {
-      const data = await apiRequest<{ user: User; token: string }>("/auth/register", "POST", {
-        body: { firstName, lastName, email, password },
-      });
-
-      Cookies.set("token", data.token, {
-        expires: 7,
-        secure: true,
-        sameSite: "strict",
-      });
-
-      return data;
-    } catch (err: any) {
-      return rejectWithValue(err.message || "Ошибка регистрации");
+    "auth/register",
+    async (
+      { firstName, lastName, email, password }: SendUserData,
+      { rejectWithValue }
+    ) => {
+      try {
+        const data = await apiRequest<{ user: LoginUserData }>("/auth/register", "POST", {
+          body: { firstName, lastName, email, password },
+          credentials: "include",
+        });
+  
+        return data;
+      } catch (err: any) {
+        return rejectWithValue(err.message || "Registration error");
+      }
     }
-  }
-);
+  );
 
-// ==== SLICE ====
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
     logout(state) {
       state.user = null;
-      state.token = null;
-      Cookies.remove("token");
     },
     clearAuthStatus(state) {
       state.error = null;
@@ -104,39 +91,34 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // LOGIN
-    builder.addCase(login.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-      state.success = false;
-    });
-    builder.addCase(login.fulfilled, (state, action: PayloadAction<{ user: User; token: string }>) => {
-      state.loading = false;
-      state.user = action.payload.user;
-      state.token = action.payload.token;
-      state.success = true;
-    });
-    builder.addCase(login.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload as string;
-    });
-
-    // REGISTER
-    builder.addCase(register.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-      state.success = false;
-    });
-    builder.addCase(register.fulfilled, (state, action: PayloadAction<{ user: User; token: string }>) => {
-      state.loading = false;
-      state.user = action.payload.user;
-      state.token = action.payload.token;
-      state.success = true;
-    });
-    builder.addCase(register.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload as string;
-    });
+    builder
+      // LOGIN
+      .addCase(login.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(login.fulfilled, (state, action: PayloadAction<{ user: User }>) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.success = true;
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // REGISTER
+      .addCase(register.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(register.fulfilled, (state) => {
+        state.loading = false;
+        state.success = true;
+      })
+      .addCase(register.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
   },
 });
 

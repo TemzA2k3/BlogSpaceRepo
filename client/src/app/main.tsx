@@ -7,9 +7,6 @@ import "./translation/i18n";
 import './styles/index.css'
 import { App } from '../components/App';
 
-console.log(import.meta.env.VITE_API_URL);
-
-
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>

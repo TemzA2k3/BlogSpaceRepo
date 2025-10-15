@@ -7,7 +7,7 @@ const minNameLength = 2;
 export const initialSignInValues = {
     email: "",
     password: "",
-    rememberMe: false,
+    remember: false,
 };
 
 export const initialSignUpValues = {

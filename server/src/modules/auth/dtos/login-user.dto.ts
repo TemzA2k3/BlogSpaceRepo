@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength } from "class-validator";
+import { IsBoolean, IsEmail, IsString, MinLength } from "class-validator";
 import { PASSWORD_MIN_LENGTH } from "src/shared/constants";
 
 export class LoginUserDto {
@@ -8,4 +8,7 @@ export class LoginUserDto {
     @IsString()
     @MinLength(PASSWORD_MIN_LENGTH)
     password: string;
+
+    @IsBoolean()
+    remember: boolean;
 }

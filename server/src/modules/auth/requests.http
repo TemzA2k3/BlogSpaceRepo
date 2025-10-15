@@ -1,0 +1,22 @@
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+    "firstName": "ZXC",
+    "lastName": "QWRRTY",
+    "email": "qwerty123@gmail.com",
+    "password": "123123"
+}
+
+### Login existing user
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+    "email": "qwerty123@gmail.com",
+    "password": "123123",
+    "remember": false
+}
+
+### Logout
+POST http://localhost:8080/auth/logout

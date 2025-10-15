@@ -43,6 +43,7 @@
     "passwordMinLength": "Минимальная длина пароля {{count}} символов!",
     "passwordMismatch": "Пароли не совпадают!",
     "nameMinLength": "Минимальная длина имени или фамилии {{count}} символов!",
-    "loginSuccess": "Успешный вход!"
+    "registrationSuccess": "Регистрация прошла успешно!",
+    "loginSuccess": "Вход выполнен успешно!"
   }
 }
