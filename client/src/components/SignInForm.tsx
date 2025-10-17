@@ -3,11 +3,11 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useFormik } from "formik";
 
-import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
-import { login, clearAuthStatus } from "../store/slices/authSlice";
-import { getValidationSignInSchema, initialSignInValues } from "../shared/utils/authValidation";
-import { Button } from "../shared/components/Button";
-import { useAlert } from "../app/providers/alert/AlertProvider";
+import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { login, clearAuthStatus } from "@/store/slices/authSlice";
+import { getValidationSignInSchema, initialSignInValues } from "@/shared/utils/authValidation";
+import { Button } from "@/shared/components/Button";
+import { useAlert } from "@/app/providers/alert/AlertProvider";
 
 export const SignInForm: React.FC = () => {
     const { t } = useTranslation();

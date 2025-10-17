@@ -1,8 +1,13 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, 
+    Controller, 
+    Post, 
+    Res 
+} from '@nestjs/common';
 import type { Response } from 'express';
 
+import { CookieService } from '@/common/services/cookie.service';
+
 import { AuthService } from './auth.service';
-import { CookieService } from '../../common/services/cookie.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { LoginUserDto } from './dtos/login-user.dto';
 

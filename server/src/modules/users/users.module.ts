@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { User } from '../../database/entities/user.entity';
+import { JwtSharedModule } from '@/common/jwt/jwt.module';
+import { User } from '@/database/entities/user.entity';
+
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { JwtSharedModule } from 'src/common/jwt/jwt.module';
 
 @Module({
   imports: [

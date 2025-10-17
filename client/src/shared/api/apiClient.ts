@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "../constants/constants";
+import { API_BASE_URL } from "@/shared/constants/constants";
 
 type RequestMethod = "GET" | "POST" | "PUT" | "DELETE";
 

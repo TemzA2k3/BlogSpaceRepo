@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 
-
 type Language = "ru" | "en";
 
 export function useLanguage() {

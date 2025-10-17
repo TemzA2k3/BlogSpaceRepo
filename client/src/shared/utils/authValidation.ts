@@ -1,6 +1,5 @@
 import * as Yup from "yup";
 
-
 const minPassLength = 6;
 const minNameLength = 2;
 

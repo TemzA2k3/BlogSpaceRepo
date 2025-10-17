@@ -1,6 +1,5 @@
 import type { FC } from "react";
 
-
 export const HomePage: FC = () => {
   return (
     <main className="flex-1 max-w-4xl mx-auto px-4 py-8">

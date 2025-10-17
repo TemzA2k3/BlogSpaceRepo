@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 
-import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
-import { register, clearAuthStatus } from "../store/slices/authSlice";
-import { Button } from "../shared/components/Button";
-import { useAlert } from "../app/providers/alert/AlertProvider";
-import { initialSignUpValues, getValidationSignUpSchema } from "../shared/utils/authValidation";
+import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { register, clearAuthStatus } from "@/store/slices/authSlice";
+import { Button } from "@/shared/components/Button";
+import { useAlert } from "@/app/providers/alert/AlertProvider";
+import { initialSignUpValues, getValidationSignUpSchema } from "@/shared/utils/authValidation";
 
 export const SignUpForm = () => {
   const { t } = useTranslation();

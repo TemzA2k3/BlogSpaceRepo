@@ -1,4 +1,3 @@
-// Alert.tsx
 import { useEffect, useState, type FC } from "react";
 
 type AlertProps = {

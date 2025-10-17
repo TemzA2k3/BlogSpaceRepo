@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 
-import { DatabaseModule } from './database/database.module';
-import { AuthModule } from './modules/auth/auth.module';
+import { DatabaseModule } from '@/database/database.module';
+import { AuthModule } from '@/modules/auth/auth.module';
 
 @Module({
   imports: [

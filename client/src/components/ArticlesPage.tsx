@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { Input } from "../shared/components/Input";
+import { Input } from "@/shared/components/Input";
 import { ArticleCard } from "./ArticleCard";
 
 const ArticlesData = [

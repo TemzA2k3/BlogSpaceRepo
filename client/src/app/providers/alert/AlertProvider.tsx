@@ -1,6 +1,6 @@
 // AlertProvider.tsx
 import { createContext, useContext, useState, type FC, type ReactNode } from "react";
-import { Alert } from "../../../shared/components/Alert";
+import { Alert } from "@/shared/components/Alert";
 
 type AlertContextType = {
   showAlert: (message: string, type?: "success" | "error" , duration?: number) => void;

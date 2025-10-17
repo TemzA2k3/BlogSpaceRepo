@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
-import { apiRequest } from "../../shared/api/apiClient";
+
+import { apiRequest } from "@/shared/api/apiClient";
 
 interface SendUserData {
   firstName: string;

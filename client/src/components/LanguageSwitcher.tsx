@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useLanguage } from "../hooks/useLanguage";
+
+import { useLanguage } from "@/hooks/useLanguage";
 
 export const LanguageSwitcher = () => {
   const { currentLanguage, changeLanguage } = useLanguage();
