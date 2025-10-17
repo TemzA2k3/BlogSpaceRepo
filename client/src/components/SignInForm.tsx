@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
@@ -14,6 +14,7 @@ export const SignInForm: React.FC = () => {
     const dispatch = useAppDispatch();
     const { loading, error, success } = useAppSelector((state) => state.auth);
     const { showAlert } = useAlert();
+    const navigate = useNavigate();
 
     const validationSchema = getValidationSignInSchema(t);
 
@@ -39,7 +40,10 @@ export const SignInForm: React.FC = () => {
         if (!error && !success) return; // если статусы пустые — ничего не показываем
 
         if (error) showAlert(error, "error");
-        else if (success) showAlert(t("forms.loginSuccess"), "success");
+        else if (success){
+            showAlert(t("forms.loginSuccess"), "success");
+            navigate('/')
+        } 
 
         // сразу после показа сбрасываем статусы, чтобы при повторном заходе на страницу алерт не появился
         dispatch(clearAuthStatus());

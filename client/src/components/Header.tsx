@@ -2,17 +2,25 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
+import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { Button } from "@/shared/components/Button";
+import { logout } from "@/store/slices/authSlice";
+
 import { HeaderNavLinks } from "./HeaderNavLinks";
 import { ToggleTheme } from "./ToogleTheme";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Notifications } from "./Notifications";
 import { LoggedUserPreview } from "./LoggedUserPreview";
 
-import { Button } from "@/shared/components/Button";
-
 export const Header = () => {
     const { t } = useTranslation();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const dispatch = useAppDispatch();
+
+    const user = useAppSelector(state => state.auth.user);
+
+    const handleLogout = () => {
+        dispatch(logout())
+    }
 
     return (
         <header
@@ -40,8 +48,8 @@ export const Header = () => {
                     <Notifications />
 
                     {/* Авторизация */}
-                    {isLoggedIn ? (
-                        <LoggedUserPreview setIsLoggedIn={() => setIsLoggedIn(false)} />
+                    {user ? (
+                        <LoggedUserPreview setIsLoggedIn={handleLogout} />
                     ) : (
                         <div className="flex gap-3">
                             <Link to="/signin">

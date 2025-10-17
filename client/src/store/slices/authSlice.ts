@@ -52,6 +52,7 @@ export const login = createAsyncThunk(
         body: { email, password, remember },
         credentials: "include",
       });
+
       return data;
     } catch (err: any) {
       return rejectWithValue(err.message || "Login error");
@@ -77,15 +78,27 @@ export const register = createAsyncThunk(
         return rejectWithValue(err.message || "Registration error");
       }
     }
-  );
+);
+
+
+export const logout = createAsyncThunk(
+    "auth/logout",
+    async (_, { rejectWithValue }) => {
+        try {
+        await apiRequest("/auth/logout", "POST", {
+            credentials: "include", // чтобы cookie ушли на сервер
+        });
+        return true; // просто возвращаем успех
+        } catch (err: any) {
+        return rejectWithValue(err.message || "Logout error");
+        }
+    }
+);
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    logout(state) {
-      state.user = null;
-    },
     clearAuthStatus(state) {
       state.error = null;
       state.success = false;
@@ -119,9 +132,24 @@ const authSlice = createSlice({
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+
+      // LOGOUT
+      .addCase(logout.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.loading = false;
+        state.user = null;
+        state.success = true;
+      })
+      .addCase(logout.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { logout, clearAuthStatus } = authSlice.actions;
+export const { clearAuthStatus } = authSlice.actions;
 export default authSlice.reducer;
