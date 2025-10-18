@@ -12,7 +12,7 @@ import { useAlert } from "@/app/providers/alert/AlertProvider";
 export const SignInForm: React.FC = () => {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
-    const { loading, error, success } = useAppSelector((state) => state.auth);
+    const { loading, error, success } = useAppSelector(state => state.auth);
     const { showAlert } = useAlert();
     const navigate = useNavigate();
 

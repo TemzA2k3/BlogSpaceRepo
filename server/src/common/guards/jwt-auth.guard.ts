@@ -14,11 +14,12 @@ import {
       const req = context.switchToHttp().getRequest();
       const token = req.cookies?.['access_token'];
   
-      if (!token) throw new UnauthorizedException('No token');
+      if (!token) throw new UnauthorizedException('You are unauthorized!');
   
       try {
         const payload = await this.jwtService.verifyAsync(token);
         req.user = payload;
+
         return true;
       } catch (err) {
         throw new UnauthorizedException('Invalid or expired token');

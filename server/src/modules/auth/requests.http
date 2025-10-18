@@ -2,9 +2,9 @@ POST http://localhost:8080/auth/register
 Content-Type: application/json
 
 {
-    "firstName": "Artsem",
+    "firstName": "Artsemxxxxx",
     "lastName": "QWRRTY",
-    "email": "kikotik91@gmail.com",
+    "email": "kikotikxxxx91@gmail.com",
     "password": "123123"
 }
 
@@ -20,3 +20,6 @@ Content-Type: application/json
 
 ### Logout
 POST http://localhost:8080/auth/logout
+
+### Get current user
+GET http://localhost:8080/auth/me

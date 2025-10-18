@@ -1,54 +1,85 @@
-import { useState, type FC, type Dispatch, type SetStateAction } from "react";
+import { useRef, useState, type FC, useEffect } from "react";
+
+import { type User } from "@/store/slices/authSlice";
 
 interface ILoggedUserPreview {
-  setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
+    handleLogout: () => void;
+    user: User;
 }
 
 export const LoggedUserPreview: FC<ILoggedUserPreview> = ({
-  setIsLoggedIn,
+    handleLogout,
+    user
 }) => {
-  const [user, setUser] = useState({
-    name: "John Doe",
-    avatar: "/placeholder.svg?height=32&width=32",
-  });
-  const [showUserDropdown, setShowUserDropdown] = useState(false);
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const [showUserDropdown, setShowUserDropdown] = useState(false);
 
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setShowUserDropdown(!showUserDropdown)}
-        className="p-0 transition-transform duration-200 hover:scale-105"
-      >
-        <div className="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center overflow-hidden shadow-md">
-          {user.avatar ? (
-            <img
-              src={user.avatar || "/placeholder.svg"}
-              alt={user.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <i className="fas fa-user text-sm text-white"></i>
-          )}
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+                setShowUserDropdown(false);
+            }
+        };
+
+        document.addEventListener("click", handleClickOutside);
+        return () => document.removeEventListener("click", handleClickOutside);
+    }, []);
+
+    // Формируем URL с инициалами
+    const avatarUrl = user.avatar
+        ? user.avatar
+        : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.firstName + ' ' + user.lastName)}&background=gray&color=fff&rounded=true&size=32`;
+
+    return (
+        <div ref={wrapperRef} className="relative flex">
+            <button
+                onClick={() => setShowUserDropdown(!showUserDropdown)}
+                className="p-0 transition-transform duration-200 hover:scale-105"
+            >
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden shadow-md">
+                    <img
+                        src={avatarUrl}
+                        alt={user.firstName + ' ' + user.lastName}
+                        className="w-full h-full object-cover"
+                    />
+                </div>
+            </button>
+
+            {showUserDropdown && (
+                <div className="absolute right-0 top-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-10 min-w-[200px] overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                    {/* User Info */}
+                    <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                        <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+                            <img
+                                src={user.avatar || `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}&background=gray&color=fff&rounded=true&size=32`}
+                                alt={user.email}
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">{user.firstName} {user.lastName}</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-300">{user.email}</span>
+                        </div>
+                    </div>
+
+                    {/* Actions */}
+                    <button className="w-full text-left px-4 py-3 text-sm flex items-center gap-3 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                        <i className="fas fa-user text-xs text-gray-600 dark:text-gray-300"></i>
+                        Profile
+                    </button>
+                    <button
+                        onClick={() => {
+                            handleLogout();
+                            setShowUserDropdown(false);
+                        }}
+                        className="w-full text-left px-4 py-3 text-sm flex items-center gap-3 font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-700 transition-colors duration-150"
+                    >
+                        <i className="fas fa-sign-out-alt text-xs"></i>
+                        Logout
+                    </button>
+                </div>
+            )}
+
         </div>
-      </button>
-      {showUserDropdown && (
-        <div className="absolute right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl z-10 min-w-[140px] overflow-hidden animate-in slide-in-from-top-2 duration-200">
-          <button className="w-full text-left px-4 py-3 text-sm flex items-center gap-3 font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150">
-            <i className="fas fa-user text-xs text-gray-600"></i>
-            Profile
-          </button>
-          <button
-            onClick={() => {
-              setIsLoggedIn(false);
-              setShowUserDropdown(false);
-            }}
-            className="w-full text-left px-4 py-3 text-sm flex items-center gap-3 font-medium text-red-600 hover:bg-red-50 transition-colors duration-150"
-          >
-            <i className="fas fa-sign-out-alt text-xs"></i>
-            Logout
-          </button>
-        </div>
-      )}
-    </div>
-  );
+    );
 };

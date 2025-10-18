@@ -54,7 +54,12 @@ export class AuthService {
         throw new BadRequestException('User is blocked');
     }
 
-    const payload = { sub: user.id, email: user.email, role: user.role };
+    const payload = { 
+        userId: user.id, 
+        email: user.email, 
+        role: user.role, 
+        userName: user.userName
+    };
 
     const { password, ...safeUser } = user;
 

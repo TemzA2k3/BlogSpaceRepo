@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import { Button } from "@/shared/components/Button";
-import { logout } from "@/store/slices/authSlice";
+import { logout, clearAuthStatus } from "@/store/slices/authSlice";
+import { useAlert } from "@/app/providers/alert/AlertProvider";
 
 import { HeaderNavLinks } from "./HeaderNavLinks";
 import { ToggleTheme } from "./ToogleTheme";
@@ -15,12 +16,27 @@ import { LoggedUserPreview } from "./LoggedUserPreview";
 export const Header = () => {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const { showAlert } = useAlert();
 
-    const user = useAppSelector(state => state.auth.user);
+    const { user, error, success } = useAppSelector(state => state.auth);
 
     const handleLogout = () => {
         dispatch(logout())
     }
+
+    useEffect(() => {
+        if (!error && !success) return;
+
+        if (error) {
+            showAlert(error, "error");
+        } else if (success && !user) {
+            showAlert(t("forms.logoutSuccess"), "success");
+            navigate("/");
+        }
+
+        dispatch(clearAuthStatus());
+    }, [error, success, user, showAlert, t, navigate]);
 
     return (
         <header
@@ -49,7 +65,7 @@ export const Header = () => {
 
                     {/* Авторизация */}
                     {user ? (
-                        <LoggedUserPreview setIsLoggedIn={handleLogout} />
+                        <LoggedUserPreview handleLogout={handleLogout} user={user}/>
                     ) : (
                         <div className="flex gap-3">
                             <Link to="/signin">

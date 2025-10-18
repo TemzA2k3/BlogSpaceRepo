@@ -19,7 +19,8 @@
   },
   "auth": {
     "unauthorizedUserText": "Don’t have an account?",
-    "authorizedUserText": "Already have an account?"
+    "authorizedUserText": "Already have an account?",
+    "notAuthorized": "Failed to authenticate. Please sign in again."
   },
   "forms": {
     "error": "Error",
@@ -44,6 +45,7 @@
     "passwordMismatch": "Passwords do not match!",
     "nameMinLength": "Name must be at least {{count}} characters long!",
     "registrationSuccess": "Registation was succesessful!",
-    "loginSuccess": "Successful login!"
+    "loginSuccess": "Successful login!",
+    "logoutSuccess": "Successfully logged out"
   }
 }

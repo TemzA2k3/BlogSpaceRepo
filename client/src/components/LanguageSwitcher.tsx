@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-
+import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 
 export const LanguageSwitcher = () => {
   const { currentLanguage, changeLanguage } = useLanguage();
   const [showLangDropdown, setShowLangDropdown] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const switchLanguage = (lang: "en" | "ru") => {
     changeLanguage(lang);
@@ -13,17 +13,17 @@ export const LanguageSwitcher = () => {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target.closest(".language-switcher")) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
         setShowLangDropdown(false);
       }
     };
+
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   return (
-    <div className="relative language-switcher">
+    <div ref={wrapperRef} className="relative">
       <button
         onClick={() => setShowLangDropdown(!showLangDropdown)}
         className="h-10 px-3 cursor-pointer bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center gap-2 transition-transform duration-200 hover:scale-105"

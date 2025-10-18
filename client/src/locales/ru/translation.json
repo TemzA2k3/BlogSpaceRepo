@@ -19,7 +19,8 @@
   },
   "auth": {
     "unauthorizedUserText": "Нет аккаунта?",
-    "authorizedUserText": "Уже есть аккаунт?"
+    "authorizedUserText": "Уже есть аккаунт?",
+    "notAuthorized": "Не удалось выполнить аутентификацию. Пожалуйста, войдите заново."
   },
   "forms": {
     "error": "Ошибка",
@@ -44,6 +45,7 @@
     "passwordMismatch": "Пароли не совпадают!",
     "nameMinLength": "Минимальная длина имени или фамилии {{count}} символов!",
     "registrationSuccess": "Регистрация прошла успешно!",
-    "loginSuccess": "Вход выполнен успешно!"
+    "loginSuccess": "Вход выполнен успешно!",
+    "logoutSuccess": "Вы успешно вышли из системы"
   }
 }

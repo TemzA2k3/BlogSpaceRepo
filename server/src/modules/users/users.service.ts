@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, FindOptionsWhere } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm'
 
 import { User } from '@/database/entities/user.entity';
@@ -13,6 +13,10 @@ export class UsersService {
 
     findByEmail(email: string) {
         return this.userRepository.findOne({ where: { email } })
+    }
+
+    findOneByParams(params: FindOptionsWhere<User>) {
+        return this.userRepository.findOne({ where: params });
     }
 
     create(data: Partial<User>) {
