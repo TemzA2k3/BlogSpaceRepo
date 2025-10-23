@@ -43,19 +43,18 @@ export const Header = () => {
   return (
     <header className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-
         {/* Левая зона: гамбургер + лого */}
         <div className="flex items-center gap-3 flex-shrink-0">
-          {/* Гамбургер на мобильных */}
+          {/* Бургер только на <890px */}
           <button
-            className="sm:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="md2:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             onClick={toggleMobileMenu}
           >
             <i className="fas fa-bars text-lg"></i>
           </button>
 
-          {/* Лого и название на sm+ */}
-          <Link to="/" className="hidden sm:flex items-center gap-2">
+          {/* Лого и название видны при ≥890px */}
+          <Link to="/" className="hidden md2:flex items-center gap-2">
             <div className="logo-icon w-10 h-10 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 flex items-center justify-center">
               <i className="fas fa-infinity text-sm"></i>
             </div>
@@ -66,7 +65,7 @@ export const Header = () => {
         </div>
 
         {/* Центральная зона: ссылки навигации на sm+ */}
-        <nav className="flex-1 hidden sm:flex justify-center">
+        <nav className="flex-1 hidden md2:flex justify-center">
           <HeaderNavLinks />
         </nav>
 
@@ -79,7 +78,7 @@ export const Header = () => {
           {user ? (
             <LoggedUserPreview handleLogout={handleLogout} user={user} />
           ) : (
-            <div className="hidden sm:flex gap-2 sm:gap-3">
+            <div className="hidden md2:flex gap-2 sm:gap-3">
               <Link to="/signin">
                 <Button
                   variant="secondary"

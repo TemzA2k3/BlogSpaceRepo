@@ -1,6 +1,9 @@
 import { type FC } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/shared/components/Button";
+import { useAppSelector, useAppDispatch } from "@/hooks/reduxHooks";
+import { logout } from "@/store/slices/authSlice";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -9,7 +12,15 @@ interface MobileMenuProps {
 
 export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
+
   const links = ["posts", "articles", "explore", "messages"];
+
+  const handleLogout = () => {
+    dispatch(logout());
+    onClose();
+  };
 
   return (
     <>
@@ -25,10 +36,11 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
       <div
         className={`
           fixed top-0 left-0 h-full w-64 bg-white dark:bg-gray-900 z-50 shadow-lg
-          transform transition-transform duration-300
+          transform transition-transform duration-300 flex flex-col justify-between
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
+        {/* Верхняя часть — навигация */}
         <div className="p-6 flex flex-col gap-4">
           {links.map((link) => (
             <Link
@@ -40,6 +52,39 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
               {t(`header.${link}`)}
             </Link>
           ))}
+        </div>
+
+        {/* Нижняя часть — кнопки авторизации / выхода */}
+        <div className="border-t border-gray-200 dark:border-gray-700 p-6 flex flex-col gap-3">
+          {user ? (
+            <Button
+              variant="secondary"
+              onClick={handleLogout}
+              className="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors rounded-lg"
+            >
+              {t("header.logout")}
+            </Button>
+          ) : (
+            <>
+              <Link to="/signin" onClick={onClose}>
+                <Button
+                  variant="secondary"
+                  className="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors rounded-lg"
+                >
+                  {t("header.signIn")}
+                </Button>
+              </Link>
+
+              <Link to="/signup" onClick={onClose}>
+                <Button
+                  variant="primary"
+                  className="w-full bg-blue-600 dark:bg-gray-700 text-white dark:text-white hover:bg-blue-700 dark:hover:bg-gray-600 transition-colors rounded-lg"
+                >
+                  {t("header.signUp")}
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </>
