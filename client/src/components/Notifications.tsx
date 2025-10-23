@@ -1,5 +1,4 @@
-import type { FC } from "react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type FC } from "react";
 
 export const Notifications: FC = () => {
   const [open, setOpen] = useState(false);
@@ -25,41 +24,37 @@ export const Notifications: FC = () => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="w-10 h-10 bg-white dark:bg-gray-800 rounded-xl cursor-pointer border border-gray-200 dark:border-gray-700 flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95"
+        className="w-8 h-8 sm:w-10 sm:h-10 bg-white dark:bg-gray-800 rounded-xl cursor-pointer border border-gray-200 dark:border-gray-700 flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95"
       >
-        <i className="fas fa-bell text-gray-600 dark:text-gray-300 text-sm"></i>
+        <i className="fas fa-bell text-gray-600 dark:text-gray-300 text-xs sm:text-sm"></i>
       </button>
 
       {notifications.length > 0 && (
-        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow">
+        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs sm:text-sm font-bold rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center shadow">
           {notifications.length}
         </span>
       )}
 
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl overflow-hidden animate-fadeIn z-50">
-          <div className="max-h-96 overflow-y-auto">
+        <div className="absolute right-0 mt-2 w-64 sm:w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl overflow-hidden animate-fadeIn z-50">
+          <div className="max-h-72 sm:max-h-96 overflow-y-auto">
             {notifications.map((n) => (
               <div
                 key={n.id}
-                className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                className="flex items-start gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
               >
-                <img
-                  src={n.avatar}
-                  alt={n.user}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-                <div className="flex-1">
-                  <p className="text-sm text-gray-800 dark:text-gray-200">
+                <img src={n.avatar} alt={n.user} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover" />
+                <div className="flex-1 text-xs sm:text-sm">
+                  <p className="text-gray-800 dark:text-gray-200">
                     <span className="font-semibold">{n.user}</span> {n.action}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{n.time}</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs">{n.time}</p>
                 </div>
               </div>
             ))}
           </div>
           <div className="border-t border-gray-200 dark:border-gray-700 text-center">
-            <button className="w-full py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition cursor-pointer">
+            <button className="w-full py-1 sm:py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition cursor-pointer">
               Показать все уведомления
             </button>
           </div>

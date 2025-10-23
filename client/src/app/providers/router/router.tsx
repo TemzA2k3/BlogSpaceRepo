@@ -4,7 +4,7 @@ import { MainLayout } from "@/layouts/MainLayout";
 import { EmptyLayout } from "@/layouts/EmptyLayout";
 
 import { HomePage } from "@/pages/HomePage";
-import { PostsPage } from "@/components/PostsPage";
+import { PostsPage } from "@/pages/PostsPage";
 import { ArticlesPage } from "@/components/ArticlesPage";
 import { ExplorePage } from "@/components/ExplorePage";
 import { AboutPage } from "@/pages/AboutPage";
