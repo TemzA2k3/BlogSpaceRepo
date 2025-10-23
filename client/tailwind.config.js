@@ -5,6 +5,10 @@ export default {
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
     darkMode: "class",
-    theme: { extend: {} },
+    theme: { extend: {
+        screens: {
+          md2: "890px",
+        },
+      }, },
     plugins: [],
   };
