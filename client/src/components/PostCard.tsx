@@ -48,7 +48,7 @@ export const PostCard: FC<PostCardProps> = ({
                             {firstName} {lastName}
                         </div>
                         <div className="text-slate-500 dark:text-gray-400 text-sm font-normal">
-                            @{username}
+                            {username}
                         </div>
                     </div>
 

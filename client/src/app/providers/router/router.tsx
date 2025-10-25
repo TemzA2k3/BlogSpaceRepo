@@ -10,6 +10,7 @@ import { ExplorePage } from "@/components/ExplorePage";
 import { AboutPage } from "@/pages/AboutPage";
 import { SignInPage } from "@/pages/SignInPage";
 import { SignUpPage } from "@/pages/SignUpPage";
+import { ProfilePage } from "@/pages/ProfilePage";
 
 export const router = createBrowserRouter([
   {
@@ -23,6 +24,7 @@ export const router = createBrowserRouter([
       { path: "/about", element: <AboutPage /> },
       { path: "/signin", element: <SignInPage /> },
       { path: "/signup", element: <SignUpPage /> },
+      { path: "/profile/:id", element: <ProfilePage /> },
     ],
   },
   {
