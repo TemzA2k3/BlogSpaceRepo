@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { PostCard } from "@/components/PostCard";
+import { useAlert } from "@/app/providers/alert/AlertProvider";
 import { useAppSelector } from "@/hooks/reduxHooks";
+import { fetchAnotherUserData } from "@/shared/services/fetchUsersData"
 
 import { type User } from "@/shared/types/userTypes";
 
@@ -45,12 +47,18 @@ const mockPosts: Post[] = [
 ];
 
 export const ProfilePage = () => {
-    const { currentUser, success } = useAppSelector(state => state.auth)
+    const { currentUser } = useAppSelector(state => state.auth)
     const { id } = useParams<{ id: string }>();
+    const { showAlert } = useAlert();
 
     const [userData, setUserData] = useState<User | null>(null)
     const [posts, setPosts] = useState<Post[]>([]);
+
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
     
+
+    //TODO тут баг, если юзера нет в кеще, то будет вызываться else при перезагрузке странички
     useEffect(() => {
         if (!id) return;
         console.log('prev');
@@ -61,18 +69,21 @@ export const ProfilePage = () => {
           setUserData(currentUser);
         } else {
           console.log('NENENEN currentuser');
-          // чужой профиль — делаем fetch
-          fetch(`/api/currentUsers/${id}`)
-            .then(res => res.json())
-            .then(data => {
-              setUserData(data.user); // пришедший пользователь
-              setPosts(data.posts || []); // если API возвращает посты
-            })
-            .catch(err => console.error(err));
+          setLoading(true)
+          fetchAnotherUserData(id)
+            .then(data => setUserData(data))
+            .catch(() => setError('Failed to fetch'))
+            .finally(() => setLoading(false))
         }
-      }, [id, currentUser, success]);
+      }, [id, currentUser]);
 
-  if (!userData) return <div className="text-center py-10">Loading...</div>;
+      useEffect(() => {
+        if (!error) return;
+
+        showAlert(error, "error");
+      }, [error])
+
+  if (!userData || loading) return <div className="text-center py-10">Loading...</div>;
 
   return (
     <main className="max-w-5xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-gray-800 dark:text-gray-100">
