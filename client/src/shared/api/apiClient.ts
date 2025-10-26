@@ -1,3 +1,4 @@
+import { ApiError } from "./apiError";
 import { API_BASE_URL } from "@/shared/constants/constants";
 
 type RequestMethod = "GET" | "POST" | "PUT" | "DELETE";
@@ -26,7 +27,7 @@ export async function apiRequest<T>(
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "Request error");
+    throw new ApiError(errorData.message || "Request error", response.status);
   }
 
   return response.json();

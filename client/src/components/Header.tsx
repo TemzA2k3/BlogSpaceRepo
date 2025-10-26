@@ -19,7 +19,7 @@ export const Header = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { showAlert } = useAlert();
-  const { user, error, success } = useAppSelector((state) => state.auth);
+  const { currentUser, error, success } = useAppSelector((state) => state.auth);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -32,13 +32,13 @@ export const Header = () => {
     if (!error && !success) return;
 
     if (error) showAlert(error, "error");
-    else if (success && !user) {
+    else if (success && !currentUser) {
       showAlert(t("forms.logoutSuccess"), "success");
       navigate("/");
     }
 
     dispatch(clearAuthStatus());
-  }, [error, success, user, showAlert, t, navigate]);
+  }, [error, success, currentUser, showAlert, t, navigate]);
 
   return (
     <header className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 transition-colors duration-300">
@@ -75,8 +75,8 @@ export const Header = () => {
           <LanguageSwitcher />
           <Notifications />
 
-          {user ? (
-            <LoggedUserPreview handleLogout={handleLogout} user={user} />
+          {currentUser ? (
+            <LoggedUserPreview handleLogout={handleLogout} user={currentUser} />
           ) : (
             <div className="hidden md2:flex gap-2 sm:gap-3">
               <Link to="/signin">

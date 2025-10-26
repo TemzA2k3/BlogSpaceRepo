@@ -2,44 +2,20 @@ import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/tool
 
 import { apiRequest } from "@/shared/api/apiClient";
 
-interface SendUserData {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-}
+import type {
+    User,
+    RegisterUserData,
+    LoginUserData,
+    AuthState
+} from "@/shared/types/userTypes"
 
-export interface User {
-    id: number;
-    firstName: string;
-    lastName: string;
-    userName: string;
-    email: string;
-    role: string;
-    avatar: string | null;
-    isBlocked: boolean;
-}
 
-interface LoginUserData {
-    email: string;
-    password: string;
-    remember: boolean;
-}
-
-interface AuthState {
-    user: User | null;
-    loading: boolean;
-    success: boolean;
-    error: string | null;
-    checked: boolean;
-}
 
 const initialState: AuthState = {
-    user: null,
+    currentUser: JSON.parse(localStorage.getItem("currentUser") || "null"),
     loading: false,
     success: false,
     error: null,
-    checked: false,
 };
 
 export const login = createAsyncThunk(
@@ -64,7 +40,7 @@ export const login = createAsyncThunk(
 export const register = createAsyncThunk(
     "auth/register",
     async (
-        { firstName, lastName, email, password }: SendUserData,
+        { firstName, lastName, email, password }: RegisterUserData,
         { rejectWithValue }
     ) => {
         try {
@@ -72,9 +48,6 @@ export const register = createAsyncThunk(
                 body: { firstName, lastName, email, password },
                 credentials: "include",
             });
-
-            console.log(data);
-            
 
             return data;
         } catch (err: any) {
@@ -130,8 +103,10 @@ const authSlice = createSlice({
             })
             .addCase(login.fulfilled, (state, action: PayloadAction<User>) => {
                 state.loading = false;
-                state.user = action.payload;
+                state.currentUser = action.payload;
                 state.success = true;
+
+                localStorage.setItem("currentUser", JSON.stringify(action.payload));
             })
             .addCase(login.rejected, (state, action) => {
                 state.loading = false;
@@ -158,8 +133,10 @@ const authSlice = createSlice({
             })
             .addCase(logout.fulfilled, (state, action) => {
                 state.loading = false;
-                state.user = null;
+                state.currentUser = null;
                 state.success = action.payload as boolean;
+
+                localStorage.removeItem("currentUser");
             })
             .addCase(logout.rejected, (state, action) => {
                 state.loading = false;
@@ -174,13 +151,15 @@ const authSlice = createSlice({
             })
             .addCase(getMe.fulfilled, (state, action: PayloadAction<User>) => {
                 state.loading = false;
-                state.user = action.payload;
+                state.currentUser = action.payload;
                 state.success = true;
                 state.error = null;
+
+                localStorage.setItem("currentUser", JSON.stringify(action.payload));
             })
             .addCase(getMe.rejected, (state, action) => {
                 state.loading = false;
-                state.user = null;
+                state.currentUser = null;
                 state.error = action.payload as string;
                 state.success = false;
             });
