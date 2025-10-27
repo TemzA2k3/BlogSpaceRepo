@@ -31,7 +31,7 @@ export const PostCard: FC<PostCardProps> = ({
     });
 
     return (
-        <div className="self-stretch px-5 py-4 bg-slate-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl flex justify-start items-start gap-4 shadow-sm hover:shadow-md transition-all duration-200">
+        <div className="self-stretch px-5 py-4 bg-slate-50 dark:bg-darkbg border border-gray-200 dark:border-gray-700 rounded-2xl flex justify-start items-start gap-4 shadow-sm hover:shadow-md transition-all duration-200">
             {/* Аватар */}
             <img
                 className="w-16 h-16 rounded-full object-cover"

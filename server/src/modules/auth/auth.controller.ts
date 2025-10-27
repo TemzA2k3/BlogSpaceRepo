@@ -59,8 +59,7 @@ export class AuthController {
         if (!currentUser) {
             throw new UnauthorizedException('You are unauthorized!');
         }
-        const { password, ...userData } = currentUser;
         
-        return userData;
+        return currentUser;
     }
 }

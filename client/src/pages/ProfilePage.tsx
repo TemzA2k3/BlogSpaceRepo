@@ -58,21 +58,17 @@ export const ProfilePage = () => {
     const [error, setError] = useState<string | null>(null);
     
 
-    //TODO тут баг, если юзера нет в кеще, то будет вызываться else при перезагрузке странички
     useEffect(() => {
         if (!id) return;
-        console.log('prev');
-      
+
         if (currentUser && +id === currentUser.id) {
-          console.log('currentuser');
           setPosts(mockPosts);
           setUserData(currentUser);
-        } else {
-          console.log('NENENEN currentuser');
+        } else if (+id !== currentUser?.id) {
           setLoading(true)
           fetchAnotherUserData(id)
             .then(data => setUserData(data))
-            .catch(() => setError('Failed to fetch'))
+            .catch((e) => setError(e.message || "Failed to fetch"))
             .finally(() => setLoading(false))
         }
       }, [id, currentUser]);

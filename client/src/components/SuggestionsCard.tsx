@@ -12,7 +12,7 @@ interface SuggestionsCardProps {
 
 export const SuggestionsCard: FC<SuggestionsCardProps> = ({ users }) => {
     return (
-        <div className="border border-gray-200 dark:border-gray-700 rounded-2xl p-4 sm:p-5 bg-white dark:bg-gray-900">
+        <div className="border border-gray-200 dark:border-gray-700 rounded-2xl p-4 sm:p-5 bg-white dark:bg-darkbg">
             <h4 className="font-semibold mb-3 sm:mb-4 text-base sm:text-lg">👥 Suggestions</h4>
             <ul className="space-y-2 sm:space-y-3">
                 {users.map(user => (

@@ -34,3 +34,11 @@ export interface AuthState {
     success: boolean;
     error: string | null;
 }
+
+export interface UserCardProps {
+    id: number;
+    firstName: string;
+    lastName: string;
+    userName: string;
+    avatar: string | null;
+}

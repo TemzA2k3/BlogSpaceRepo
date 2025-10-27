@@ -1,7 +1,7 @@
 import { useRef, useState, type FC, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import { type User } from "@/store/slices/authSlice";
+import { type User } from "@/shared/types/userTypes";
 
 interface ILoggedUserPreview {
     handleLogout: () => void;
@@ -49,7 +49,10 @@ export const LoggedUserPreview: FC<ILoggedUserPreview> = ({ handleLogout, user }
                         </div>
                     </div>
 
-                    <Link to={`profile/${user.id}`}>
+                    <Link 
+                        to={`users/${user.id}`}
+                        onClick={() => setShowUserDropdown(false)}
+                        >
                         <button className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm flex items-center gap-2 sm:gap-3 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
                             <i className="fas fa-user text-xs sm:text-sm text-gray-600 dark:text-gray-300"></i>
                             Profile

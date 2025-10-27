@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository, FindOptionsWhere } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm'
 
@@ -15,8 +15,14 @@ export class UsersService {
         return this.userRepository.findOne({ where: { email } })
     }
 
-    findOneByParams(params: FindOptionsWhere<User>) {
-        return this.userRepository.findOne({ where: params });
+    async findOneByParams(params: FindOptionsWhere<User>) {
+        const user = await this.userRepository.findOne({ where: params });
+        if (!user) {
+            throw new NotFoundException('User not found')
+        }
+        const { password, ...safeUser } = user;
+
+        return safeUser
     }
 
     create(data: Partial<User>) {

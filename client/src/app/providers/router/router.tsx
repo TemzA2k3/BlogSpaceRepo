@@ -5,8 +5,8 @@ import { EmptyLayout } from "@/layouts/EmptyLayout";
 
 import { HomePage } from "@/pages/HomePage";
 import { PostsPage } from "@/pages/PostsPage";
-import { ArticlesPage } from "@/components/ArticlesPage";
-import { ExplorePage } from "@/components/ExplorePage";
+import { ArticlesPage } from "@/pages/ArticlesPage";
+import { ExplorePage } from "@/pages/ExplorePage";
 import { AboutPage } from "@/pages/AboutPage";
 import { SignInPage } from "@/pages/SignInPage";
 import { SignUpPage } from "@/pages/SignUpPage";
@@ -24,7 +24,7 @@ export const router = createBrowserRouter([
       { path: "/about", element: <AboutPage /> },
       { path: "/signin", element: <SignInPage /> },
       { path: "/signup", element: <SignUpPage /> },
-      { path: "/profile/:id", element: <ProfilePage /> },
+      { path: "/users/:id", element: <ProfilePage /> },
     ],
   },
   {
