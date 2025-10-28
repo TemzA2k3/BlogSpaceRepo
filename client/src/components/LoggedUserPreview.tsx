@@ -1,4 +1,5 @@
 import { useRef, useState, type FC, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 import { type User } from "@/shared/types/userTypes";
@@ -9,6 +10,8 @@ interface ILoggedUserPreview {
 }
 
 export const LoggedUserPreview: FC<ILoggedUserPreview> = ({ handleLogout, user }) => {
+    const { t } = useTranslation();
+
     const wrapperRef = useRef<HTMLDivElement>(null);
     const [showUserDropdown, setShowUserDropdown] = useState(false);
 
@@ -55,7 +58,7 @@ export const LoggedUserPreview: FC<ILoggedUserPreview> = ({ handleLogout, user }
                         >
                         <button className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm flex items-center gap-2 sm:gap-3 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
                             <i className="fas fa-user text-xs sm:text-sm text-gray-600 dark:text-gray-300"></i>
-                            Profile
+                            {t('profile.getProfile')}
                         </button>
                     </Link>
 
@@ -67,7 +70,7 @@ export const LoggedUserPreview: FC<ILoggedUserPreview> = ({ handleLogout, user }
                         className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm flex items-center gap-2 sm:gap-3 font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-700 transition-colors duration-150"
                     >
                         <i className="fas fa-sign-out-alt text-xs sm:text-sm"></i>
-                        Logout
+                        {t('profile.logout')}
                     </button>
                 </div>
             )}

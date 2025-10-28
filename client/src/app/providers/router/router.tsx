@@ -11,6 +11,7 @@ import { AboutPage } from "@/pages/AboutPage";
 import { SignInPage } from "@/pages/SignInPage";
 import { SignUpPage } from "@/pages/SignUpPage";
 import { ProfilePage } from "@/pages/ProfilePage";
+import { SpecificArticlePage } from "@/pages/SpecificArticlePage";
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +21,7 @@ export const router = createBrowserRouter([
       { path: "/", element: <HomePage /> },
       { path: "/posts", element: <PostsPage /> },
       { path: "/articles", element: <ArticlesPage /> },
+      { path: "/articles/:id", element: <SpecificArticlePage /> },
       { path: "/explore", element: <ExplorePage /> },
       { path: "/about", element: <AboutPage /> },
       { path: "/signin", element: <SignInPage /> },

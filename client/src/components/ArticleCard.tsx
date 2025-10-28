@@ -1,10 +1,24 @@
 import { type FC } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 import { type Article } from "@/shared/types/articleTypes";
 
-export const ArticleCard: FC<Omit<Article, "id">> = ({ title, author, content, tags, imageUrl }) => {
-    return (
-        <article className="rounded-2xl bg-white dark:bg-darkbg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
 
+export const ArticleCard: FC<Article> = ({ 
+    id, 
+    title, 
+    author, 
+    authorId, 
+    content, 
+    tags, 
+    imageUrl 
+}) => {
+    const navigate = useNavigate(); 
+
+    return (
+        <article
+            onClick={() => navigate(`/articles/${id}`)}
+            className="rounded-2xl bg-white dark:bg-darkbg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
             {/* Картинка сверху */}
             <div className="h-48 w-full overflow-hidden rounded-t-2xl">
                 <img
@@ -20,9 +34,13 @@ export const ArticleCard: FC<Omit<Article, "id">> = ({ title, author, content, t
                 {/* Ник автора с подсветкой */}
                 <p className="text-sm mb-3">
                     Автор:{" "}
-                    <span className="font-semibold text-blue-600 dark:text-blue-400">
+                    <Link
+                        to={`/users/${authorId}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                    >
                         @{author}
-                    </span>
+                    </Link>
                 </p>
 
                 <p className="text-gray-700 dark:text-gray-300 mb-4 flex-grow">{content}</p>

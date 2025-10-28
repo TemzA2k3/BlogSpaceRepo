@@ -9,6 +9,10 @@
     "signIn": "Sign In",
     "signUp": "Sign Up"
   },
+  "profile": {
+    "getProfile": "Profile",
+    "logout": "Logout"
+  },
   "footer": {
     "label": "Share your thoughts and discover amazing stories from people around the world.",
     "home": "Home",

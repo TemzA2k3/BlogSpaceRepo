@@ -8,6 +8,7 @@ import { type Article } from "@/shared/types/articleTypes"
 const mockArticles: Article[] = [
     {
       id: 1,
+      authorId: 101,
       title: "10 советов по работе с React",
       author: "frontend_guru",
       content:
@@ -17,6 +18,7 @@ const mockArticles: Article[] = [
     },
     {
       id: 2,
+      authorId: 102,
       title: "Почему TypeScript спасает ваши проекты",
       author: "jslover",
       content:
@@ -26,6 +28,7 @@ const mockArticles: Article[] = [
     },
     {
       id: 3,
+      authorId: 103,
       title: "Как писать чистый код в 2025 году",
       author: "tech_writer",
       content:
@@ -35,6 +38,7 @@ const mockArticles: Article[] = [
     },
     {
       id: 4,
+      authorId: 104,
       title: "Зачем нужен Zustand и как он упрощает state management",
       author: "state_master",
       content:
@@ -44,6 +48,7 @@ const mockArticles: Article[] = [
     },
     {
       id: 5,
+      authorId: 105,
       title: "Оптимизация Lighthouse: как получить 100/100",
       author: "seo_ninja",
       content:
@@ -53,6 +58,7 @@ const mockArticles: Article[] = [
     },
     {
       id: 6,
+      authorId: 106,
       title: "Tailwind CSS: дизайн без страданий",
       author: "ui_crafter",
       content:
@@ -62,6 +68,7 @@ const mockArticles: Article[] = [
     },
     {
       id: 7,
+      authorId: 107,
       title: "Node.js 22: что нового и зачем обновляться",
       author: "backend_boss",
       content:
@@ -71,6 +78,7 @@ const mockArticles: Article[] = [
     },
     {
       id: 8,
+      authorId: 108,
       title: "Next.js App Router: практическое руководство",
       author: "fullstack_hero",
       content:
@@ -80,6 +88,7 @@ const mockArticles: Article[] = [
     },
     {
       id: 9,
+      authorId: 109,
       title: "AI в веб-разработке: что стоит автоматизировать уже сейчас",
       author: "ml_coder",
       content:
@@ -89,6 +98,7 @@ const mockArticles: Article[] = [
     },
     {
       id: 10,
+      authorId: 110,
       title: "Почему UX важнее, чем вы думаете",
       author: "design_sensei",
       content:
@@ -98,6 +108,7 @@ const mockArticles: Article[] = [
     },
     {
       id: 11,
+      authorId: 111,
       title: "React Query vs TanStack Query: в чём разница?",
       author: "data_fetcher",
       content:
@@ -107,6 +118,7 @@ const mockArticles: Article[] = [
     },
     {
       id: 12,
+      authorId: 112,
       title: "Docker для новичков: быстрый старт",
       author: "devops_kid",
       content:
@@ -116,6 +128,7 @@ const mockArticles: Article[] = [
     },
     {
       id: 13,
+      authorId: 113,
       title: "GraphQL: когда стоит использовать, а когда — нет",
       author: "api_architect",
       content:
@@ -125,6 +138,7 @@ const mockArticles: Article[] = [
     },
     {
       id: 14,
+      authorId: 114,
       title: "Секреты производительного Redux Toolkit",
       author: "state_wizard",
       content:
@@ -134,6 +148,7 @@ const mockArticles: Article[] = [
     },
     {
       id: 15,
+      authorId: 115,
       title: "Лучшие VS Code плагины для фронтенда",
       author: "code_addict",
       content:
@@ -176,8 +191,10 @@ export const ArticlesPage = () => {
           filteredArticles.map((article) => (
             <ArticleCard
                 key={article.id}
+                id={article.id}
                 title={article.title}
                 author={article.author}
+                authorId={article.authorId}
                 content={article.content}
                 tags={article.tags}
                 imageUrl="https://placehold.co/100x100"

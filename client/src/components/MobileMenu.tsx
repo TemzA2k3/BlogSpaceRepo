@@ -13,7 +13,7 @@ interface MobileMenuProps {
 export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.auth);
+  const { currentUser } = useAppSelector((state) => state.auth);
 
   const links = ["posts", "articles", "explore", "messages"];
 
@@ -56,13 +56,13 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
 
         {/* Нижняя часть — кнопки авторизации / выхода */}
         <div className="border-t border-gray-200 dark:border-gray-700 p-6 flex flex-col gap-3">
-          {user ? (
+          {currentUser ? (
             <Button
               variant="secondary"
               onClick={handleLogout}
               className="w-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors rounded-lg"
             >
-              {t("header.logout")}
+              {t("profile.logout")}
             </Button>
           ) : (
             <>
