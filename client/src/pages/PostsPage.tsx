@@ -1,22 +1,11 @@
 import { useEffect, useState } from "react";
+
 import { PostCard } from "@/components/PostCard";
 import { TrendingTopicsCard } from "@/components/TrendingTopicsCard";
 import { TopCommunitiesCard } from "@/components/TopCommunitiesCard";
 import { SuggestionsCard } from "@/components/SuggestionsCard";
 
-interface Post {
-    id: number;
-    firstName: string;
-    lastName: string;
-    username: string;
-    content: string;
-    hashtags: string[];
-    likes: number;
-    comments: number;
-    saved: number;
-    avatar?: string;
-    date: string;
-}
+import { type Post } from "@/shared/types/postTypes";
 
 const mockPosts: Post[] = [
     {

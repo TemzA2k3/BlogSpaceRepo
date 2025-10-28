@@ -3,7 +3,10 @@ import {
     PrimaryGeneratedColumn,
     Column,
     BeforeInsert,
+    OneToMany
 } from 'typeorm';
+
+import { Post } from './post.entity';
 
 export enum UserRole {
     USER = 'user',
@@ -61,6 +64,10 @@ export class User {
 
     @Column({ default: 0 })
     followingCount: number;
+
+    // Связь с постами
+    @OneToMany(() => Post, (post) => post.user)
+    posts: Post[];
 
     @BeforeInsert()
     generateUsername() {

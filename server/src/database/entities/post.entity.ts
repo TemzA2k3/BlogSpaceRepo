@@ -1,0 +1,43 @@
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToOne,
+    ManyToMany,
+    JoinTable,
+    CreateDateColumn,
+} from 'typeorm';
+
+import { User } from './user.entity';
+import { Hashtag } from './hashtag.entity';
+
+@Entity('posts')
+export class Post {
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column({ type: 'text' })
+    content: string;
+
+    @Column({ default: 0 })
+    likes: number;
+
+    @Column({ default: 0 })
+    comments: number;
+
+    @Column({ default: 0 })
+    saved: number;
+
+    @Column({ nullable: true })
+    avatar?: string;
+
+    @CreateDateColumn({ type: 'timestamp' })
+    date: Date;
+
+    @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
+    user: User;
+
+    @ManyToMany(() => Hashtag, (hashtag) => hashtag.posts, { cascade: true })
+    @JoinTable()
+    hashtags: Hashtag[];
+}
