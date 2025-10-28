@@ -29,4 +29,16 @@ export class UsersService {
         const user = this.userRepository.create(data);
         return this.userRepository.save(user);
     }
+
+    async updateAvatar(userId: number, filename: string) {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user) throw new Error('User not found');
+    
+        user.avatar = `/uploads/avatars/${filename}`;
+        await this.userRepository.save(user);
+
+        const { password, ...userWithoutPassword } = user;
+        
+        return userWithoutPassword;   
+    }
 }

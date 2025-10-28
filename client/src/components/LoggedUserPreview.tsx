@@ -2,6 +2,8 @@ import { useRef, useState, type FC, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
+import { getAvatarUrl } from "@/shared/utils/getAvatarUrl";
+
 import { type User } from "@/shared/types/userTypes";
 
 interface ILoggedUserPreview {
@@ -25,10 +27,6 @@ export const LoggedUserPreview: FC<ILoggedUserPreview> = ({ handleLogout, user }
         return () => document.removeEventListener("click", handleClickOutside);
     }, []);
 
-    const avatarUrl = user.avatar
-        ? user.avatar
-        : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.firstName + ' ' + user.lastName)}&background=gray&color=fff&rounded=true&size=32`;
-
     return (
         <div ref={wrapperRef} className="relative flex">
             <button
@@ -36,7 +34,10 @@ export const LoggedUserPreview: FC<ILoggedUserPreview> = ({ handleLogout, user }
                 className="p-0 transition-transform duration-200 hover:scale-105"
             >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center overflow-hidden shadow-md">
-                    <img src={avatarUrl} alt={user.firstName + ' ' + user.lastName} className="w-full h-full object-cover" />
+                    <img 
+                        src={getAvatarUrl(user.firstName, user.lastName, user.avatar)} 
+                        alt={user.userName} 
+                        className="w-full h-full object-cover" />
                 </div>
             </button>
 
@@ -44,7 +45,10 @@ export const LoggedUserPreview: FC<ILoggedUserPreview> = ({ handleLogout, user }
                 <div className="absolute right-0 top-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-10 min-w-[160px] sm:min-w-[200px] overflow-hidden animate-in slide-in-from-top-2 duration-200">
                     <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 border-b border-gray-200 dark:border-gray-700">
                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
-                            <img src={user.avatar || avatarUrl} alt={user.email} className="w-full h-full object-cover" />
+                            <img 
+                            src={getAvatarUrl(user.firstName, user.lastName, user.avatar)} 
+                            alt={user.userName} 
+                            className="w-full h-full object-cover" />
                         </div>
                         <div className="flex flex-col text-xs sm:text-sm">
                             <span className="font-semibold text-gray-800 dark:text-gray-100">{user.firstName} {user.lastName}</span>
