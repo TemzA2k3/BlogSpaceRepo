@@ -1,4 +1,3 @@
-import { ApiError } from "./apiError";
 import { API_BASE_URL } from "@/shared/constants/constants";
 
 type RequestMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -19,7 +18,6 @@ export async function apiRequest<T>(
 
   let body = options.body;
 
-  // ✅ если это не FormData, добавляем заголовок и сериализуем в JSON
   if (!(body instanceof FormData)) {
     headers["Content-Type"] = "application/json";
     if (body && typeof body === "object") {
@@ -34,9 +32,18 @@ export async function apiRequest<T>(
     credentials: "include",
   });
 
+  if (response.status === 401) {
+    // Лениво импортируем store только здесь потому что иначе будет циклическая зависимость
+    const { store } = await import("@/store/store");
+    const { logout } = await import("@/store/slices/authSlice");
+    
+    store.dispatch(logout());
+    throw new Error("Unauthorized");
+  }
+
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new ApiError(errorData.message || "Request error", response.status);
+    throw new Error(errorData.message || "Request error");
   }
 
   return response.json();

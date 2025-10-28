@@ -24,8 +24,6 @@ export class UsersController {
         return this.usersService.findOneByParams({ id: +id })
     }
 
-
-    //TODO сделать дто и посмотреть почему не разлогинивает
     @Patch('avatar')
     @UseGuards(JwtAuthGuard)
     @UseInterceptors(AvatarUploadInterceptor())
