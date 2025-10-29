@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 
 import { Post } from './post.entity';
+import { UserRelation } from './user-relation.entity'
 
 export enum UserRole {
     USER = 'user',
@@ -68,6 +69,13 @@ export class User {
     // Связь с постами
     @OneToMany(() => Post, (post) => post.user)
     posts: Post[];
+
+    @OneToMany(() => UserRelation, (relation) => relation.sourceUser)
+    relationsFrom: UserRelation[];
+
+    @OneToMany(() => UserRelation, (relation) => relation.targetUser)
+    relationsTo: UserRelation[];
+
 
     @BeforeInsert()
     generateUsername() {

@@ -6,7 +6,10 @@ import {
     UploadedFile, 
     UseInterceptors, 
     Req, 
-    UseGuards
+    UseGuards,
+    Post,
+    BadRequestException,
+    Delete
 } from '@nestjs/common';
 import { File as MulterFile } from 'multer';
 
@@ -20,8 +23,9 @@ export class UsersController {
     constructor(private usersService: UsersService) {}
 
     @Get(':id')
-    getUserData(@Param('id') id: string) {
-        return this.usersService.findOneByParams({ id: +id })
+    getUserData(@Param('id') id: string, @Req() req) {
+        const currentUserId = req.user?.id;
+        return this.usersService.getUserProfileWithFollowStatus(+id, currentUserId)
     }
 
     @Patch('avatar')
@@ -29,5 +33,20 @@ export class UsersController {
     @UseInterceptors(AvatarUploadInterceptor())
     changeAvatar(@UploadedFile() file: MulterFile, @Req() req) {
       return this.usersService.updateAvatar(req.user.id, file.filename);
+    }
+
+    @Post(':id/follow')
+    @UseGuards(JwtAuthGuard)
+    followUser(@Param('id') targetId: number, @Req() req) {
+        if (req.user.id === targetId) throw new BadRequestException('You cannot follow yourself!');
+
+        return this.usersService.followUser(req.user.id, targetId);
+    }
+
+    @Delete(':id/unfollow')
+    @UseGuards(JwtAuthGuard)
+    unfollowUser(@Param('id') targetId: number, @Req() req) {
+        const currentUserId = req.user.id;
+        return this.usersService.unfollowUser(+currentUserId, +targetId);
     }
 }
