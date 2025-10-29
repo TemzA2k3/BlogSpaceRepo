@@ -6,6 +6,7 @@ import {
     UploadedFile, 
     UseInterceptors, 
     Req, 
+    Query,
     UseGuards,
     Post,
     BadRequestException,
@@ -23,9 +24,11 @@ export class UsersController {
     constructor(private usersService: UsersService) {}
 
     @Get(':id')
-    getUserData(@Param('id') id: string, @Req() req) {
-        const currentUserId = req.user?.id;
-        return this.usersService.getUserProfileWithFollowStatus(+id, currentUserId)
+    getUserData(
+        @Param('id') id: string,
+        @Query('currentUserId') currentUserId?: string
+    ) {
+        return this.usersService.getUserProfileData(+id, currentUserId ? +currentUserId : undefined);
     }
 
     @Patch('avatar')
@@ -46,7 +49,7 @@ export class UsersController {
     @Delete(':id/unfollow')
     @UseGuards(JwtAuthGuard)
     unfollowUser(@Param('id') targetId: number, @Req() req) {
-        const currentUserId = req.user.id;
+        const currentUserId = req.user.userId;
         return this.usersService.unfollowUser(+currentUserId, +targetId);
     }
 }

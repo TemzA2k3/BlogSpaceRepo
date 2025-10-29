@@ -1,7 +1,7 @@
 import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
+    BadRequestException,
+    Injectable,
+    NotFoundException,
 } from "@nestjs/common";
 import { Repository, FindOptionsWhere } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -10,129 +10,147 @@ import * as fs from "fs";
 
 import { User } from "@/database/entities/user.entity";
 import {
-  RelationType,
-  UserRelation,
+    RelationType,
+    UserRelation,
 } from "@/database/entities/user-relation.entity";
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    @InjectRepository(UserRelation)
-    private readonly relationRepository: Repository<UserRelation>
-  ) {}
+    constructor(
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
+        @InjectRepository(UserRelation)
+        private readonly relationRepository: Repository<UserRelation>
+    ) { }
 
-  findByEmail(email: string) {
-    return this.userRepository.findOne({ where: { email } });
-  }
-
-  async findOneByParams(params: FindOptionsWhere<User>) {
-    const user = await this.userRepository.findOne({ where: params });
-    if (!user) {
-      throw new NotFoundException("User not found");
-    }
-    const { password, ...safeUser } = user;
-
-    return safeUser;
-  }
-
-  async getUserProfileWithFollowStatus(
-    targetUserId: number,
-    currentUserId?: number
-  ) {
-    const user = await this.userRepository.findOne({
-      where: { id: targetUserId },
-    });
-    if (!user) {
-      throw new NotFoundException("User not found");
+    findByEmail(email: string) {
+        return this.userRepository.findOne({ where: { email } });
     }
 
-    const { password, ...safeUser } = user;
+    async findOneByParams(params: FindOptionsWhere<User>) {
+        const user = await this.userRepository.findOne({ where: params });
+        if (!user) {
+            throw new NotFoundException("User not found");
+        }
+        const { password, ...safeUser } = user;
 
-    let isFollowing = false;
-
-    if (currentUserId) {
-      const relation = await this.relationRepository.findOne({
-        where: {
-          sourceUser: { id: currentUserId },
-          targetUser: { id: targetUserId },
-          type: RelationType.FOLLOW,
-        },
-      });
-      isFollowing = Boolean(relation);
+        return safeUser;
     }
 
-    return {
-      ...safeUser,
-      isFollowing,
-    };
-  }
+    async getUserProfileData(
+        targetUserId: number,
+        currentUserId?: number
+    ) {
+        const user = await this.userRepository.findOne({
+            where: { id: targetUserId },
+        });
 
-  create(data: Partial<User>) {
-    const user = this.userRepository.create(data);
-    return this.userRepository.save(user);
-  }
+        if (!user) {
+            throw new NotFoundException("User not found");
+        }
 
-  async updateAvatar(userId: number, filename: string) {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) throw new Error("User not found");
+        const { password, ...safeUser } = user;
 
-    if (user.avatar && user.avatar.startsWith("/uploads/avatars/")) {
-      const oldPath = path.join(process.cwd(), user.avatar);
-      try {
-        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-      } catch (err) {
-        console.warn(`⚠️ Не удалось удалить старый аватар: ${err.message}`);
-      }
+        let isFollowing = false;
+
+        if (currentUserId) {
+            const relation = await this.relationRepository
+                .createQueryBuilder('r')
+                .select('r.id')
+                .where('r."sourceUserId" = :sourceId', { sourceId: currentUserId })
+                .andWhere('r."targetUserId" = :targetId', { targetId: targetUserId })
+                .andWhere('r.type::text = :type', { type: RelationType.FOLLOW })
+                .getOne();
+
+            isFollowing = !!relation;
+        }
+
+        // Подсчёт подписчиков (кто подписан на targetUser)
+        const followersCount = await this.relationRepository
+            .createQueryBuilder('r')
+            .where('r."targetUserId" = :targetId', { targetId: targetUserId })
+            .andWhere('r.type::text = :type', { type: RelationType.FOLLOW })
+            .getCount();
+
+        // Подсчёт подписок (на кого targetUser подписан)
+        const followingCount = await this.relationRepository
+            .createQueryBuilder('r')
+            .where('r."sourceUserId" = :sourceId', { sourceId: targetUserId })
+            .andWhere('r.type::text = :type', { type: RelationType.FOLLOW })
+            .getCount();
+
+        return {
+            ...safeUser,
+            isFollowing,
+            followersCount,
+            followingCount,
+        };
     }
 
-    user.avatar = `/uploads/avatars/${filename}`;
-    await this.userRepository.save(user);
+    create(data: Partial<User>) {
+        const user = this.userRepository.create(data);
+        return this.userRepository.save(user);
+    }
 
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
-  }
+    async updateAvatar(userId: number, filename: string) {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user) throw new Error("User not found");
 
-  async followUser(sourceId: number, targetId: number) {
-    const [sourceUser, targetUser] = await Promise.all([
-      this.userRepository.findOneBy({ id: sourceId }),
-      this.userRepository.findOneBy({ id: targetId }),
-    ]);
+        if (user.avatar && user.avatar.startsWith("/uploads/avatars/")) {
+            const oldPath = path.join(process.cwd(), user.avatar);
+            try {
+                if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+            } catch (err) {
+                console.warn(`⚠️ Не удалось удалить старый аватар: ${err.message}`);
+            }
+        }
 
-    if (!sourceUser) throw new NotFoundException("Source user not found");
-    if (!targetUser) throw new NotFoundException("Target user not found");
+        user.avatar = `/uploads/avatars/${filename}`;
+        await this.userRepository.save(user);
 
-    const existing = await this.relationRepository.findOne({
-      where: { sourceUser: { id: sourceId }, targetUser: { id: targetId } },
-    });
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+    }
 
-    if (existing) throw new BadRequestException("You have already subscribed!");
+    async followUser(sourceId: number, targetId: number) {
+        const [sourceUser, targetUser] = await Promise.all([
+            this.userRepository.findOneBy({ id: sourceId }),
+            this.userRepository.findOneBy({ id: targetId }),
+        ]);
 
-    const relation = this.relationRepository.create({
-      sourceUser,
-      targetUser,
-      type: RelationType.FOLLOW,
-    });
+        if (!sourceUser) throw new NotFoundException("Source user not found");
+        if (!targetUser) throw new NotFoundException("Target user not found");
 
-    await this.relationRepository.save(relation);
-    return { message: "You have subscribed successfully!" };
-  }
+        const existing = await this.relationRepository.findOne({
+            where: { sourceUser: { id: sourceId }, targetUser: { id: targetId } },
+        });
 
-  async unfollowUser(sourceId: number, targetId: number) {
-    if (sourceId === targetId) throw new BadRequestException("You cannot unfollow yourself");
-  
-    const relation = await this.relationRepository.findOne({
-      where: {
-        sourceUser: { id: sourceId },
-        targetUser: { id: targetId },
-        type: RelationType.FOLLOW,
-      },
-    });
-  
-    if (!relation) throw new BadRequestException("You are not following this user");
-  
-    await this.relationRepository.remove(relation);
-    return { message: "You have unfollowed the user successfully!" };
-  }
+        if (existing) throw new BadRequestException("You have already subscribed!");
+
+        const relation = this.relationRepository.create({
+            sourceUser,
+            targetUser,
+            type: RelationType.FOLLOW,
+        });
+
+        await this.relationRepository.save(relation);
+        return { message: "You have subscribed successfully!" };
+    }
+
+    async unfollowUser(sourceId: number, targetId: number) {
+        if (sourceId === targetId) throw new BadRequestException("You cannot unfollow yourself");
+
+        const relation = await this.relationRepository.findOne({
+            where: {
+                sourceUser: { id: sourceId },
+                targetUser: { id: targetId },
+                type: RelationType.FOLLOW,
+            },
+        });
+
+        if (!relation) throw new BadRequestException("You are not following this user");
+
+        await this.relationRepository.remove(relation);
+        return { message: "You have unfollowed the user successfully!" };
+    }
 }

@@ -2,9 +2,9 @@ import { apiRequest } from "@/shared/api/apiClient";
 
 import type { User } from "@/shared/types/userTypes"
 
-export const fetchAnotherUserData = async (id: string): Promise<User & { isFollowing?: boolean }> => {
+export const fetchAnotherUserData = async (userId: string, currentUserId: number | undefined): Promise<User & { isFollowing?: boolean }> => {
     try {
-        const data = await apiRequest<User>(`/users/${id}`, "GET", {
+        const data = await apiRequest<User>(`/users/${userId}?currentUserId=${currentUserId}`, "GET", {
             credentials: "include",
         });
 

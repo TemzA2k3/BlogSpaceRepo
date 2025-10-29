@@ -55,7 +55,7 @@ export class AuthController {
     @UseGuards(JwtAuthGuard)
     @Get('me')
     async getMe(@UserReq() user: JwtPayload) {
-        const currentUser = await this.usersService.findOneByParams({ id: user.userId });
+        const currentUser = await this.usersService.getUserProfileData(user.userId);
         if (!currentUser) {
             throw new UnauthorizedException('You are unauthorized!');
         }

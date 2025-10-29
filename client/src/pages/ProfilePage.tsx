@@ -79,8 +79,8 @@ export const ProfilePage = () => {
     } else if (+id !== currentUser?.id) {
       setLoading(true);
       setIsMyProfile(false);
-      fetchAnotherUserData(id)
-        .then((data) => {
+      fetchAnotherUserData(id, currentUser?.id)
+        .then((data) => {            
             setUserData(data)
             setIsFollowing(Boolean(data.isFollowing));
         })

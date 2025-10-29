@@ -60,12 +60,6 @@ export class User {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
-    @Column({ default: 0 })
-    followersCount: number;
-
-    @Column({ default: 0 })
-    followingCount: number;
-
     // Связь с постами
     @OneToMany(() => Post, (post) => post.user)
     posts: Post[];
@@ -75,7 +69,6 @@ export class User {
 
     @OneToMany(() => UserRelation, (relation) => relation.targetUser)
     relationsTo: UserRelation[];
-
 
     @BeforeInsert()
     generateUsername() {

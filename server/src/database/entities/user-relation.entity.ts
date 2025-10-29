@@ -6,6 +6,7 @@ import {
     CreateDateColumn,
     Unique,
   } from 'typeorm';
+  
   import { User } from './user.entity';
   
   export enum RelationType {
@@ -38,6 +39,6 @@ import {
     createdAt: Date;
   
     @Column({ default: false })
-    isAccepted: boolean; // можно использовать для приватных профилей
+    isAccepted: boolean;
   }
   
