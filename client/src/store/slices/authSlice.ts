@@ -12,7 +12,8 @@ import type {
 
 
 const initialState: AuthState = {
-    currentUser: JSON.parse(localStorage.getItem("currentUser") || "null"),
+    currentUser: null,
+        // JSON.parse(localStorage.getItem("currentUser") || "null"),
     loading: false,
     success: false,
     error: null,
@@ -91,7 +92,7 @@ const authSlice = createSlice({
     reducers: {
         setCurrentUser: (state, action: PayloadAction<User>) => {
             state.currentUser = action.payload;
-            localStorage.setItem("currentUser", JSON.stringify(action.payload));
+            // localStorage.setItem("currentUser", JSON.stringify(action.payload));
           },
         clearAuthStatus(state) {
             state.error = null;
@@ -110,7 +111,7 @@ const authSlice = createSlice({
                 state.currentUser = action.payload;
                 state.success = true;
 
-                localStorage.setItem("currentUser", JSON.stringify(action.payload));
+                // localStorage.setItem("currentUser", JSON.stringify(action.payload));
             })
             .addCase(login.rejected, (state, action) => {
                 state.loading = false;
@@ -140,7 +141,7 @@ const authSlice = createSlice({
                 state.currentUser = null;
                 state.success = action.payload as boolean;
 
-                localStorage.removeItem("currentUser");
+                // localStorage.removeItem("currentUser");
             })
             .addCase(logout.rejected, (state, action) => {
                 state.loading = false;
@@ -159,7 +160,7 @@ const authSlice = createSlice({
                 state.success = true;
                 state.error = null;
 
-                localStorage.setItem("currentUser", JSON.stringify(action.payload));
+                // localStorage.setItem("currentUser", JSON.stringify(action.payload));
             })
             .addCase(getMe.rejected, (state, action) => {
                 state.loading = false;

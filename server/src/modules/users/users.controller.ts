@@ -24,7 +24,7 @@ export class UsersController {
     constructor(private usersService: UsersService) {}
 
     @Get(':id')
-    getUserData(
+    getUserProfileData(
         @Param('id') id: string,
         @Query('currentUserId') currentUserId?: string
     ) {

@@ -8,13 +8,16 @@ import { getMe } from "@/store/slices/authSlice";
 
 export const App = () => {
     const dispatch = useAppDispatch();
-    const { currentUser } = useAppSelector(state => state.auth);
+    // const { currentUser } = useAppSelector(state => state.auth);
 
     useEffect(() => {
-        if(!currentUser){
+        // if(!currentUser){
             dispatch(getMe())
-        }
-    }, [dispatch, currentUser])
+        // }
+    }, [
+        dispatch,
+        // currentUser
+    ])
 
   return (
     <>

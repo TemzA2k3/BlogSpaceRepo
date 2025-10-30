@@ -1,25 +1,21 @@
 import { apiRequest } from "@/shared/api/apiClient";
 
-export const followUser = async (id: number): Promise<{ message: string }> => {
+export const followUser = async (id: number): Promise<void> => {
     try {
-        const data = await apiRequest<{ message: string }>(`/users/${id}/follow`, "POST", {
+        await apiRequest(`/users/${id}/follow`, "POST", {
             credentials: "include",
         });
-
-        return data;
     } catch (err: any) {
-        throw new Error(err.message || "Something went wrong...")
+        throw new Error(err.message || "Something went wrong...");
     }
 }
 
-export const unfollowUser = async (id: number): Promise<{ message: string }> => {
+export const unfollowUser = async (id: number): Promise<void> => {
     try {
-        const data = await apiRequest<{ message: string }>(`/users/${id}/unfollow`, "DELETE", {
+        await apiRequest(`/users/${id}/unfollow`, "DELETE", {
             credentials: "include",
         });
-
-        return data;
     } catch (err: any) {
-        throw new Error(err.message || "Something went wrong...")
+        throw new Error(err.message || "Something went wrong...");
     }
 }

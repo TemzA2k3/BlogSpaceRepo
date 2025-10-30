@@ -11,7 +11,15 @@
   },
   "profile": {
     "getProfile": "Profile",
-    "logout": "Logout"
+    "logout": "Logout",
+    "subscribe": "You have subscribed successfully!",
+    "unsubscribe": "You have unfollowed the user successfully!",
+    "subError": "Failed to update follow status",
+    "updatedAvatar": "Avatar updated successfully",
+    "errorUpdatingAvatar": "Failed to update avatar"
+  },
+  "error": {
+    "fetchError": "Failed to fetch"
   },
   "footer": {
     "label": "Share your thoughts and discover amazing stories from people around the world.",

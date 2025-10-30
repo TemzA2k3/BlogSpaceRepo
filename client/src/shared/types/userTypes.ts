@@ -11,8 +11,12 @@ export interface User {
     location?: string;
     website?: string;
     createdAt?: string;
+}
+
+export interface ProfileUserData extends User {
     followersCount: number;
     followingCount: number;
+    isFollowing?: boolean
 }
 
 export interface RegisterUserData {

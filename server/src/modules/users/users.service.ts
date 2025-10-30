@@ -82,8 +82,8 @@ export class UsersService {
         return {
             ...safeUser,
             isFollowing,
-            followersCount,
-            followingCount,
+            followersCount: followersCount,
+            followingCount: followingCount,
         };
     }
 
@@ -134,7 +134,6 @@ export class UsersService {
         });
 
         await this.relationRepository.save(relation);
-        return { message: "You have subscribed successfully!" };
     }
 
     async unfollowUser(sourceId: number, targetId: number) {
@@ -151,6 +150,5 @@ export class UsersService {
         if (!relation) throw new BadRequestException("You are not following this user");
 
         await this.relationRepository.remove(relation);
-        return { message: "You have unfollowed the user successfully!" };
     }
 }
