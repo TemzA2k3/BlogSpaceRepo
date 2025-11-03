@@ -13,14 +13,19 @@ import {
     RelationType,
     UserRelation,
 } from "@/database/entities/user-relation.entity";
+import { Post } from "@/database/entities/post.entity";
 
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
+
         @InjectRepository(UserRelation)
-        private readonly relationRepository: Repository<UserRelation>
+        private readonly relationRepository: Repository<UserRelation>,
+
+        @InjectRepository(Post)
+        private readonly postRepository: Repository<Post>
     ) { }
 
     findByEmail(email: string) {
@@ -40,52 +45,63 @@ export class UsersService {
     async getUserProfileData(
         targetUserId: number,
         currentUserId?: number
-    ) {
+      ) {
         const user = await this.userRepository.findOne({
-            where: { id: targetUserId },
+          where: { id: targetUserId },
         });
-
+      
         if (!user) {
-            throw new NotFoundException("User not found");
+          throw new NotFoundException('User not found');
         }
-
+      
         const { password, ...safeUser } = user;
-
+      
         let isFollowing = false;
-
+      
         if (currentUserId) {
-            const relation = await this.relationRepository
-                .createQueryBuilder('r')
-                .select('r.id')
-                .where('r."sourceUserId" = :sourceId', { sourceId: currentUserId })
-                .andWhere('r."targetUserId" = :targetId', { targetId: targetUserId })
-                .andWhere('r.type::text = :type', { type: RelationType.FOLLOW })
-                .getOne();
-
-            isFollowing = !!relation;
+          const relation = await this.relationRepository
+            .createQueryBuilder('r')
+            .select('r.id')
+            .where('r."sourceUserId" = :sourceId', { sourceId: currentUserId })
+            .andWhere('r."targetUserId" = :targetId', { targetId: targetUserId })
+            .andWhere('r.type::text = :type', { type: RelationType.FOLLOW })
+            .getOne();
+      
+          isFollowing = !!relation;
         }
-
-        // Подсчёт подписчиков (кто подписан на targetUser)
-        const followersCount = await this.relationRepository
+      
+        // ✅ Подсчёт подписчиков и подписок
+        const [followersCount, followingCount] = await Promise.all([
+          this.relationRepository
             .createQueryBuilder('r')
             .where('r."targetUserId" = :targetId', { targetId: targetUserId })
             .andWhere('r.type::text = :type', { type: RelationType.FOLLOW })
-            .getCount();
-
-        // Подсчёт подписок (на кого targetUser подписан)
-        const followingCount = await this.relationRepository
+            .getCount(),
+      
+          this.relationRepository
             .createQueryBuilder('r')
             .where('r."sourceUserId" = :sourceId', { sourceId: targetUserId })
             .andWhere('r.type::text = :type', { type: RelationType.FOLLOW })
-            .getCount();
-
+            .getCount(),
+        ]);
+      
+        // ✅ Получаем посты пользователя
+        const posts = await this.postRepository
+          .createQueryBuilder('post')
+          .leftJoinAndSelect('post.hashtags', 'hashtag')
+          .where('post.userId = :userId', { userId: targetUserId })
+          .orderBy('post.createdAt', 'DESC')
+          .getMany();
+      
         return {
-            ...safeUser,
-            isFollowing,
-            followersCount: followersCount,
-            followingCount: followingCount,
+          ...safeUser,
+          isFollowing,
+          followersCount,
+          followingCount,
+          posts,
         };
-    }
+      }
+      
 
     create(data: Partial<User>) {
         const user = this.userRepository.create(data);

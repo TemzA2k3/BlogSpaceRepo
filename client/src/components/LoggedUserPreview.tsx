@@ -2,7 +2,7 @@ import { useRef, useState, type FC, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
-import { getAvatarUrl } from "@/shared/utils/getAvatarUrl";
+import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 
 import { type User } from "@/shared/types/userTypes";
 

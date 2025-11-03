@@ -8,7 +8,7 @@ import { TrendingTopicsCard } from "@/components/TrendingTopicsCard";
 import { TopCommunitiesCard } from "@/components/TopCommunitiesCard";
 import { SuggestionsCard } from "@/components/SuggestionsCard";
 
-import { getAvatarUrl } from "@/shared/utils/getAvatarUrl";
+import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 
 import { type Post } from "@/shared/types/postTypes";
 

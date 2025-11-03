@@ -29,10 +29,10 @@ export class Post {
     saved: number;
 
     @Column({ nullable: true })
-    avatar?: string;
+    image?: string;
 
     @CreateDateColumn({ type: 'timestamp' })
-    date: Date;
+    createdAt: Date;
 
     @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
     user: User;

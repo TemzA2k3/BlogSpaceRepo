@@ -1,13 +1,42 @@
+type HashTag = {
+    id: number,
+    name: string
+}
+
 export interface Post {
     id: number;
+    content: string;
+    hashtags: HashTag[];
+    likes: number;
+    comments: number;
+    saved: number;
+    image: string;
+    createdAt: string;
+}
+
+export interface PostsState {
+    posts: Post[];
+    loading: boolean;
+    error: string | null;
+    success: boolean;
+}
+
+export interface CreatePostData {
+    content: string | null;
+    hashtags: string[] | null;
+    image: File | null
+}
+
+export interface PostCardProps {
+    avatar: string;
     firstName: string;
     lastName: string;
     username: string;
     content: string;
-    hashtags: string[];
+    image: string;
+    hashtags: HashTag[]
+    date: string;
     likes: number;
     comments: number;
     saved: number;
-    avatar?: string;
-    date: string;
 }

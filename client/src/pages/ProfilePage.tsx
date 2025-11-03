@@ -10,49 +10,49 @@ import { useAppSelector } from "@/hooks/reduxHooks";
 import { fetchProfileUserData } from "@/shared/services/fetchUsersData";
 import { changeUserAvatar } from "@/shared/services/changeUserAvatar";
 
-import { getAvatarUrl } from "@/shared/utils/getAvatarUrl";
+import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 import { followUser, unfollowUser } from "@/shared/services/userSubscriptions"
 
 import { type ProfileUserData } from "@/shared/types/userTypes";
 import { useTranslation } from "react-i18next";
 
-interface Post {
-    id: number;
-    content: string;
-    date: string;
-    likes: number;
-    comments: number;
-    saved: number;
-    avatar?: string;
-    firstName: string;
-    lastName: string;
-    currentUsername: string;
-}
+// interface Post {
+//     id: number;
+//     content: string;
+//     date: string;
+//     likes: number;
+//     comments: number;
+//     saved: number;
+//     avatar?: string;
+//     firstName: string;
+//     lastName: string;
+//     currentUsername: string;
+// }
 
-const mockPosts: Post[] = [
-    {
-        id: 1,
-        firstName: "Alex",
-        lastName: "Dev",
-        currentUsername: "alex_dev",
-        content: "Работаю над новым pet-проектом 🚀",
-        date: "2025-10-20",
-        likes: 42,
-        comments: 5,
-        saved: 10,
-    },
-    {
-        id: 2,
-        firstName: "Alex",
-        lastName: "Dev",
-        currentUsername: "alex_dev",
-        content: "Люблю тёмную тему ❤️",
-        date: "2025-10-21",
-        likes: 12,
-        comments: 3,
-        saved: 4,
-    },
-];
+// const mockPosts: Post[] = [
+//     {
+//         id: 1,
+//         firstName: "Alex",
+//         lastName: "Dev",
+//         currentUsername: "alex_dev",
+//         content: "Работаю над новым pet-проектом 🚀",
+//         date: "2025-10-20",
+//         likes: 42,
+//         comments: 5,
+//         saved: 10,
+//     },
+//     {
+//         id: 2,
+//         firstName: "Alex",
+//         lastName: "Dev",
+//         currentUsername: "alex_dev",
+//         content: "Люблю тёмную тему ❤️",
+//         date: "2025-10-21",
+//         likes: 12,
+//         comments: 3,
+//         saved: 4,
+//     },
+// ];
 
 export const ProfilePage = () => {
     const { t } = useTranslation();
@@ -62,7 +62,6 @@ export const ProfilePage = () => {
     const dispatch = useAppDispatch();
 
     const [userData, setUserData] = useState<ProfileUserData | null>(null);
-    const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [isMyProfile, setIsMyProfile] = useState<boolean>(false);
@@ -78,7 +77,6 @@ export const ProfilePage = () => {
         fetchProfileUserData(id, currentUser?.id)
             .then(profileUserData => {
                 setUserData(profileUserData)
-                setPosts(mockPosts)
             })
             .catch((e) => setError(e.message || t('error.fetchError')))
             .finally(() => setLoading(false));
@@ -249,15 +247,17 @@ export const ProfilePage = () => {
             <section>
                 <h3 className="text-xl font-semibold mb-4">Posts</h3>
                 <div className="space-y-6">
-                    {posts.map((post) => (
+                    {userData.posts.map((post) => (
                         <PostCard
                             key={post.id}
-                            avatar={userData.avatar || "https://placehold.co/70x70"}
+                            avatar={getAvatarUrl(userData.firstName, userData.lastName,userData.avatar)}
                             firstName={userData.firstName}
                             lastName={userData.lastName}
                             username={userData.userName}
                             content={post.content}
-                            date={post.date}
+                            image={post.image}
+                            hashtags={post.hashtags}
+                            date={post.createdAt}
                             likes={post.likes}
                             comments={post.comments}
                             saved={post.saved}

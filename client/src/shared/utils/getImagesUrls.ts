@@ -9,4 +9,8 @@ export const getAvatarUrl = (
     
     return `${API_BASE_URL}${path}`;
 };
+
+export const getImageUrl = (path: string) => {
+    return `${API_BASE_URL}${path}`;
+}
   

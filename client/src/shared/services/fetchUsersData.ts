@@ -13,7 +13,9 @@ export const fetchProfileUserData = async (userId: string, currentUserId: number
             credentials: "include",
         });
 
-        return data;
+        console.log(data)
+
+        return data as ProfileUserData;
     } catch (err: any) {
         throw new Error(err.message || "Something went wrong...")
     }
