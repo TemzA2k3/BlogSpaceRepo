@@ -211,9 +211,11 @@ export const ProfilePage = () => {
                         </div>
 
                         {isMyProfile ? (
-                            <button className="mt-6 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition">
-                                Edit Profile
-                            </button>
+                            <div className="mt-6 flex flex-wrap justify-center sm:justify-start gap-3">
+                                <button className="mt-6 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition">
+                                    Edit Profile
+                                </button>
+                            </div>
                         ) : (
                             <div className="mt-6 flex gap-3 justify-center sm:justify-start">
                                 <button

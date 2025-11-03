@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { useAppSelector } from "@/hooks/reduxHooks";
 
 import { PostCard } from "@/components/PostCard";
 import { TrendingTopicsCard } from "@/components/TrendingTopicsCard";
 import { TopCommunitiesCard } from "@/components/TopCommunitiesCard";
 import { SuggestionsCard } from "@/components/SuggestionsCard";
 
+import { getAvatarUrl } from "@/shared/utils/getAvatarUrl";
+
 import { type Post } from "@/shared/types/postTypes";
+
 
 const mockPosts: Post[] = [
     {
@@ -110,6 +116,9 @@ const suggestedUsers = [
 ];
 
 export const PostsPage = () => {
+    const { currentUser } = useAppSelector(state => state.auth)
+    const navigate = useNavigate();
+
     const [posts, setPosts] = useState<Post[]>([]);
 
     useEffect(() => {
@@ -126,8 +135,30 @@ export const PostsPage = () => {
             </aside>
 
             {/* Центральная колонка — посты */}
-            <div className="w-full max-w-3xl h-[70vh] sm:h-[75vh] md:h-[80vh] overflow-y-auto">
-                <div className="space-y-6 pr-2 sm:pr-4">
+            <div className="w-full max-w-3xl h-[70vh] sm:h-[75vh] md:h-[80vh] overflow-y-auto flex flex-col gap-6">
+                {currentUser && (
+                    <div
+                    onClick={() => navigate("create-post")}
+                    className="flex items-center gap-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm px-4 py-3 cursor-pointer hover:shadow-md transition-all duration-200"
+                >
+                    <div className="w-10 h-10 rounded-full flex-shrink-0">
+                        <img 
+                            className="w-full h-full"
+                            src={getAvatarUrl(currentUser.firstName, currentUser.lastName, currentUser.avatar)}
+                            alt={currentUser.userName}
+                        />
+                    </div>
+                    <div className="flex-1 text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-full py-2 px-4">
+                        Что у вас нового?
+                    </div>
+                    <button
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-full shadow transition-colors duration-150"
+                    >
+                        Написать
+                    </button>
+                </div>
+                )}
+                <div className="space-y-6">
                     {posts.map(post => (
                         <PostCard
                             key={post.id}

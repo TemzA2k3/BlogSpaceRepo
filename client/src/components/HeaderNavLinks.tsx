@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+import { menuElements } from "@/shared/constants/menuElements"
+
 interface HeaderNavLinksProps {
   isMobile?: boolean;
 }
@@ -8,15 +10,13 @@ interface HeaderNavLinksProps {
 export const HeaderNavLinks = ({ isMobile = false }: HeaderNavLinksProps) => {
   const { t } = useTranslation();
 
-  const links = ["posts", "articles", "explore", "messages"];
-
   return (
     <nav
       className={`
         ${isMobile ? "flex flex-col gap-4" : "flex items-center gap-2 sm:gap-4"}
       `}
     >
-      {links.map((link) => (
+      {menuElements.map((link) => (
         <Link
           key={link}
           to={`/${link}`}

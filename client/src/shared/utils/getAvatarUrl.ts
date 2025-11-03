@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/shared/constants/constants"
+import { API_BASE_URL } from "@/shared/constants/urls"
 
 export const getAvatarUrl = (
     fname: string, 
