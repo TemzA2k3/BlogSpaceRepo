@@ -1,11 +1,11 @@
 import { apiRequest } from "@/shared/api/apiClient";
 
 export const followUser = async (id: number): Promise<void> => {
-    try {
+    try {        
         await apiRequest(`/users/${id}/follow`, "POST", {
             credentials: "include",
         });
-    } catch (err: any) {
+    } catch (err: any) {        
         throw new Error(err.message || "Something went wrong...");
     }
 }

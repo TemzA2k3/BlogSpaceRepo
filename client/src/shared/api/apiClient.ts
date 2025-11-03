@@ -11,7 +11,7 @@ export async function apiRequest<T>(
   endpoint: string,
   method: RequestMethod = "GET",
   options: ApiOptions = {}
-): Promise<T> {
+): Promise<T | null> {
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string> || {}),
   };
@@ -46,5 +46,5 @@ export async function apiRequest<T>(
     throw new Error(errorData.message || "Request error");
   }
 
-  return response.json();
+  return response.status === 204 ? null : response.json();
 }

@@ -148,7 +148,7 @@ export class UsersService {
         });
 
         if (!relation) throw new BadRequestException("You are not following this user");
-
+                
         await this.relationRepository.remove(relation);
     }
 }

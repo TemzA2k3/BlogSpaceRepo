@@ -10,12 +10,16 @@ import {
     UseGuards,
     Post,
     BadRequestException,
-    Delete
+    Delete,
+    HttpCode
 } from '@nestjs/common';
 import { File as MulterFile } from 'multer';
 
 import { UsersService } from './users.service';
 
+import { type JwtPayload } from '@/shared/types/jwt-payload.interface';
+
+import { UserReq } from '@/common/decorators/user.decorator';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { AvatarUploadInterceptor } from '@/common/interceptors/avatar-upload.interceptor';
 
@@ -40,16 +44,23 @@ export class UsersController {
 
     @Post(':id/follow')
     @UseGuards(JwtAuthGuard)
-    followUser(@Param('id') targetId: number, @Req() req) {
-        if (req.user.id === targetId) throw new BadRequestException('You cannot follow yourself!');
-
-        return this.usersService.followUser(req.user.id, targetId);
+    @HttpCode(204)
+    async followUser(
+        @Param('id') targetId: number, 
+        @UserReq() user: JwtPayload
+    ) {
+        if (user.userId === targetId) throw new BadRequestException('You cannot follow yourself!');
+        await this.usersService.followUser(user.userId, targetId);
     }
 
     @Delete(':id/unfollow')
     @UseGuards(JwtAuthGuard)
-    unfollowUser(@Param('id') targetId: number, @Req() req) {
-        const currentUserId = req.user.userId;
-        return this.usersService.unfollowUser(+currentUserId, +targetId);
+    @HttpCode(204)
+    async unfollowUser(
+        @Param('id') targetId: number, 
+        @UserReq() user: JwtPayload
+    ) {
+        const currentUserId = user.userId;
+        await this.usersService.unfollowUser(+currentUserId, +targetId);
     }
 }

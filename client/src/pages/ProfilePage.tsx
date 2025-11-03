@@ -126,7 +126,7 @@ export const ProfilePage = () => {
                 }));
                 showAlert(t('profile.subscribe'), "success");
             }
-        } catch (err: any) {
+        } catch (err: any) {                        
             showAlert(err.message || t('profile.subError'), "error");
         } finally {
             setFollowLoading(false);
