@@ -12,8 +12,8 @@ import {
   
     async canActivate(context: ExecutionContext): Promise<boolean> {
       const req = context.switchToHttp().getRequest();
-      const token = req.cookies?.['access_token'];
-  
+      const token = req.cookies?.['access_token'];      
+        
       if (!token) throw new UnauthorizedException('You are unauthorized!');
   
       try {

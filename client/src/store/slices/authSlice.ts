@@ -29,7 +29,7 @@ export const login = createAsyncThunk(
             const data = await apiRequest<User>("/auth/login", "POST", {
                 body: { email, password, remember },
                 credentials: "include",
-            });
+            }) as User;
             
             return data;
         } catch (err: any) {
@@ -77,7 +77,7 @@ export const getMe = createAsyncThunk(
         try {
             const data = await apiRequest<User>("/auth/me", "GET", {
                 credentials: "include",
-            });
+            }) as User;
 
             return data;
         } catch (err: any) {
