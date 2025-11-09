@@ -93,7 +93,6 @@ export class PostsService {
       
 
       async findAll(userId: number) {
-        // Получаем всех, на кого подписан пользователь
         const followRelations = await this.userRelationRepository.find({
           where: { 
             sourceUser: { id: userId },
@@ -102,19 +101,16 @@ export class PostsService {
           relations: ['targetUser'],
         });
       
-        // Собираем ID подписок
         const followedUserIds = followRelations.map(rel => rel.targetUser.id);
       
-        // Добавляем самого пользователя, чтобы его посты тоже были
         followedUserIds.push(userId);
       
-        // Если нет ни одного пользователя (крайний случай) — просто оставляем массив с самим собой
         const posts = await this.postRepository.find({
           where: {
             user: { id: In(followedUserIds) },
           },
           relations: ['user', 'hashtags'],
-          order: { createdAt: 'DESC' }, // сортировка по времени создания
+          order: { createdAt: 'DESC' },
         });
       
         return posts.map(post => ({
@@ -130,6 +126,7 @@ export class PostsService {
           firstName: post.user.firstName,
           lastName: post.user.lastName,
           username: post.user.userName,
+          userId: post.user.id
         }));
       }
       

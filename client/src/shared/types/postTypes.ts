@@ -15,6 +15,7 @@ export interface Post {
 }
 
 export interface UsersPosts extends Post {
+    userId: number;
     avatar: string;
     firstName: string;
     lastName: string;
@@ -35,6 +36,7 @@ export interface CreatePostData {
 }
 
 export interface PostCardProps {
+    userId: number;
     avatar: string;
     firstName: string;
     lastName: string;

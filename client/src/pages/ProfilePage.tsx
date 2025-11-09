@@ -250,6 +250,7 @@ export const ProfilePage = () => {
                     {userData.posts.map((post) => (
                         <PostCard
                             key={post.id}
+                            userId={userData.id}
                             avatar={getAvatarUrl(userData.firstName, userData.lastName,userData.avatar)}
                             firstName={userData.firstName}
                             lastName={userData.lastName}

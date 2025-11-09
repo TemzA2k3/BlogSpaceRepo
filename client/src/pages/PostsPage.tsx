@@ -16,112 +16,6 @@ import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 import type { UsersPosts } from "@/shared/types/postTypes";
 
 
-export const mockPosts: UsersPosts[] = [
-    {
-        id: 1,
-        avatar: "https://placehold.co/600x400",
-        firstName: "Alex",
-        lastName: "ZXC",
-        username: "@zxcclown",
-        content: "Работаю над новым pet-проектом 🚀",
-        hashtags: [
-            { id: 1, name: "devlife" },
-            { id: 2, name: "react" },
-        ],
-        likes: 42,
-        comments: 5,
-        saved: 10,
-        image: null,
-        createdAt: "2025-10-20",
-    },
-    {
-        id: 2,
-        avatar: "https://placehold.co/600x400",
-        firstName: "Alex",
-        lastName: "ZXC",
-        username: "@zxcclown",
-        content: "Люблю тёмную тему ❤️",
-        hashtags: [
-            { id: 3, name: "uiux" },
-            { id: 4, name: "darkmode" },
-        ],
-        likes: 12,
-        comments: 3,
-        saved: 4,
-        image: "https://placehold.co/600x400",
-        createdAt: "2025-10-21",
-    },
-    {
-        id: 3,
-        avatar: "https://placehold.co/600x400",
-        firstName: "Alex",
-        lastName: "ZXC",
-        username: "@zxcclown",
-        content: "Пишу статью о TypeScript. Делитесь опытом!",
-        hashtags: [
-            { id: 5, name: "typescript" },
-            { id: 6, name: "frontend" },
-        ],
-        likes: 30,
-        comments: 9,
-        saved: 6,
-        image: "https://placehold.co/600x400",
-        createdAt: "2025-10-22",
-    },
-    {
-        id: 4,
-        avatar: "https://placehold.co/600x400",
-        firstName: "Alex",
-        lastName: "ZXC",
-        username: "@zxcclown",
-        content: "Работаю над новым pet-проектом 🚀",
-        hashtags: [
-            { id: 1, name: "devlife" },
-            { id: 2, name: "react" },
-        ],
-        likes: 42,
-        comments: 5,
-        saved: 10,
-        image: "https://placehold.co/600x400",
-        createdAt: "2025-10-20",
-    },
-    {
-        id: 5,
-        avatar: "https://placehold.co/600x400",
-        firstName: "Alex",
-        lastName: "ZXC",
-        username: "@zxcclown",
-        content: "Работаю над новым pet-проектом 🚀",
-        hashtags: [
-            { id: 1, name: "devlife" },
-            { id: 2, name: "react" },
-        ],
-        likes: 42,
-        comments: 5,
-        saved: 10,
-        image: "https://placehold.co/600x400",
-        createdAt: "2025-10-20",
-    },
-    {
-        id: 6,
-        avatar: "https://placehold.co/600x400",
-        firstName: "Alex",
-        lastName: "ZXC",
-        username: "@zxcclown",
-        content: "Работаю над новым pet-проектом 🚀",
-        hashtags: [
-            { id: 1, name: "devlife" },
-            { id: 2, name: "react" },
-        ],
-        likes: 42,
-        comments: 5,
-        saved: 10,
-        image: "https://placehold.co/600x400",
-        createdAt: "2025-10-20",
-    },
-];
-
-
 const trendingTopics = [
     { tag: "#react", count: 123 },
     { tag: "#frontend", count: 89 },
@@ -152,15 +46,18 @@ export const PostsPage = () => {
     const [userPosts, setUserPosts] = useState<UsersPosts[]>([]);
 
     useEffect(() => {
-        try {
-            dispatch(getPosts())
+        dispatch(getPosts())
+            .unwrap()
+            .catch((err: any) => {
+                showAlert(err.message || "Ошибка при загрузке постов", "error");
+            });
+    }, [dispatch, showAlert]);
 
-            setUserPosts(posts);
-        } catch (e: any) {
-            showAlert(e.message || "Ошибка при публикации поста", "error");
-        }
-        
-    }, []);
+    useEffect(() => {
+        console.log(posts)
+        setUserPosts(posts);
+    }, [posts]);
+
 
     return (
         <main className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row justify-center gap-6 lg:gap-10 text-gray-800 dark:text-gray-100">
@@ -199,7 +96,8 @@ export const PostsPage = () => {
                     {userPosts.map(post => (
                         <PostCard
                             key={post.id}
-                            avatar={post.avatar}
+                            userId={post.userId}
+                            avatar={getAvatarUrl(post.firstName, post.lastName, post.avatar)}
                             firstName={post.firstName}
                             lastName={post.lastName}
                             username={post.username}

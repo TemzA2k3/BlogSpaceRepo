@@ -1,10 +1,12 @@
-import { type FC } from "react";
+import { type FC, useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 
-import { getImageUrl } from "@/shared/utils/getImagesUrls"
-
+import { useAppSelector } from "@/hooks/reduxHooks";
+import { getImageUrl } from "@/shared/utils/getImagesUrls";
 import type { PostCardProps } from "@/shared/types/postTypes";
 
 export const PostCard: FC<PostCardProps> = ({
+    userId,
     avatar,
     firstName,
     lastName,
@@ -17,16 +19,60 @@ export const PostCard: FC<PostCardProps> = ({
     comments,
     saved,
 }) => {
-    // Преобразуем дату в читаемый формат
+    const { currentUser } = useAppSelector(state => state.auth);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
     const formattedDate = new Date(date).toLocaleDateString("ru-RU", {
         day: "numeric",
         month: "short",
         year: "numeric",
     });
 
+    // Закрытие дропдауна при клике вне
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setShowDropdown(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     return (
-        <div className="self-stretch px-5 py-4 bg-slate-50 dark:bg-darkbg border border-gray-200 dark:border-gray-700 rounded-2xl flex justify-start items-start gap-4 shadow-sm hover:shadow-md transition-all duration-200">
-            
+        <div className="relative self-stretch px-5 py-4 bg-slate-50 dark:bg-darkbg border border-gray-200 dark:border-gray-700 rounded-2xl flex justify-start items-start gap-4 shadow-sm hover:shadow-md transition-all duration-200">
+
+            {/* Дропдаун кнопка справа сверху */}
+            <div className="absolute top-3 right-3" ref={dropdownRef}>
+                <button
+                    onClick={() => setShowDropdown(!showDropdown)}
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                >
+                    <i className="fas fa-ellipsis-h"></i>
+                </button>
+
+                {showDropdown && (
+                    <div className="absolute right-0 top-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-10 min-w-[140px] overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                        <ul className="flex flex-col">
+                            <li className="w-full text-left px-3 py-2 text-sm font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
+                                <i className="fas fa-flag text-xs sm:text-sm"></i>
+                                Пожаловаться
+                            </li>
+                            {currentUser?.id === userId && (
+                                <li className="w-full text-left px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-700 cursor-pointer flex items-center gap-2">
+                                    <i className="fas fa-trash-alt text-xs sm:text-sm"></i>
+                                    Удалить
+                                </li>
+                            )}
+                        </ul>
+                    </div>
+                )}
+            </div>
+
             {/* Аватар */}
             <img
                 className="w-16 h-16 rounded-full object-cover"
@@ -37,18 +83,19 @@ export const PostCard: FC<PostCardProps> = ({
             {/* Контент */}
             <div className="flex-1 flex flex-col justify-between">
                 <div className="flex flex-col gap-1">
-                    
                     {/* Имя и юзернейм */}
                     <div className="flex flex-col">
-                        <div className="text-neutral-900 dark:text-gray-100 text-[17px] font-semibold leading-snug">
+                        <Link
+                            to={`/users/${userId}`} 
+                            className="text-neutral-900 dark:text-gray-100 text-[17px] font-semibold leading-snug">
                             {firstName} {lastName}
-                        </div>
+                        </Link>
                         <div className="text-slate-500 dark:text-gray-400 text-sm font-normal">
                             {username}
                         </div>
                     </div>
 
-                    {/* Контент поста с сохранением переносов */}
+                    {/* Контент поста */}
                     {content && (
                         <div className="text-slate-700 dark:text-gray-300 text-[15px] font-normal leading-relaxed mt-2 whitespace-pre-wrap">
                             {content}
