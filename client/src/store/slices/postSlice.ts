@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/tool
 
 import { apiRequest } from "@/shared/api/apiClient";
 
-import type { Post, PostsState, CreatePostData } from "@/shared/types/postTypes";
+import type { Post, UsersPosts, PostsState } from "@/shared/types/postTypes";
 
 
 const initialState: PostsState = {
@@ -13,19 +13,19 @@ const initialState: PostsState = {
 };
 
 // Thunks
-export const getPosts = createAsyncThunk<Post[]>(
+export const getPosts = createAsyncThunk(
   "posts/getPosts",
   async (_, { rejectWithValue }) => {
     try {
       const data = await apiRequest<Post[]>("/posts", "GET");
-      return data || [];
+      return data as UsersPosts[] || [];
     } catch (err: any) {
       return rejectWithValue(err.message || "Failed to fetch posts");
     }
   }
 );
 
-export const createPost = createAsyncThunk<Post, FormData>(
+export const createPost = createAsyncThunk<UsersPosts, FormData>(
   "posts/createPost",
   async (formData, { rejectWithValue }) => {
     
@@ -38,7 +38,7 @@ export const createPost = createAsyncThunk<Post, FormData>(
         console.log(data);
         
 
-      return data as Post;
+      return data as UsersPosts;
     } catch (err: any) {
       return rejectWithValue(err.message || "Failed to create post");
     }
@@ -86,7 +86,7 @@ const postSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(getPosts.fulfilled, (state, action: PayloadAction<Post[]>) => {
+      .addCase(getPosts.fulfilled, (state, action: PayloadAction<UsersPosts[]>) => {
         state.loading = false;
         state.posts = action.payload;
         state.success = true;
@@ -101,7 +101,7 @@ const postSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(createPost.fulfilled, (state, action: PayloadAction<Post>) => {
+      .addCase(createPost.fulfilled, (state, action: PayloadAction<UsersPosts>) => {
         state.loading = false;
         state.posts.unshift(action.payload); // добавляем новый пост в начало
         state.success = true;

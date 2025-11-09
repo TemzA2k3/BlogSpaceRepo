@@ -22,7 +22,7 @@ export interface UsersPosts extends Post {
 }
 
 export interface PostsState {
-    posts: Post[];
+    posts: UsersPosts[];
     loading: boolean;
     error: string | null;
     success: boolean;
