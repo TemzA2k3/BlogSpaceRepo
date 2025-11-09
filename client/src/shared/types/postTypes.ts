@@ -10,8 +10,15 @@ export interface Post {
     likes: number;
     comments: number;
     saved: number;
-    image: string;
+    image: string | null;
     createdAt: string;
+}
+
+export interface UsersPosts extends Post {
+    avatar: string;
+    firstName: string;
+    lastName: string;
+    username: string;
 }
 
 export interface PostsState {
@@ -33,7 +40,7 @@ export interface PostCardProps {
     lastName: string;
     username: string;
     content: string;
-    image: string;
+    image: string | null;
     hashtags: HashTag[]
     date: string;
     likes: number;

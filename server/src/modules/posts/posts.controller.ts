@@ -33,7 +33,7 @@ export class PostsController {
         prefix: 'post',
         maxSizeMB: 5,
     }))
-    async createPost(
+    createPost(
         @UserReq() user: JwtPayload,
         @Body('content') content?: string,
         @Body('hashtags', new ParseJsonArrayPipe(true)) hashtags?: string[],
@@ -47,8 +47,9 @@ export class PostsController {
 
 
     @Get()
-    findAll() {
-
+    @UseGuards(JwtAuthGuard)
+    findAll(@UserReq() user: JwtPayload) {
+        return this.postsService.findAll(user.userId);
     }
 
 }

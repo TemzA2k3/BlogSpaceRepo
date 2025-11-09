@@ -1,96 +1,123 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useAppSelector } from "@/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { useAlert } from "@/app/providers/alert/AlertProvider";
 
 import { PostCard } from "@/components/PostCard";
 import { TrendingTopicsCard } from "@/components/TrendingTopicsCard";
 import { TopCommunitiesCard } from "@/components/TopCommunitiesCard";
 import { SuggestionsCard } from "@/components/SuggestionsCard";
 
+import { getPosts } from "@/store/slices/postSlice"
+
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 
-import { type Post } from "@/shared/types/postTypes";
+import type { UsersPosts } from "@/shared/types/postTypes";
 
 
-const mockPosts: Post[] = [
+export const mockPosts: UsersPosts[] = [
     {
         id: 1,
+        avatar: "https://placehold.co/600x400",
         firstName: "Alex",
-        lastName: "Dev",
-        username: "alex_dev",
+        lastName: "ZXC",
+        username: "@zxcclown",
         content: "Работаю над новым pet-проектом 🚀",
-        hashtags: ["#devlife", "#react"],
+        hashtags: [
+            { id: 1, name: "devlife" },
+            { id: 2, name: "react" },
+        ],
         likes: 42,
         comments: 5,
         saved: 10,
-        avatar: "https://placehold.co/70x70",
-        date: "2025-10-20",
+        image: null,
+        createdAt: "2025-10-20",
     },
     {
         id: 2,
-        firstName: "Maria",
-        lastName: "Sokolova",
-        username: "maria",
+        avatar: "https://placehold.co/600x400",
+        firstName: "Alex",
+        lastName: "ZXC",
+        username: "@zxcclown",
         content: "Люблю тёмную тему ❤️",
-        hashtags: ["#uiux", "#darkmode"],
+        hashtags: [
+            { id: 3, name: "uiux" },
+            { id: 4, name: "darkmode" },
+        ],
         likes: 12,
         comments: 3,
         saved: 4,
-        avatar: "https://placehold.co/70x70",
-        date: "2025-10-21",
+        image: "https://placehold.co/600x400",
+        createdAt: "2025-10-21",
     },
     {
         id: 3,
-        firstName: "Ivan",
-        lastName: "Coder",
-        username: "ivan_coder",
+        avatar: "https://placehold.co/600x400",
+        firstName: "Alex",
+        lastName: "ZXC",
+        username: "@zxcclown",
         content: "Пишу статью о TypeScript. Делитесь опытом!",
-        hashtags: ["#typescript", "#frontend"],
+        hashtags: [
+            { id: 5, name: "typescript" },
+            { id: 6, name: "frontend" },
+        ],
         likes: 30,
         comments: 9,
         saved: 6,
-        avatar: "https://placehold.co/70x70",
-        date: "2025-10-22",
+        image: "https://placehold.co/600x400",
+        createdAt: "2025-10-22",
     },
     {
         id: 4,
+        avatar: "https://placehold.co/600x400",
         firstName: "Alex",
-        lastName: "Dev",
-        username: "alex_dev",
+        lastName: "ZXC",
+        username: "@zxcclown",
         content: "Работаю над новым pet-проектом 🚀",
-        hashtags: ["#devlife", "#react"],
+        hashtags: [
+            { id: 1, name: "devlife" },
+            { id: 2, name: "react" },
+        ],
         likes: 42,
         comments: 5,
         saved: 10,
-        avatar: "https://placehold.co/70x70",
-        date: "2025-10-20",
+        image: "https://placehold.co/600x400",
+        createdAt: "2025-10-20",
     },
     {
         id: 5,
+        avatar: "https://placehold.co/600x400",
         firstName: "Alex",
-        lastName: "Dev",
-        username: "alex_dev",
+        lastName: "ZXC",
+        username: "@zxcclown",
         content: "Работаю над новым pet-проектом 🚀",
-        hashtags: ["#devlife", "#react"],
+        hashtags: [
+            { id: 1, name: "devlife" },
+            { id: 2, name: "react" },
+        ],
         likes: 42,
         comments: 5,
         saved: 10,
-        avatar: "https://placehold.co/70x70",
-        date: "2025-10-20",
+        image: "https://placehold.co/600x400",
+        createdAt: "2025-10-20",
     },
     {
         id: 6,
+        avatar: "https://placehold.co/600x400",
         firstName: "Alex",
-        lastName: "Dev",
-        username: "alex_dev",
+        lastName: "ZXC",
+        username: "@zxcclown",
         content: "Работаю над новым pet-проектом 🚀",
-        hashtags: ["#devlife", "#react"],
+        hashtags: [
+            { id: 1, name: "devlife" },
+            { id: 2, name: "react" },
+        ],
         likes: 42,
         comments: 5,
         saved: 10,
-        avatar: "https://placehold.co/70x70",
-        date: "2025-10-20",
+        image: "https://placehold.co/600x400",
+        createdAt: "2025-10-20",
     },
 ];
 
@@ -117,12 +144,22 @@ const suggestedUsers = [
 
 export const PostsPage = () => {
     const { currentUser } = useAppSelector(state => state.auth)
+    const { posts } = useAppSelector(state => state.posts)
+    const { showAlert } = useAlert();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const [posts, setPosts] = useState<Post[]>([]);
+    const [userPosts, setUserPosts] = useState<UsersPosts[]>([]);
 
     useEffect(() => {
-        setPosts(mockPosts);
+        try {
+            dispatch(getPosts())
+
+            setUserPosts(posts);
+        } catch (e: any) {
+            showAlert(e.message || "Ошибка при публикации поста", "error");
+        }
+        
     }, []);
 
     return (
@@ -138,28 +175,28 @@ export const PostsPage = () => {
             <div className="w-full max-w-3xl h-[70vh] sm:h-[75vh] md:h-[80vh] overflow-y-auto flex flex-col gap-6">
                 {currentUser && (
                     <div
-                    onClick={() => navigate("create-post")}
-                    className="flex items-center gap-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm px-4 py-3 cursor-pointer hover:shadow-md transition-all duration-200"
-                >
-                    <div className="w-10 h-10 rounded-full flex-shrink-0">
-                        <img 
-                            className="w-full h-full"
-                            src={getAvatarUrl(currentUser.firstName, currentUser.lastName, currentUser.avatar)}
-                            alt={currentUser.userName}
-                        />
-                    </div>
-                    <div className="flex-1 text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-full py-2 px-4">
-                        Что у вас нового?
-                    </div>
-                    <button
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-full shadow transition-colors duration-150"
+                        onClick={() => navigate("create-post")}
+                        className="flex items-center gap-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm px-4 py-3 cursor-pointer hover:shadow-md transition-all duration-200"
                     >
-                        Написать
-                    </button>
-                </div>
+                        <div className="w-10 h-10 rounded-full flex-shrink-0">
+                            <img
+                                className="w-full h-full"
+                                src={getAvatarUrl(currentUser.firstName, currentUser.lastName, currentUser.avatar)}
+                                alt={currentUser.userName}
+                            />
+                        </div>
+                        <div className="flex-1 text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-full py-2 px-4">
+                            Что у вас нового?
+                        </div>
+                        <button
+                            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-full shadow transition-colors duration-150"
+                        >
+                            Написать
+                        </button>
+                    </div>
                 )}
                 <div className="space-y-6">
-                    {posts.map(post => (
+                    {userPosts.map(post => (
                         <PostCard
                             key={post.id}
                             avatar={post.avatar}
@@ -167,7 +204,9 @@ export const PostsPage = () => {
                             lastName={post.lastName}
                             username={post.username}
                             content={post.content}
-                            date={post.date}
+                            image={post.image}
+                            hashtags={post.hashtags}
+                            date={post.createdAt}
                             likes={post.likes}
                             comments={post.comments}
                             saved={post.saved}

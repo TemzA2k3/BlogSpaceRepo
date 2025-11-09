@@ -1,4 +1,5 @@
 import { useState, useRef, type ChangeEvent, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
@@ -12,6 +13,7 @@ import { isValidPost } from "@/shared/utils/postValidation"
 export const CreatePostPage = () => {
     const { currentUser } = useAppSelector(state => state.auth);
     const { loading, error } = useAppSelector(state => state.posts)
+    const navigate = useNavigate();
     const { showAlert } = useAlert();
     const dispatch = useAppDispatch();
 
@@ -26,31 +28,33 @@ export const CreatePostPage = () => {
 
     const handleSubmit = async () => {
         if (!isValidPost(content, image, hashtags)) {
-          setValidationError("Нужно добавить текст, картинку или хештег");
-          return;
+            setValidationError("Нужно добавить текст, картинку или хештег");
+            return;
         }
-      
+
         const formData = new FormData();
-      
+
         // Добавляем текст только если он есть
         if (content.trim()) formData.append("content", content);
-      
+
         // Добавляем хештеги только если есть
         if (hashtags.length > 0) formData.append("hashtags", JSON.stringify(hashtags));
-      
+
         // Добавляем изображение только если есть
         if (image) formData.append("image", image);
-      
-        await dispatch(createPost(formData)).unwrap();
-      
-          // Очищаем поля после успешного создания
-          setContent("");
-          setImage(null);
-          setHashtags([]);
-          setShowEmojiPicker(false);
-      };
-      
-      
+
+        try {
+            await dispatch(createPost(formData)).unwrap();
+
+            showAlert("Пост успешно опубликован!", "success");
+
+            navigate('/posts')
+        } catch (err: any) {
+            showAlert(err.message || "Ошибка при публикации поста", "error");
+        }
+    };
+
+
 
     const handleImageClick = () => fileInputRef.current?.click();
 
@@ -66,35 +70,35 @@ export const CreatePostPage = () => {
 
     const handleHashtagClick = () => {
         if (!textareaRef.current) return;
-      
+
         const textarea = textareaRef.current;
         const selectionStart = textarea.selectionStart;
         const selectionEnd = textarea.selectionEnd;
-      
+
         if (selectionStart === selectionEnd) return;
-      
+
         const selectedText = content.slice(selectionStart, selectionEnd).trim();
         if (!selectedText) return;
-      
+
         const emojiRegex = /[\p{Emoji_Presentation}\u200d]/u;
         if (emojiRegex.test(selectedText)) return;
-      
-        setHashtags(prev => [...prev, selectedText]);
-      
-        const newContent =
-          content.slice(0, selectionStart) +
-          content.slice(selectionEnd);
-        setContent(newContent);
-      };
 
-      useEffect(() => {
+        setHashtags(prev => [...prev, selectedText]);
+
+        const newContent =
+            content.slice(0, selectionStart) +
+            content.slice(selectionEnd);
+        setContent(newContent);
+    };
+
+    useEffect(() => {
         if (validationError) {
-          showAlert(validationError, "error");
+            showAlert(validationError, "error");
         } else if (error) {
-          showAlert(error, "error");
+            showAlert(error, "error");
         }
-      }, [validationError, error]);
-      
+    }, [validationError, error]);
+
 
     return (
         <div className="max-w-[50rem] mx-auto mt-8 px-2">
@@ -198,10 +202,11 @@ export const CreatePostPage = () => {
             <div className="flex justify-end mt-4">
                 <button
                     onClick={handleSubmit}
-                    disabled={!content.trim() && !image && hashtags.length === 0}
-                    className="rounded-full bg-blue-500 px-6 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
+                    disabled={loading || (!content.trim() && !image && hashtags.length === 0)}
+                    className="rounded-full bg-blue-500 px-6 py-2 text-white hover:bg-blue-600 disabled:opacity-50 flex items-center justify-center gap-2 transition-all duration-200"
                 >
-                    Опубликовать
+                    {loading && <i className="fa fa-spinner fa-spin" />}
+                    {loading ? "Публикуем..." : "Опубликовать"}
                 </button>
             </div>
         </div>

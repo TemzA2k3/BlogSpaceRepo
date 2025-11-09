@@ -13,17 +13,17 @@ const initialState: PostsState = {
 };
 
 // Thunks
-// export const getPosts = createAsyncThunk<Post[]>(
-//   "posts/getPosts",
-//   async (_, { rejectWithValue }) => {
-//     try {
-//       const data = await apiRequest<Post[]>("/posts", "GET");
-//       return data || [];
-//     } catch (err: any) {
-//       return rejectWithValue(err.message || "Failed to fetch posts");
-//     }
-//   }
-// );
+export const getPosts = createAsyncThunk<Post[]>(
+  "posts/getPosts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await apiRequest<Post[]>("/posts", "GET");
+      return data || [];
+    } catch (err: any) {
+      return rejectWithValue(err.message || "Failed to fetch posts");
+    }
+  }
+);
 
 export const createPost = createAsyncThunk<Post, FormData>(
   "posts/createPost",
@@ -82,19 +82,19 @@ const postSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // GET POSTS
-    //   .addCase(getPosts.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(getPosts.fulfilled, (state, action: PayloadAction<Post[]>) => {
-    //     state.loading = false;
-    //     state.posts = action.payload;
-    //     state.success = true;
-    //   })
-    //   .addCase(getPosts.rejected, (state, action) => {
-    //     state.loading = false;
-    //     state.error = action.payload as string;
-    //   })
+      .addCase(getPosts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getPosts.fulfilled, (state, action: PayloadAction<Post[]>) => {
+        state.loading = false;
+        state.posts = action.payload;
+        state.success = true;
+      })
+      .addCase(getPosts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
 
       // CREATE POST
       .addCase(createPost.pending, (state) => {

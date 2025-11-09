@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { File as MulterFile } from 'multer';
 
 import { Post } from '@/database/entities/post.entity';
 import { User } from '@/database/entities/user.entity';
+import { UserRelation, RelationType } from '@/database/entities/user-relation.entity';
 import { Hashtag } from '@/database/entities/hashtag.entity'
 
 import { CreatePostDto } from '@/modules/posts/dtos/create-post.dto'
@@ -20,6 +21,9 @@ export class PostsService {
 
         @InjectRepository(Hashtag)
         private readonly hashtagRepository: Repository<Hashtag>,
+
+        @InjectRepository(UserRelation)
+        private readonly userRelationRepository: Repository<UserRelation>
     ) { }
 
     async createPost(userId, postData: CreatePostDto, image?: MulterFile) {
@@ -63,4 +67,42 @@ export class PostsService {
             relations: ['user', 'hashtags'],
         });
     }
+
+    async findAll(userId: number) {
+        const followRelations = await this.userRelationRepository.find({
+          where: { 
+            sourceUser: { id: userId },
+            type: RelationType.FOLLOW,
+          },
+          relations: ['targetUser'],
+        });
+      
+        const followedUserIds = followRelations.map(rel => rel.targetUser.id);
+      
+        if (followedUserIds.length === 0) return [];
+      
+        const posts = await this.postRepository.find({
+          where: {
+            user: { id: In(followedUserIds) },
+          },
+          relations: ['user', 'hashtags'],
+          order: { createdAt: 'DESC' },
+        });
+      
+        return posts.map(post => ({
+          id: post.id,
+          content: post.content,
+          hashtags: post.hashtags?.map(h => ({ id: h.id, name: h.name })) || [],
+          likes: post.likes,
+          comments: post.comments,
+          saved: post.saved,
+          image: post.image ?? null,
+          createdAt: post.createdAt,
+          avatar: post.user.avatar,
+          firstName: post.user.firstName,
+          lastName: post.user.lastName,
+          username: post.user.userName,
+        }));
+      }
+      
 }
