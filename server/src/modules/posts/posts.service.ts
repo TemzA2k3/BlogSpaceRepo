@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository, In } from 'typeorm';
 import { File as MulterFile } from 'multer';
 
 import { Post } from '@/database/entities/post.entity';
-import { User } from '@/database/entities/user.entity';
+import { User, UserRole } from '@/database/entities/user.entity';
 import { UserRelation, RelationType } from '@/database/entities/user-relation.entity';
 import { Hashtag } from '@/database/entities/hashtag.entity'
 
@@ -130,5 +130,28 @@ export class PostsService {
         }));
       }
       
-      
+      async deletePost(postId: number, userId: number) {
+        const post = await this.postRepository.findOne({
+          where: { id: postId },
+          relations: ['user', 'hashtags'],
+        });
+    
+        if (!post) {
+          throw new NotFoundException('Post not found');
+        }
+    
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user) {
+          throw new NotFoundException('User not found');
+        }
+    
+        if (post.user.id !== user.id && user.role !== UserRole.ADMIN) {
+          throw new ForbiddenException('You are not allowed to delete this post');
+        }
+    
+        // Удаляем пост
+        await this.postRepository.remove(post);
+    
+        return { message: 'Post successfully deleted', postId };
+      }
 }

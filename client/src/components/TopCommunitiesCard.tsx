@@ -1,4 +1,5 @@
 import { type FC } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Community {
     id: number;
@@ -12,9 +13,11 @@ interface TopCommunitiesCardProps {
 }
 
 export const TopCommunitiesCard: FC<TopCommunitiesCardProps> = ({ communities }) => {
+    const { t } = useTranslation();
+
     return (
         <div className="border border-gray-200 dark:border-gray-700 rounded-2xl p-4 sm:p-5 bg-white dark:bg-darkbg">
-            <h4 className="font-semibold mb-3 sm:mb-4 text-base sm:text-lg">🏘️ Top Communities</h4>
+            <h4 className="font-semibold mb-3 sm:mb-4 text-base sm:text-lg">🏘️ {t('posts.topCommunities')}</h4>
             <ul className="space-y-2 sm:space-y-3">
                 {communities.map(c => (
                     <li key={c.id} className="flex justify-between items-center">
@@ -29,7 +32,7 @@ export const TopCommunitiesCard: FC<TopCommunitiesCardProps> = ({ communities })
                                     {c.name}
                                 </div>
                                 <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                                    {c.members} members
+                                    {c.members} {t('posts.members')}
                                 </div>
                             </div>
                         </div>

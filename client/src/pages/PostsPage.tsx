@@ -14,6 +14,7 @@ import { getPosts } from "@/store/slices/postSlice"
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 
 import type { UsersPosts } from "@/shared/types/postTypes";
+import { useTranslation } from "react-i18next";
 
 
 const trendingTopics = [
@@ -37,6 +38,7 @@ const suggestedUsers = [
 ];
 
 export const PostsPage = () => {
+    const { t } = useTranslation();
     const { currentUser } = useAppSelector(state => state.auth)
     const { posts } = useAppSelector(state => state.posts)
     const { showAlert } = useAlert();
@@ -83,12 +85,12 @@ export const PostsPage = () => {
                             />
                         </div>
                         <div className="flex-1 text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-full py-2 px-4">
-                            Что у вас нового?
+                            {t('posts.whatsNew')}
                         </div>
                         <button
                             className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-full shadow transition-colors duration-150"
                         >
-                            Написать
+                            {t('posts.writeSmth')}
                         </button>
                     </div>
                 )}
@@ -96,6 +98,7 @@ export const PostsPage = () => {
                     {userPosts.map(post => (
                         <PostCard
                             key={post.id}
+                            id={post.id}
                             userId={post.userId}
                             avatar={getAvatarUrl(post.firstName, post.lastName, post.avatar)}
                             firstName={post.firstName}

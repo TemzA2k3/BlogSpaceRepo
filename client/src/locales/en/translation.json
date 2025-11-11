@@ -16,7 +16,9 @@
     "unsubscribe": "You have unfollowed the user successfully!",
     "subError": "Failed to update follow status",
     "updatedAvatar": "Avatar updated successfully",
-    "errorUpdatingAvatar": "Failed to update avatar"
+    "errorUpdatingAvatar": "Failed to update avatar",
+    "followers": "Followers",
+    "following": "Following"
   },
   "error": {
     "fetchError": "Failed to fetch"
@@ -59,5 +61,18 @@
     "registrationSuccess": "Registation was succesessful!",
     "loginSuccess": "Successful login!",
     "logoutSuccess": "Successfully logged out"
+  },
+  "posts": {
+    "published": "Published",
+    "posts": "posts",
+    "trendingTopics": "Trending Topics",
+    "topCommunities": "Top Communities",
+    "members": "members",
+    "suggestions": "Suggestions",
+    "follow": "Follow",
+    "whatsNew": "What’s new with you?",
+    "writeSmth": "Write",
+    "successfullyDeletedPost": "Post has been deleted successfully!",
+    "errorWhileDeletingPost": "Error while deleting a post"
   }
 }

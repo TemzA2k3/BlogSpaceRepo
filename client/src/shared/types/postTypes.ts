@@ -36,6 +36,7 @@ export interface CreatePostData {
 }
 
 export interface PostCardProps {
+    id: number;
     userId: number;
     avatar: string;
     firstName: string;

@@ -38,7 +38,7 @@ export const Alert: FC<AlertProps> = ({
       <div
         className={`
           fixed top-5 right-5 w-full max-w-sm flex transform transition-all duration-300
-          backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 shadow-lg
+          backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 shadow-lg z-50
           ${type === "success" ? "text-green-900 dark:text-green-200" : "text-red-900 dark:text-red-200"}
           ${visible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4 pointer-events-none"}
         `}

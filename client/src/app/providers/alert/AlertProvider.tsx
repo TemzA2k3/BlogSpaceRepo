@@ -13,7 +13,7 @@ type AlertProviderProps = { children: ReactNode };
 export const AlertProvider: FC<AlertProviderProps> = ({ children }) => {
   const [alert, setAlert] = useState<{ message: string; type: "success" | "error"; duration: number } | null>(null);
 
-  const showAlert = (message: string, type: "success" | "error" = "success", duration = 4000) => {
+  const showAlert = (message: string, type: "success" | "error" = "success", duration = 500000) => {
     setAlert({ message, type, duration });
   };
 

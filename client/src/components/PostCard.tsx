@@ -1,11 +1,16 @@
 import { type FC, useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-import { useAppSelector } from "@/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { useAlert } from "@/app/providers/alert/AlertProvider";
 import { getImageUrl } from "@/shared/utils/getImagesUrls";
+import { deletePost } from "@/store/slices/postSlice"
 import type { PostCardProps } from "@/shared/types/postTypes";
 
+
 export const PostCard: FC<PostCardProps> = ({
+    id,
     userId,
     avatar,
     firstName,
@@ -19,6 +24,9 @@ export const PostCard: FC<PostCardProps> = ({
     comments,
     saved,
 }) => {
+    const { t } = useTranslation();
+    const { showAlert } = useAlert();
+    const dispatch = useAppDispatch();
     const { currentUser } = useAppSelector(state => state.auth);
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -43,6 +51,20 @@ export const PostCard: FC<PostCardProps> = ({
         };
     }, []);
 
+    const handleDeletePost = async (id: number) => {
+        try {
+            const resultAction = await dispatch(deletePost(id));
+    
+            if (deletePost.fulfilled.match(resultAction)) {
+                showAlert(t('posts.successfullyDeletedPost'), "success");
+            } else {
+                showAlert(resultAction.payload as string || t('posts.errorWhileDeletingPost'), "error");
+            }
+        } catch (err: any) {
+            showAlert(err.message || t('posts.errorWhileDeletingPost'), "error");
+        }
+    };
+
     return (
         <div className="relative self-stretch px-5 py-4 bg-slate-50 dark:bg-darkbg border border-gray-200 dark:border-gray-700 rounded-2xl flex justify-start items-start gap-4 shadow-sm hover:shadow-md transition-all duration-200">
 
@@ -63,7 +85,9 @@ export const PostCard: FC<PostCardProps> = ({
                                 Пожаловаться
                             </li>
                             {currentUser?.id === userId && (
-                                <li className="w-full text-left px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-700 cursor-pointer flex items-center gap-2">
+                                <li 
+                                    onClick={() => handleDeletePost(id)}
+                                    className="w-full text-left px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-700 cursor-pointer flex items-center gap-2">
                                     <i className="fas fa-trash-alt text-xs sm:text-sm"></i>
                                     Удалить
                                 </li>
@@ -87,10 +111,10 @@ export const PostCard: FC<PostCardProps> = ({
                     <div className="flex flex-col">
                         <Link
                             to={`/users/${userId}`} 
-                            className="text-neutral-900 dark:text-gray-100 text-[17px] font-semibold leading-snug">
+                            className="w-fit text-neutral-900 dark:text-gray-100 text-[17px] font-semibold leading-snug">
                             {firstName} {lastName}
                         </Link>
-                        <div className="text-slate-500 dark:text-gray-400 text-sm font-normal">
+                        <div className="w-fit text-slate-500 dark:text-gray-400 text-sm font-normal">
                             {username}
                         </div>
                     </div>
@@ -127,7 +151,7 @@ export const PostCard: FC<PostCardProps> = ({
 
                     {/* Дата */}
                     <div className="text-slate-400 dark:text-gray-500 text-sm font-normal mt-2 italic">
-                        Опубликовано {formattedDate}
+                        {t('postCard.published')} {formattedDate}
                     </div>
                 </div>
 

@@ -16,43 +16,6 @@ import { followUser, unfollowUser } from "@/shared/services/userSubscriptions"
 import { type ProfileUserData } from "@/shared/types/userTypes";
 import { useTranslation } from "react-i18next";
 
-// interface Post {
-//     id: number;
-//     content: string;
-//     date: string;
-//     likes: number;
-//     comments: number;
-//     saved: number;
-//     avatar?: string;
-//     firstName: string;
-//     lastName: string;
-//     currentUsername: string;
-// }
-
-// const mockPosts: Post[] = [
-//     {
-//         id: 1,
-//         firstName: "Alex",
-//         lastName: "Dev",
-//         currentUsername: "alex_dev",
-//         content: "Работаю над новым pet-проектом 🚀",
-//         date: "2025-10-20",
-//         likes: 42,
-//         comments: 5,
-//         saved: 10,
-//     },
-//     {
-//         id: 2,
-//         firstName: "Alex",
-//         lastName: "Dev",
-//         currentUsername: "alex_dev",
-//         content: "Люблю тёмную тему ❤️",
-//         date: "2025-10-21",
-//         likes: 12,
-//         comments: 3,
-//         saved: 4,
-//     },
-// ];
 
 export const ProfilePage = () => {
     const { t } = useTranslation();
@@ -201,10 +164,10 @@ export const ProfilePage = () => {
 
                         <div className="mt-5 flex justify-center sm:justify-start gap-6 text-sm">
                             <span>
-                                <strong>{userData.followersCount}</strong> Followers
+                                <strong>{userData.followersCount}</strong> {t('profile.followers')}
                             </span>
                             <span>
-                                <strong>{userData.followingCount}</strong> Following
+                                <strong>{userData.followingCount}</strong> {t('profile.following')}
                             </span>
                         </div>
 
@@ -250,6 +213,7 @@ export const ProfilePage = () => {
                     {userData.posts.map((post) => (
                         <PostCard
                             key={post.id}
+                            id={post.id}
                             userId={userData.id}
                             avatar={getAvatarUrl(userData.firstName, userData.lastName,userData.avatar)}
                             firstName={userData.firstName}

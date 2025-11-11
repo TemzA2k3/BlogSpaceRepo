@@ -16,7 +16,9 @@
     "unsubscribe": "Вы отписались от пользователя!",
     "subError": "Не удалось обновить статус подписки",
     "updatedAvatar": "Аватар успешно обновлён",
-    "errorUpdatingAvatar": "Не удалось обновить аватар"
+    "errorUpdatingAvatar": "Не удалось обновить аватар",
+    "followers": "Подписчиков",
+    "following": "Подписок"
     },
     "error": {
         "fetchError": "Не удалось получить данные"
@@ -59,5 +61,18 @@
     "registrationSuccess": "Регистрация прошла успешно!",
     "loginSuccess": "Вход выполнен успешно!",
     "logoutSuccess": "Вы успешно вышли из системы"
+  },
+  "posts": {
+    "published": "Опубликовано",
+    "posts": "постов",
+    "trendingTopics": "Актуальные Темы",
+    "topCommunities": "Лучшие Сообщества",
+    "members": "участников",
+    "suggestions": "Рекомендации",
+    "follow": "Подписаться",
+    "whatsNew": "Что у вас нового?",
+    "writeSmth": "Написать",
+    "successfullyDeletedPost": "Пост был удален успешно!",
+    "errorWhileDeletingPost": "Ошибка при удалении поста"
   }
 }

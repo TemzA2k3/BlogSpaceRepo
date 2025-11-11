@@ -5,7 +5,9 @@ import {
     Body,
     UseInterceptors,
     UploadedFile,
-    UseGuards
+    UseGuards,
+    Delete,
+    Param
 } from '@nestjs/common';
 import { File as MulterFile } from 'multer';
 
@@ -17,6 +19,7 @@ import { ImageUploadInterceptor } from "@/common/interceptors/image-upload.inter
 import { ParseJsonArrayPipe } from "@/common/pipes/parse-json-array.pipe"
 
 import { PostsService } from './posts.service';
+
 import { CreatePostDto } from "./dtos/create-post.dto"
 
 
@@ -44,12 +47,19 @@ export class PostsController {
         return this.postsService.createPost(user.userId, createPostDto, file);
     }
 
-
-
     @Get()
     @UseGuards(JwtAuthGuard)
     findAll(@UserReq() user: JwtPayload) {
         return this.postsService.findAll(user.userId);
+    }
+
+    @Delete('/:id')
+    @UseGuards(JwtAuthGuard)
+    deletePost(
+        @UserReq() user: JwtPayload,
+        @Param('id') postId: string
+    ){
+        return this.postsService.deletePost(+postId, user.userId)
     }
 
 }
