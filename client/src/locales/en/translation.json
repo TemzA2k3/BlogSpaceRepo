@@ -74,5 +74,10 @@
     "writeSmth": "Write",
     "successfullyDeletedPost": "Post has been deleted successfully!",
     "errorWhileDeletingPost": "Error while deleting a post"
+  },
+  "articles": {
+    "createArticle": "Create Article",
+    "searchArticles": "Search article...",
+    "notAuthForCreateaArticle": "You are not authorized for creating Article"
   }
 }

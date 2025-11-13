@@ -151,7 +151,7 @@ export const PostCard: FC<PostCardProps> = ({
 
                     {/* Дата */}
                     <div className="text-slate-400 dark:text-gray-500 text-sm font-normal mt-2 italic">
-                        {t('postCard.published')} {formattedDate}
+                        {t('posts.published')} {formattedDate}
                     </div>
                 </div>
 

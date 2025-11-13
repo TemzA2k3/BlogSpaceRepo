@@ -5,6 +5,7 @@ import * as Joi from 'joi';
 import { DatabaseModule } from '@/database/database.module';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { PostsModule } from './modules/posts/posts.module';
+import { ArticlesModule } from './modules/articles/articles.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { PostsModule } from './modules/posts/posts.module';
     DatabaseModule,
     AuthModule,
     PostsModule,
+    ArticlesModule,
   ],
   providers: [],
 })

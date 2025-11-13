@@ -1,10 +1,10 @@
 import { type FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { type Article } from "@/shared/types/articleTypes";
+import { type ArticlePreview } from "@/shared/types/articleTypes";
 
 
-export const ArticleCard: FC<Article> = ({ 
+export const ArticleCard: FC<ArticlePreview> = ({ 
     id, 
     title, 
     author, 
@@ -48,10 +48,10 @@ export const ArticleCard: FC<Article> = ({
                 <div className="flex flex-wrap gap-2 mb-4">
                     {tags.map((tag) => (
                         <span
-                            key={tag}
+                            key={tag.id}
                             className="text-blue-600 dark:text-blue-400 text-sm font-medium"
                         >
-                            {tag}
+                            {tag.name}
                         </span>
                     ))}
                 </div>

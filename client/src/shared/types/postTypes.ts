@@ -1,7 +1,4 @@
-type HashTag = {
-    id: number,
-    name: string
-}
+import type { HashTag } from "./hashTagTypes";
 
 export interface Post {
     id: number;

@@ -24,7 +24,7 @@ export class PostsService {
 
         @InjectRepository(UserRelation)
         private readonly userRelationRepository: Repository<UserRelation>
-    ) { }
+    ) {}
 
     async createPost(userId: number, postData: CreatePostDto, image?: MulterFile) {
         const { content, hashtags = [] } = postData;

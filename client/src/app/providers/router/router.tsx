@@ -7,6 +7,7 @@ import { HomePage } from "@/pages/HomePage";
 import { PostsPage } from "@/pages/PostsPage";
 import { CreatePostPage } from "@/pages/CreatePostPage";
 import { ArticlesPage } from "@/pages/ArticlesPage";
+import { CreateArticlePage } from "@/pages/CteateArticlePage";
 import { ExplorePage } from "@/pages/ExplorePage";
 import { AboutPage } from "@/pages/AboutPage";
 import { SignInPage } from "@/pages/SignInPage";
@@ -20,14 +21,21 @@ export const router = createBrowserRouter([
     element: <MainLayout />,
     children: [
       { path: "/", element: <HomePage /> },
+
       { path: "/posts", element: <PostsPage /> },
       { path: "/posts/create-post", element: <CreatePostPage /> },
+
       { path: "/articles", element: <ArticlesPage /> },
+      { path: "/articles/create-article", element: <CreateArticlePage /> },
       { path: "/articles/:id", element: <SpecificArticlePage /> },
+
       { path: "/explore", element: <ExplorePage /> },
+
       { path: "/about", element: <AboutPage /> },
+
       { path: "/signin", element: <SignInPage /> },
       { path: "/signup", element: <SignUpPage /> },
+      
       { path: "/users/:id", element: <ProfilePage /> },
     ],
   },

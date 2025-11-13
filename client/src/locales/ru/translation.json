@@ -74,5 +74,9 @@
     "writeSmth": "Написать",
     "successfullyDeletedPost": "Пост был удален успешно!",
     "errorWhileDeletingPost": "Ошибка при удалении поста"
+  },
+  "articles": {
+    "createArticle": "Создать Статью",
+    "searchArticles": "Поиск статей..."
   }
 }
