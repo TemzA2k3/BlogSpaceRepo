@@ -8,6 +8,7 @@ import {
 
 import { Post } from './post.entity';
 import { UserRelation } from './user-relation.entity'
+import { Article } from './article.entity';
 
 export enum UserRole {
     USER = 'user',
@@ -60,9 +61,11 @@ export class User {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
-    // Связь с постами
-    @OneToMany(() => Post, (post) => post.user)
+    @OneToMany(() => Post, (posts) => posts.user)
     posts: Post[];
+
+    @OneToMany(() => Article, (articles) => articles.user)
+    articles: Article[];
 
     @OneToMany(() => UserRelation, (relation) => relation.sourceUser)
     relationsFrom: UserRelation[];

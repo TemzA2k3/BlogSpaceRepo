@@ -34,7 +34,7 @@ export class Post {
     @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date;
 
-    @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
+    @ManyToOne(() => User, (user) => user.posts, { onDelete: 'CASCADE' })
     user: User;
 
     @ManyToMany(() => Hashtag, (hashtag) => hashtag.posts, { cascade: true })

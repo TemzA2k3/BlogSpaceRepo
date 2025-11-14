@@ -1,6 +1,7 @@
 import { 
     Controller,
     Post,
+    Get,
     UseGuards,
     UseInterceptors,
     Body,
@@ -18,6 +19,8 @@ import { type JwtPayload } from '@/shared/types/jwt-payload.interface';
 
 import { ImageUploadInterceptor } from "@/common/interceptors/image-upload.interceptor"
 
+import { CreateArticleDto } from './dtos/create-article.dto';
+
 @Controller('articles')
 export class ArticlesController {
 
@@ -26,19 +29,28 @@ export class ArticlesController {
     @Post()
     @UseGuards(JwtAuthGuard)
     @UseInterceptors(ImageUploadInterceptor({
-        fieldName: 'image',
+        fieldName: 'coverImage',
         folder: 'articles',
         prefix: 'article',
         maxSizeMB: 5,
     }))
     createArticle(
-        // TODO добавть необходимые параметры
         @UserReq() user: JwtPayload,
+        @Body('title') title: string,
+        @UploadedFile() file: MulterFile,
+        @Body('description') description?: string,
+        @Body('content') content?: string,
         @Body('hashtags', new ParseJsonArrayPipe(true)) hashtags?: string[],
-        @UploadedFile() file?: MulterFile,
-    ) {
-        const createArticleDto = {}
+        
+    ) {        
+        const articleData: CreateArticleDto = { title, description, content, hashtags }
     
-        return this.articlesService.createArticle();
+        return this.articlesService.createArticle(user.userId, articleData, file);
+    }
+
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    findAll() {
+        return this.articlesService.findAll();
     }
 }

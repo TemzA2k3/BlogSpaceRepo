@@ -4,6 +4,7 @@ import type { ArticlePreview, ArticlesState } from "@/shared/types/articleTypes"
 
 // TODO временные mock-данные — можно заменить API-запросом
 import { mockArticles } from "@/shared/mocks/articles";
+import { apiRequest } from "@/shared/api/apiClient";
 
 
 const initialState: ArticlesState = {
@@ -17,14 +18,12 @@ export const fetchArticles = createAsyncThunk<ArticlePreview[]>(
     "articles/fetchAll",
     async (_, { rejectWithValue }) => {
         try {
-            // Здесь можно заменить на реальный API-запрос:
-            // const response = await fetch("/api/articles");
-            // if (!response.ok) throw new Error("Failed to fetch");
-            // return await response.json();
+            
+            const data = await apiRequest<ArticlePreview[]>("/articles", "GET", {
+                credentials: "include",
+            })
 
-            // имитация задержки для реализма
-            await new Promise((resolve) => setTimeout(resolve, 500));
-            return mockArticles;
+            return data || [];
         } catch (err) {
             return rejectWithValue("Ошибка при загрузке статей");
         }
@@ -42,34 +41,20 @@ export const createArticle = createAsyncThunk<
   { rejectValue: string }
 >("articles/create", async (formData, { rejectWithValue }) => {
   try {
-    // 🚀 Пример API-запроса (замени URL на свой)
-    // const response = await fetch("/api/articles", {
-    //   method: "POST",
-    //   body: formData,
-    // })
-    // if (!response.ok) throw new Error("Ошибка при создании статьи")
-    // const data = await response.json()
-    // return data as ArticlePreview
+    // for (const [key, value] of formData.entries()) {
+    //     console.log(key, value);
+    // }
 
-    // 🧪 Временная имитация
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    const data = await apiRequest<ArticlePreview>("/articles", "POST", {
+        credentials: "include",
+        body: formData
+    })
 
-    // Преобразуем FormData в объект
-    const newArticle: ArticlePreview = {
-      id: Math.floor(Math.random() * 10000),
-      title: formData.get("title") as string,
-      author: "current_user", // позже заменится на currentUser.userName
-      authorId: 999, // позже заменится на currentUser.id
-      content: (formData.get("content") as string) || "",
-      imageUrl: formData.get("coverImage")
-        ? URL.createObjectURL(formData.get("coverImage") as File)
-        : "https://picsum.photos/seed/new/400/250",
-      tags: JSON.parse((formData.get("tags") as string) || "[]").map(
-        (t: string, i: number) => ({ id: i + 1, name: t.startsWith("#") ? t : `#${t}` })
-      ),
-    }
+    console.log('qwerty')
+    console.log(data)
 
-    return newArticle
+
+    return data as ArticlePreview
   } catch (err: any) {
     return rejectWithValue(err.message || "Ошибка при создании статьи")
   }

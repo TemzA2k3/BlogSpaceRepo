@@ -149,7 +149,6 @@ export class PostsService {
           throw new ForbiddenException('You are not allowed to delete this post');
         }
     
-        // Удаляем пост
         await this.postRepository.remove(post);
     
         return { message: 'Post successfully deleted', postId };

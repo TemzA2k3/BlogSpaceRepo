@@ -41,7 +41,7 @@ export const CreateArticlePage = () => {
     formData.append("title", title)
     if (description.trim()) formData.append("description", description)
     if (content.trim()) formData.append("content", content)
-    if (tags.length > 0) formData.append("tags", JSON.stringify(tags))
+    if (tags.length > 0) formData.append("hashtags", JSON.stringify(tags))
     if (coverImage) formData.append("coverImage", coverImage)
 
     try {

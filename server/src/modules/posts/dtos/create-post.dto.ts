@@ -3,7 +3,6 @@ import {
     IsOptional, 
     IsArray, 
     ArrayNotEmpty, 
-    ArrayUnique 
 } from 'class-validator';
 
 export class CreatePostDto {

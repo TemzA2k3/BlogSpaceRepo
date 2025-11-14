@@ -19,10 +19,10 @@ export class Article {
     @Column({ type: 'text' })
     title: string;
 
-    @Column({ nullable: true })
-    description?: string;
+    @Column({ type: 'text', nullable: true })
+    description: string | null;
 
-    @Column()
+    @Column({ type: 'text' })
     content: string;
 
     @Column({ default: 0 })
@@ -40,10 +40,10 @@ export class Article {
     @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date;
 
-    @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
+    @ManyToOne(() => User, (user) => user.articles, { onDelete: 'CASCADE' })
     user: User;
 
-    @ManyToMany(() => Hashtag, (hashtag) => hashtag.posts, { cascade: true })
+    @ManyToMany(() => Hashtag, (hashtag) => hashtag.articles, { cascade: true })
     @JoinTable()
     hashtags: Hashtag[];
 }

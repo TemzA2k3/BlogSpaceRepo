@@ -1,0 +1,26 @@
+### Create Article (multipart/form-data)
+POST http://localhost:8080/articles
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="title"
+
+title
+--boundary123
+Content-Disposition: form-data; name="content"
+
+content
+--boundary123
+Content-Disposition: form-data; name="description"
+
+description
+--boundary123
+Content-Disposition: form-data; name="hashtags"
+
+["QWRRTY", "TestTag"]
+--boundary123
+Content-Disposition: form-data; name="image"; filename="test.png"
+Content-Type: image/png
+
+< ./test.png
+--boundary123--
