@@ -2,28 +2,26 @@ import { useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
 
 import { AlertProvider } from "@/app/providers/alert/AlertProvider"
+import { ThemeProvider } from "@/app/providers/theme/ThemeProvider";
 import { router } from "@/app/providers/router/router";
-import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { useAppDispatch } from "@/hooks/reduxHooks";
 import { getMe } from "@/store/slices/authSlice";
 
 export const App = () => {
     const dispatch = useAppDispatch();
-    // const { currentUser } = useAppSelector(state => state.auth);
 
     useEffect(() => {
-        // if(!currentUser){
-            dispatch(getMe())
-        // }
-    }, [
-        dispatch,
-        // currentUser
-    ])
+        dispatch(getMe())
+    }, [dispatch])
 
-  return (
-    <>
-        <AlertProvider >
-            <RouterProvider router={router} />
-        </AlertProvider>
-    </>
-  )
+    return (
+        <>
+            <ThemeProvider>
+                <AlertProvider>
+                    <RouterProvider router={router} />
+                </AlertProvider>
+            </ThemeProvider>
+
+        </>
+    )
 };

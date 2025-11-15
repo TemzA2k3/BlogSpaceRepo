@@ -70,4 +70,9 @@ export class UsersController {
         const currentUserId = user.userId;
         await this.usersService.unfollowUser(+currentUserId, +targetId);
     }
+
+    @Get('/search/users')
+    getUsersBySearch(@Query('query') query: string) {        
+        return this.usersService.getUsersBySearch(query)
+    }
 }

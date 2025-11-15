@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "@/hooks/reduxHooks";
 import { setCurrentUser } from "@/store/slices/authSlice";
@@ -9,16 +10,18 @@ import { useAlert } from "@/app/providers/alert/AlertProvider";
 import { useAppSelector } from "@/hooks/reduxHooks";
 import { fetchProfileUserData } from "@/shared/services/fetchUsersData";
 import { changeUserAvatar } from "@/shared/services/changeUserAvatar";
+import { Loader } from "@/shared/components/Loader";
 
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 import { followUser, unfollowUser } from "@/shared/services/userSubscriptions"
 
 import { type ProfileUserData } from "@/shared/types/userTypes";
-import { useTranslation } from "react-i18next";
+
 
 
 export const ProfilePage = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const { currentUser } = useAppSelector((state) => state.auth);
     const { id } = useParams<{ id: string }>();
     const { showAlert } = useAlert();
@@ -41,7 +44,10 @@ export const ProfilePage = () => {
             .then(profileUserData => {
                 setUserData(profileUserData)
             })
-            .catch((e) => setError(e.message || t('error.fetchError')))
+            .catch((e) => {
+                setError(e.message || t('error.fetchError'))
+                navigate(`/users/${currentUser.id}`)
+            })
             .finally(() => setLoading(false));
     }, [id, currentUser]);
 
@@ -66,9 +72,9 @@ export const ProfilePage = () => {
 
     const handleFollow = async () => {
         if (!userData) return;
-    
+
         setFollowLoading(true);
-    
+
         try {
             if (userData.isFollowing) {
                 await unfollowUser(userData.id);
@@ -87,20 +93,17 @@ export const ProfilePage = () => {
                 }));
                 showAlert(t('profile.subscribe'), "success");
             }
-        } catch (err: any) {                        
+        } catch (err: any) {
             showAlert(err.message || t('profile.subError'), "error");
         } finally {
             setFollowLoading(false);
         }
     };
-    
 
-    if (!userData || loading)
-        return <div className="text-center py-10">Loading...</div>;
+    if (!userData || loading) return <Loader />;
 
     return (
         <main className="max-w-5xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-gray-800 dark:text-gray-100">
-            {/* Шапка профиля */}
             <section
                 className={`border rounded-2xl p-6 shadow-sm mb-8 ${isMyProfile
                     ? "bg-white dark:bg-darkbg border-gray-200 dark:border-gray-700"
@@ -121,8 +124,8 @@ export const ProfilePage = () => {
                         {isMyProfile && (
                             <label
                                 className="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center cursor-pointer
-                                bg-black text-white hover:bg-gray-700
-                                dark:bg-blue-600 dark:text-white dark:hover:bg-blue-500 transition-colors"
+                            bg-black text-white hover:bg-gray-700
+                            dark:bg-blue-600 dark:text-white dark:hover:bg-blue-500 transition-colors"
                             >
                                 <i className="fa-solid fa-camera" />
                                 <input
@@ -206,7 +209,6 @@ export const ProfilePage = () => {
                 </div>
             </section>
 
-            {/* Посты пользователя */}
             <section>
                 <h3 className="text-xl font-semibold mb-4">Posts</h3>
                 <div className="space-y-6">
@@ -215,7 +217,7 @@ export const ProfilePage = () => {
                             key={post.id}
                             id={post.id}
                             userId={userData.id}
-                            avatar={getAvatarUrl(userData.firstName, userData.lastName,userData.avatar)}
+                            avatar={getAvatarUrl(userData.firstName, userData.lastName, userData.avatar)}
                             firstName={userData.firstName}
                             lastName={userData.lastName}
                             username={userData.userName}

@@ -1,2 +1,5 @@
 ### Get user data by id
 GET http://localhost:8080/users/14
+
+### Get users by search
+GET http://localhost:8080/users/search/users?query=zxc

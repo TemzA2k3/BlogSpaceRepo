@@ -15,6 +15,8 @@ import { SignUpPage } from "@/pages/SignUpPage";
 import { ProfilePage } from "@/pages/ProfilePage";
 import { SpecificArticlePage } from "@/pages/SpecificArticlePage";
 
+import { NotFoundPage } from "@/pages/NotFoundPage";
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -42,7 +44,7 @@ export const router = createBrowserRouter([
   {
     element: <EmptyLayout />,
     children: [
-      
+        { path: "*", element: <NotFoundPage /> },
     ],
   },
 ]);

@@ -73,11 +73,26 @@
     "whatsNew": "What’s new with you?",
     "writeSmth": "Write",
     "successfullyDeletedPost": "Post has been deleted successfully!",
-    "errorWhileDeletingPost": "Error while deleting a post"
+    "errorWhileDeletingPost": "Error while deleting a post",
+    "zeroPosts": "There are no posts yet",
+    "zeroPostsLabel": "Create your first post and start sharing your thoughts with the community!"
   },
   "articles": {
     "createArticle": "Create Article",
     "searchArticles": "Search article...",
-    "notAuthForCreateaArticle": "You are not authorized for creating Article"
+    "notAuthForCreateaArticle": "You are not authorized for creating Article",
+    "articlesNotFound": "Articles not found",
+    "articlesNotFoundHint": "Try to change the search query or create your first article!"
+  },
+  "explore": {
+    "search": "Search",
+    "searchUsers": "Search for users...",
+    "usersNotFound": "Users not found",
+    "usersNotFoundHint": "Try another query"
+  },
+  "notFound404": {
+    "title": "Page Not Found",
+    "label": "Oops! The page you are looking for does not exist or has been moved. Please check the URL or return to the homepage.",
+    "btnText": "Go to Homepage"
   }
 }

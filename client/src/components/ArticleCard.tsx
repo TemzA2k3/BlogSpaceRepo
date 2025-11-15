@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { type ArticlePreview } from "@/shared/types/articleTypes";
 
+import { getImageUrl } from "@/shared/utils/getImagesUrls"
+
 
 export const ArticleCard: FC<ArticlePreview> = ({ 
     id, 
@@ -22,7 +24,7 @@ export const ArticleCard: FC<ArticlePreview> = ({
             {/* Картинка сверху */}
             <div className="h-48 w-full overflow-hidden rounded-t-2xl">
                 <img
-                    src={imageUrl}
+                    src={getImageUrl(imageUrl)}
                     alt={title}
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />

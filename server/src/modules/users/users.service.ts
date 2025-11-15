@@ -3,7 +3,7 @@ import {
     Injectable,
     NotFoundException,
 } from "@nestjs/common";
-import { Repository, FindOptionsWhere } from "typeorm";
+import { Repository, FindOptionsWhere, ILike } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as path from "path";
 import * as fs from "fs";
@@ -45,63 +45,63 @@ export class UsersService {
     async getUserProfileData(
         targetUserId: number,
         currentUserId?: number
-      ) {
+    ) {
         const user = await this.userRepository.findOne({
-          where: { id: targetUserId },
+            where: { id: targetUserId },
         });
-      
+
         if (!user) {
-          throw new NotFoundException('User not found');
+            throw new NotFoundException('User not found');
         }
-      
+
         const { password, ...safeUser } = user;
-      
+
         let isFollowing = false;
-      
+
         if (currentUserId) {
-          const relation = await this.relationRepository
-            .createQueryBuilder('r')
-            .select('r.id')
-            .where('r."sourceUserId" = :sourceId', { sourceId: currentUserId })
-            .andWhere('r."targetUserId" = :targetId', { targetId: targetUserId })
-            .andWhere('r.type::text = :type', { type: RelationType.FOLLOW })
-            .getOne();
-      
-          isFollowing = !!relation;
+            const relation = await this.relationRepository
+                .createQueryBuilder('r')
+                .select('r.id')
+                .where('r."sourceUserId" = :sourceId', { sourceId: currentUserId })
+                .andWhere('r."targetUserId" = :targetId', { targetId: targetUserId })
+                .andWhere('r.type::text = :type', { type: RelationType.FOLLOW })
+                .getOne();
+
+            isFollowing = !!relation;
         }
-      
+
         // ✅ Подсчёт подписчиков и подписок
         const [followersCount, followingCount] = await Promise.all([
-          this.relationRepository
-            .createQueryBuilder('r')
-            .where('r."targetUserId" = :targetId', { targetId: targetUserId })
-            .andWhere('r.type::text = :type', { type: RelationType.FOLLOW })
-            .getCount(),
-      
-          this.relationRepository
-            .createQueryBuilder('r')
-            .where('r."sourceUserId" = :sourceId', { sourceId: targetUserId })
-            .andWhere('r.type::text = :type', { type: RelationType.FOLLOW })
-            .getCount(),
+            this.relationRepository
+                .createQueryBuilder('r')
+                .where('r."targetUserId" = :targetId', { targetId: targetUserId })
+                .andWhere('r.type::text = :type', { type: RelationType.FOLLOW })
+                .getCount(),
+
+            this.relationRepository
+                .createQueryBuilder('r')
+                .where('r."sourceUserId" = :sourceId', { sourceId: targetUserId })
+                .andWhere('r.type::text = :type', { type: RelationType.FOLLOW })
+                .getCount(),
         ]);
-      
+
         // ✅ Получаем посты пользователя
         const posts = await this.postRepository
-          .createQueryBuilder('post')
-          .leftJoinAndSelect('post.hashtags', 'hashtag')
-          .where('post.userId = :userId', { userId: targetUserId })
-          .orderBy('post.createdAt', 'DESC')
-          .getMany();
-      
+            .createQueryBuilder('post')
+            .leftJoinAndSelect('post.hashtags', 'hashtag')
+            .where('post.userId = :userId', { userId: targetUserId })
+            .orderBy('post.createdAt', 'DESC')
+            .getMany();
+
         return {
-          ...safeUser,
-          isFollowing,
-          followersCount,
-          followingCount,
-          posts,
+            ...safeUser,
+            isFollowing,
+            followersCount,
+            followingCount,
+            posts,
         };
-      }
-      
+    }
+
 
     create(data: Partial<User>) {
         const user = this.userRepository.create(data);
@@ -164,7 +164,23 @@ export class UsersService {
         });
 
         if (!relation) throw new BadRequestException("You are not following this user");
-                
+
         await this.relationRepository.remove(relation);
+    }
+
+    async getUsersBySearch(query: string) {
+        if (!query) return [];
+
+        const users = await this.userRepository.find({
+            where: [
+                { firstName: ILike(`%${query}%`) },
+                { lastName: ILike(`%${query}%`) },
+                { userName: ILike(`%${query}%`) },
+            ],
+            select: ['id', 'firstName', 'lastName', 'userName', 'avatar'],
+            take: 50,
+        });
+
+        return users;
     }
 }

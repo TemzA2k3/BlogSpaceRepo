@@ -1,4 +1,5 @@
 import type { HashTag } from "./hashTagTypes";
+import type { User } from "./userTypes";
 
 export interface Post {
     id: number;
@@ -47,3 +48,8 @@ export interface PostCardProps {
     comments: number;
     saved: number;
 }
+
+export type CreatePostSectionProps = Pick<
+  User,
+  "firstName" | "lastName" | "avatar" | "userName"
+>;

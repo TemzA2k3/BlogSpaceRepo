@@ -1,6 +1,9 @@
 import { type FC } from "react";
-import { type UserCardProps } from "@/shared/types/userTypes";
 import { Link } from "react-router-dom";
+
+import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
+
+import { type UserCardProps } from "@/shared/types/userTypes";
 
 export const UserCard: FC<UserCardProps> = ({
     id,
@@ -16,18 +19,18 @@ export const UserCard: FC<UserCardProps> = ({
         >
             <img
                 className="w-14 h-14 relative rounded-3xl object-cover"
-                src={avatar || `https://i.pravatar.cc/56?u=${userName}`}
+                src={getAvatarUrl(firstName, lastName, avatar)}
                 alt={userName}
             />
             <div className="inline-flex flex-col justify-center items-start">
-                <div className="flex flex-col justify-start items-start overflow-hidden">
+                <div className="flex flex-col justify-start items-start">
                     <div className="justify-start text-neutral-900 dark:text-gray-100 text-base font-medium leading-6">
                         {firstName} {lastName}
                     </div>
                 </div>
-                <div className="w-24 flex flex-col justify-start items-start overflow-hidden">
+                <div className="w-24 flex flex-col justify-start items-start">
                     <div className="self-stretch justify-start text-slate-500 dark:text-gray-400 text-sm font-normal leading-5">
-                        @{userName}
+                        {userName}
                     </div>
                 </div>
             </div>
