@@ -12,7 +12,7 @@ export const CreatePostSection: FC<CreatePostSectionProps> = ({ firstName, lastN
 
     return (
         <div
-            onClick={() => navigate("create-post")}
+            onClick={() => navigate("create")}
             className="flex items-center gap-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm px-4 py-3 cursor-pointer hover:shadow-md transition-all duration-200"
         >
             <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden">
@@ -22,9 +22,11 @@ export const CreatePostSection: FC<CreatePostSectionProps> = ({ firstName, lastN
                     alt={userName}
                 />
             </div>
-            <div className="flex-1 text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-full py-2 px-4">
+
+            <div className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-full truncate whitespace-nowrap text-gray-500 dark:text-gray-400">
                 {t('posts.whatsNew')}
             </div>
+
             <button
                 className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-full shadow transition-colors duration-150"
             >

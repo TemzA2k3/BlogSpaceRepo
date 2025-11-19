@@ -20,12 +20,10 @@ export const ArticlesPage = () => {
 
     const [searchTerm, setSearchTerm] = useState("");
 
-    // Загружаем статьи при монтировании
     useEffect(() => {
         dispatch(fetchArticles());
     }, [dispatch]);
 
-    // Показываем ошибки, если они есть
     useEffect(() => {
         if (error) {
             showAlert(error, "error");
@@ -33,7 +31,7 @@ export const ArticlesPage = () => {
     }, [error, showAlert]);
 
     const handleNavigate = () => {
-        if (currentUser) navigate("create-article");
+        if (currentUser) navigate("create");
         else {
             showAlert(t("articles.notAuthForCreateaArticle"), "error");
             navigate("/signin");
@@ -52,7 +50,7 @@ export const ArticlesPage = () => {
     return (
         <main className="max-w-6xl mx-auto py-10 px-6 text-gray-800 dark:text-gray-100">
             {/* Поисковая строка */}
-            <div className="mb-8 flex justify-start gap-3">
+            <div className="mb-8 flex flex-col sm:flex-row justify-start gap-3">
                 <input
                     type="text"
                     placeholder={t("articles.searchArticles")}
@@ -62,7 +60,7 @@ export const ArticlesPage = () => {
                 />
                 <button
                     onClick={handleNavigate}
-                    className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 h-[38px] text-sm font-medium transition-all whitespace-nowrap"
+                    className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 sm:h-[38px] text-sm font-medium transition-all whitespace-nowrap w-full sm:w-auto"
                 >
                     {t("articles.createArticle")}
                 </button>
@@ -70,7 +68,7 @@ export const ArticlesPage = () => {
 
             {/* Сетка статей */}
             {isLoading ? (
-                <Loader/>
+                <Loader />
             ) : filteredArticles.length > 0 ? (
                 <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                     {filteredArticles.map((article) => (

@@ -7,6 +7,8 @@ import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 
 import { EmojiPicker } from "@/shared/components/EmojiPicker";
 
+import { HashTag } from "@/components/HashTag"
+
 import { createPost } from "@/store/slices/postSlice"
 import { isValidPost } from "@/shared/utils/postValidation"
 
@@ -181,18 +183,11 @@ export const CreatePostPage = () => {
                 {hashtags.length > 0 && (
                     <div className="mt-4 pl-20 flex flex-wrap gap-2">
                         {hashtags.map((tag, idx) => (
-                            <span
+                            <HashTag
                                 key={idx}
-                                className="px-2 py-1 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-100 rounded-full text-sm flex items-center gap-1"
-                            >
-                                #{tag}
-                                <button
-                                    onClick={() => setHashtags(prev => prev.filter((_, i) => i !== idx))}
-                                    className="ml-1 text-red-500 hover:text-red-700 text-xs"
-                                >
-                                    ×
-                                </button>
-                            </span>
+                                tag={tag}
+                                onRemove={() => setHashtags((prev) => prev.filter((_, i) => i !== idx))}
+                            />
                         ))}
                     </div>
                 )}

@@ -20,17 +20,17 @@ export const UserFollowersPage = () => {
 
     const [followers, setFollowers] = useState<UserCardProps[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null)
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!id) return
-        setLoading(true)
+        if (!id) return;
+        setLoading(true);
 
         fetchUserFollowers(id)
             .then(data => setFollowers(data))
-            .catch(e => setError(e.message || t('error.fetchError')))
-            .finally(() => setLoading(false))
-    }, [id]);
+            .catch(e => setError(e.message || t("error.fetchError")))
+            .finally(() => setLoading(false));
+    }, [id, t]);
 
     useEffect(() => {
         if (!error) return;
@@ -39,30 +39,37 @@ export const UserFollowersPage = () => {
 
     return (
         <main className="max-w-3xl mx-auto py-10 px-4 text-gray-800 dark:text-gray-100">
-            <h2 className="text-xl font-semibold mb-4">{t("profile.followersHeader")}</h2>
+            <h2 className="text-2xl font-bold mb-6">{t("profile.followersHeader")}</h2>
 
             {loading ? (
                 <Loader />
             ) : followers.length > 0 ? (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-4">
                     {followers.map((user) => (
-                        <UserCard
+                        <div
                             key={user.id}
-                            id={user.id}
-                            firstName={user.firstName}
-                            lastName={user.lastName}
-                            userName={user.userName}
-                            avatar={user.avatar}
-                        />
+                            className="bg-gray-50 dark:bg-darkbg p-4 rounded-xl shadow hover:shadow-lg hover:scale-105 transition-transform duration-200 cursor-pointer"
+                            onClick={() => console.log("Go to user", user.userName)}
+                        >
+                            <UserCard
+                                id={user.id}
+                                firstName={user.firstName}
+                                lastName={user.lastName}
+                                userName={user.userName}
+                                avatar={user.avatar}
+                            />
+                        </div>
                     ))}
                 </div>
             ) : (
-                <BlankData
-                    icon="📭"
-                    title={t("profile.blankFollowers")}
-                    message={t("profile.blankFollowersLabel")}
-                />
+                <div className="mt-10">
+                    <BlankData
+                        icon="📭"
+                        title={t("profile.blankFollowers")}
+                        message={t("profile.blankFollowersLabel")}
+                    />
+                </div>
             )}
         </main>
     );
-}
+};

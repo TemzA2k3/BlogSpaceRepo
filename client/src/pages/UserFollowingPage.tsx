@@ -20,17 +20,16 @@ export const UserFollowingPage = () => {
 
     const [following, setFollowing] = useState<UserCardProps[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null)
-    
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!id) return
-        setLoading(true)
+        if (!id) return;
+        setLoading(true);
 
         fetchUserFollowing(id)
             .then(data => setFollowing(data))
-            .catch(e => setError(e.message || t('error.fetchError')))
-            .finally(() => setLoading(false))
+            .catch(e => setError(e.message || t("error.fetchError")))
+            .finally(() => setLoading(false));
     }, [id, t]);
 
     useEffect(() => {
@@ -40,30 +39,36 @@ export const UserFollowingPage = () => {
 
     return (
         <main className="max-w-3xl mx-auto py-10 px-4 text-gray-800 dark:text-gray-100">
-            <h2 className="text-xl font-semibold mb-4">{t('profile.followingHeader')}</h2>
+            <h2 className="text-2xl font-bold mb-6">{t("profile.followingHeader")}</h2>
 
             {loading ? (
                 <Loader />
             ) : following.length > 0 ? (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-4">
                     {following.map((user) => (
-                        <UserCard
+                        <div
                             key={user.id}
-                            id={user.id}
-                            firstName={user.firstName}
-                            lastName={user.lastName}
-                            userName={user.userName}
-                            avatar={user.avatar}
-                        />
+                            className="bg-gray-50 dark:bg-darkbg p-4 rounded-xl shadow hover:shadow-lg hover:scale-105 transition-transform duration-200 cursor-pointer"
+                        >
+                            <UserCard
+                                id={user.id}
+                                firstName={user.firstName}
+                                lastName={user.lastName}
+                                userName={user.userName}
+                                avatar={user.avatar}
+                            />
+                        </div>
                     ))}
                 </div>
             ) : (
-                <BlankData
-                    icon="👥"
-                    title={t('profile.blankFollowing')}
-                    message={t('profile.blankFollowingLabel')}
-                />
+                <div className="mt-10">
+                    <BlankData
+                        icon="👥"
+                        title={t("profile.blankFollowing")}
+                        message={t("profile.blankFollowingLabel")}
+                    />
+                </div>
             )}
         </main>
     );
-}
+};

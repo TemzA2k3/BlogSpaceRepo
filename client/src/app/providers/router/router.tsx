@@ -28,10 +28,10 @@ export const router = createBrowserRouter([
       { path: "/", element: <HomePage /> },
 
       { path: "/posts", element: <PostsPage /> },
-      { path: "/posts/create-post", element: <CreatePostPage /> },
+      { path: "/posts/create", element: <CreatePostPage /> },
 
       { path: "/articles", element: <ArticlesPage /> },
-      { path: "/articles/create-article", element: <CreateArticlePage /> },
+      { path: "/articles/create", element: <CreateArticlePage /> },
       { path: "/articles/:id", element: <SpecificArticlePage /> },
 
       { path: "/explore", element: <ExplorePage /> },
