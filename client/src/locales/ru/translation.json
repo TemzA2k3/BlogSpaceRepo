@@ -18,7 +18,13 @@
     "updatedAvatar": "Аватар успешно обновлён",
     "errorUpdatingAvatar": "Не удалось обновить аватар",
     "followers": "Подписчиков",
-    "following": "Подписок"
+    "following": "Подписок",
+    "followersHeader": "Подписчики",
+    "followingHeader": "Подписки",
+    "blankFollowing": "Подписок нет",
+    "blankFollowingLabel": "Похоже, вы ещё ни на кого не подписаны.",
+    "blankFollowers": "Подписчиков нет",
+    "blankFollowersLabel": "Похоже, ещё никто не подписался."
     },
     "error": {
         "fetchError": "Не удалось получить данные"

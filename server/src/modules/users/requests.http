@@ -3,3 +3,9 @@ GET http://localhost:8080/users/14
 
 ### Get users by search
 GET http://localhost:8080/users/search/users?query=zxc
+
+### Get user followers
+GET http://localhost:8080/users/6/followers
+
+### Get user following
+GET http://localhost:8080/users/6/following

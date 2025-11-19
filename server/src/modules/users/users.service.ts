@@ -183,4 +183,39 @@ export class UsersService {
 
         return users;
     }
+
+    async getUserFollowing(userId: number) {
+        return this.getUserSubs(userId, "targetUser")
+    }
+
+    getUserFollowers(userId: number) {
+        return this.getUserSubs(userId, "sourceUser")
+    }
+
+    private async getUserSubs(
+        userId: number,
+        relation: "sourceUser" | "targetUser"
+    ) {
+        const whereCondition =
+            relation === "sourceUser"
+                ? { targetUser: { id: userId }, type: RelationType.FOLLOW } // подписчики
+                : { sourceUser: { id: userId }, type: RelationType.FOLLOW }; // подписки
+    
+        const relations = await this.relationRepository.find({
+            where: whereCondition,
+            relations: [relation],
+        });
+    
+        return relations.map(rel => {
+            const user = rel[relation];
+            return {
+                id: user.id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                userName: user.userName,
+                avatar: user.avatar,
+            };
+        });
+    }
+    
 }

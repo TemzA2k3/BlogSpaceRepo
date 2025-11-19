@@ -75,4 +75,14 @@ export class UsersController {
     getUsersBySearch(@Query('query') query: string) {        
         return this.usersService.getUsersBySearch(query)
     }
+
+    @Get('/:id/following')
+    getUserFollowing(@Param('id') userId: string){
+        return this.usersService.getUserFollowing(+userId)
+    }
+
+    @Get('/:id/followers')
+    getUserFollowers(@Param('id') userId: string){
+        return this.usersService.getUserFollowers(+userId)
+    }
 }

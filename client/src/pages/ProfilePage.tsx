@@ -166,13 +166,26 @@ export const ProfilePage = () => {
                         )}
 
                         <div className="mt-5 flex justify-center sm:justify-start gap-6 text-sm">
-                            <span>
-                                <strong>{userData.followersCount}</strong> {t('profile.followers')}
+                            <span
+                                className="cursor-pointer px-2 py-1 rounded-lg 
+               hover:bg-gray-200 dark:hover:bg-gray-700 
+               transition-colors"
+                                onClick={() => navigate(`/users/${userData.id}/followers`)}
+                            >
+                                <strong>{userData.followersCount}</strong> {t("profile.followers")}
                             </span>
-                            <span>
-                                <strong>{userData.followingCount}</strong> {t('profile.following')}
+
+                            <span
+                                className="cursor-pointer px-2 py-1 rounded-lg 
+               hover:bg-gray-200 dark:hover:bg-gray-700 
+               transition-colors"
+                                onClick={() => navigate(`/users/${userData.id}/following`)}
+                            >
+                                <strong>{userData.followingCount}</strong> {t("profile.following")}
                             </span>
                         </div>
+
+
 
                         {isMyProfile ? (
                             <div className="mt-6 flex flex-wrap justify-center sm:justify-start gap-3">

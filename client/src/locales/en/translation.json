@@ -18,7 +18,13 @@
     "updatedAvatar": "Avatar updated successfully",
     "errorUpdatingAvatar": "Failed to update avatar",
     "followers": "Followers",
-    "following": "Following"
+    "following": "Following",
+    "followersHeader": "Followers",
+    "followingHeader": "Following",
+    "blankFollowing": "No following",
+    "blankFollowingLabel": "It seems you are not following anyone yet.",
+    "blankFollowers": "No followers",
+    "blankFollowersLabel": "It seems no one has followed yet."
   },
   "error": {
     "fetchError": "Failed to fetch"

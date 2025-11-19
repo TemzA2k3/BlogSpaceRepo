@@ -13,9 +13,12 @@ import { AboutPage } from "@/pages/AboutPage";
 import { SignInPage } from "@/pages/SignInPage";
 import { SignUpPage } from "@/pages/SignUpPage";
 import { ProfilePage } from "@/pages/ProfilePage";
+import { UserFollowingPage } from "@/pages/UserFollowingPage";
+import { UserFollowersPage } from "@/pages/UserFollowersPage"
 import { SpecificArticlePage } from "@/pages/SpecificArticlePage";
 
 import { NotFoundPage } from "@/pages/NotFoundPage";
+
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +42,8 @@ export const router = createBrowserRouter([
       { path: "/signup", element: <SignUpPage /> },
       
       { path: "/users/:id", element: <ProfilePage /> },
+      { path: "/users/:id/following", element: <UserFollowingPage /> },
+      { path: "/users/:id/followers", element: <UserFollowersPage /> },
     ],
   },
   {
