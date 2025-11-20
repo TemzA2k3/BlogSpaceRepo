@@ -36,13 +36,10 @@ export const CreatePostPage = () => {
 
         const formData = new FormData();
 
-        // Добавляем текст только если он есть
         if (content.trim()) formData.append("content", content);
 
-        // Добавляем хештеги только если есть
         if (hashtags.length > 0) formData.append("hashtags", JSON.stringify(hashtags));
 
-        // Добавляем изображение только если есть
         if (image) formData.append("image", image);
 
         try {
