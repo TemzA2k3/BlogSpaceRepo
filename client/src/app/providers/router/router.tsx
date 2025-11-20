@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import { MainLayout } from "@/layouts/MainLayout";
+import { HeaderLayout } from "@/layouts/HeaderLayout"
 import { EmptyLayout } from "@/layouts/EmptyLayout";
 
 import { HomePage } from "@/pages/HomePage";
@@ -16,6 +17,7 @@ import { ProfilePage } from "@/pages/ProfilePage";
 import { UserFollowingPage } from "@/pages/UserFollowingPage";
 import { UserFollowersPage } from "@/pages/UserFollowersPage"
 import { SpecificArticlePage } from "@/pages/SpecificArticlePage";
+import { MessagesPage } from "@/pages/MessagesPage"
 
 import { NotFoundPage } from "@/pages/NotFoundPage";
 
@@ -45,6 +47,12 @@ export const router = createBrowserRouter([
       { path: "/users/:id/following", element: <UserFollowingPage /> },
       { path: "/users/:id/followers", element: <UserFollowersPage /> },
     ],
+  },
+  {
+    element: <HeaderLayout />,
+    children : [
+        { path: "/messages", element: <MessagesPage/> },
+    ]
   },
   {
     element: <EmptyLayout />,

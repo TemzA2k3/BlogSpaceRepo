@@ -1,0 +1,10 @@
+### Create Chat with user
+POST http://localhost:8080/chat
+Content-Type: application/json
+
+{
+    "targetUserId": 7
+}
+
+### Get All chats
+GET http://localhost:8080/chat

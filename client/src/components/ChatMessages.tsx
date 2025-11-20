@@ -1,0 +1,28 @@
+import { ChatMessage } from "@/components/ChatMessage";
+import { BlankData } from "@/shared/components/BlankData";
+
+export const ChatMessages = ({ messages, selectedUser }: any) => {
+    const isEmpty = messages.length === 0;
+
+    return (
+        <div className="flex-1 overflow-y-auto p-6 relative">
+            {isEmpty ? (
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <BlankData
+                        icon="💬"
+                        title="Нет сообщений"
+                        message={`Вы ещё не переписывались с ${selectedUser.name}.`}
+                        bordered={false}
+                        background={false}
+                    />
+                </div>
+            ) : (
+                <div className="space-y-4 mx-auto">
+                    {messages.map((msg: any) => (
+                        <ChatMessage key={msg.id} msg={msg} selectedUser={selectedUser} />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
