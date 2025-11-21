@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 import { getImageUrl } from "@/shared/utils/getImagesUrls";
 import { deletePost } from "@/store/slices/postSlice"
-import type { PostCardProps } from "@/shared/types/postTypes";
+import type { PostCardProps } from "@/shared/types/post.types";
 
 
 export const PostCard: FC<PostCardProps> = ({

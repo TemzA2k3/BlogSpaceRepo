@@ -15,7 +15,7 @@ import { Loader } from "@/shared/components/Loader";
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 import { followUser, unfollowUser } from "@/shared/services/userSubscriptions"
 
-import { type ProfileUserData } from "@/shared/types/userTypes";
+import { type ProfileUserData } from "@/shared/types/user.types";
 
 
 

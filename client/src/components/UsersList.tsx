@@ -11,18 +11,8 @@ import { Modal } from '@/shared/components/Modal';
 
 import { fetchUserFollowing } from '@/shared/services/fetchUserSubs';
 
-import { getAvatarUrl } from '@/shared/utils/getImagesUrls';
+import type { ChatUser, UsersListProps } from '@/shared/types/chat.types';
 
-import type { ChatUser } from '@/shared/types/chat.types';
-
-interface UsersListProps {
-    users: ChatUser[];
-    setUsers: React.Dispatch<React.SetStateAction<ChatUser[]>>;
-    selectedUser: ChatUser | null;
-    setSelectedUser: (user: ChatUser) => void;
-    searchQuery: string;
-    setSearchQuery: (query: string) => void;
-  }
 
 export const UsersList: React.FC<UsersListProps> = ({
     users,
@@ -37,26 +27,14 @@ export const UsersList: React.FC<UsersListProps> = ({
     const noUsers = users.length === 0;
 
     const handleChatCreated = useCallback((user: ChatUser) => {
-        const newUser: ChatUser = {
-            id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            avatar: getAvatarUrl(user.firstName, user.lastName, user.avatar),
-            lastMessage: null,
-            time: null,
-            unread: 0,
-            online: false,
-        };
-
         setUsers((prev: ChatUser[]) => {
-            if (!prev.find(u => u.id === newUser.id)) return [...prev, newUser];
+            if (!prev.find(u => u.id === user.id)) return [...prev, user];
             return prev;
         });
 
+        setIsModalOpen(false);        
 
-        setIsModalOpen(false);
-
-        setSelectedUser(newUser);
+        setSelectedUser(user);
     }, [setUsers]);
 
 

@@ -1,4 +1,4 @@
-import { type Post } from "./postTypes";
+import { type Post } from "./post.types";
 
 export interface User {
     id: number;

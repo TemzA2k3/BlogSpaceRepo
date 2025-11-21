@@ -1,4 +1,4 @@
-import type { HashTag } from "./hashTagTypes";
+import type { HashTag } from "./hashTag.types";
 
 export interface ArticlePreview {
     id: number;

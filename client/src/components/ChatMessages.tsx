@@ -11,7 +11,7 @@ export const ChatMessages = ({ messages, selectedUser }: any) => {
                     <BlankData
                         icon="💬"
                         title="Нет сообщений"
-                        message={`Вы ещё не переписывались с ${selectedUser.name}.`}
+                        message={`Вы ещё не переписывались с ${selectedUser.firstName}.`}
                         bordered={false}
                         background={false}
                     />

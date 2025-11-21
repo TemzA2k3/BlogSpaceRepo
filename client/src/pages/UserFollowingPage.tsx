@@ -9,7 +9,7 @@ import { BlankData } from "@/shared/components/BlankData";
 
 import { UserCard } from "@/components/UserCard";
 
-import type { UserCardProps } from "@/shared/types/userTypes";
+import type { UserCardProps } from "@/shared/types/user.types";
 
 import { fetchUserFollowing } from "@/shared/services/fetchUserSubs";
 

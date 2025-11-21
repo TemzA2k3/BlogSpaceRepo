@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 
-import { type User } from "@/shared/types/userTypes";
+import { type User } from "@/shared/types/user.types";
 
 interface ILoggedUserPreview {
     handleLogout: () => void;

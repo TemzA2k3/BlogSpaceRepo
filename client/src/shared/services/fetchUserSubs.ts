@@ -1,6 +1,6 @@
 import { apiRequest } from "../api/apiClient";
 
-import type { UserCardProps } from "../types/userTypes";
+import type { UserCardProps } from "../types/user.types";
 
 export const fetchUserFollowers = async (userId: string | number) => {
     try {

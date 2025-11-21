@@ -2,7 +2,7 @@ import { type FC } from "react";
 import { Link } from "react-router-dom";
 
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
-import { type UserCardProps } from "@/shared/types/userTypes";
+import { type UserCardProps } from "@/shared/types/user.types";
 
 interface UserCardWithMessageProps extends UserCardProps {
     showMessageButton?: boolean;

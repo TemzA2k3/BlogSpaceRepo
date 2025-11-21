@@ -7,7 +7,7 @@ import type {
     RegisterUserData,
     LoginUserData,
     AuthState
-} from "@/shared/types/userTypes"
+} from "@/shared/types/user.types"
 
 
 

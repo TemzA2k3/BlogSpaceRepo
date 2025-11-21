@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 
-import type { ArticlePreview, ArticlesState } from "@/shared/types/articleTypes";
+import type { ArticlePreview, ArticlesState } from "@/shared/types/article.types";
 
 // TODO временные mock-данные — можно заменить API-запросом
 import { mockArticles } from "@/shared/mocks/articles";

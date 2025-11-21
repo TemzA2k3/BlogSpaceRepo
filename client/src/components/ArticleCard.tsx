@@ -1,7 +1,7 @@
 import { type FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { type ArticlePreview } from "@/shared/types/articleTypes";
+import { type ArticlePreview } from "@/shared/types/article.types";
 
 import { getImageUrl } from "@/shared/utils/getImagesUrls"
 

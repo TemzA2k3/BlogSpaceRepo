@@ -8,3 +8,6 @@ Content-Type: application/json
 
 ### Get All chats
 GET http://localhost:8080/chat
+
+### Get all chat messages
+GET http://localhost:8080/chat/10/messages

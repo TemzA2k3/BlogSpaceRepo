@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm';
 
@@ -33,7 +33,7 @@ export class ChatService {
         }
 
         // Проверяем, есть ли уже чат между этими пользователями
-        const existingChat = await this.chatRepository
+        let chat = await this.chatRepository
             .createQueryBuilder('chat')
             .leftJoin('chat.participants', 'user')
             .where(qb => {
@@ -50,17 +50,17 @@ export class ChatService {
             .leftJoinAndSelect('chat.participants', 'participants')
             .getOne();
 
-        // Если чата нет — создаем новый
-        if (!existingChat) {
+        if (!chat) {
             const newChat = this.chatRepository.create({
                 participants: [currentUser, targetUser],
             });
-            await this.chatRepository.save(newChat);
+            chat = await this.chatRepository.save(newChat);
         }
 
-        // Маппинг под фронтенд — всегда возвращаем объект ChatUser для targetUser
+        // Маппинг под фронтенд — возвращаем объект ChatUser для targetUser + chatId
         const result = {
             id: targetUser.id,
+            chatId: chat.id,  // <-- добавили chatId
             firstName: targetUser.firstName,
             lastName: targetUser.lastName,
             avatar: targetUser.avatar,
@@ -97,11 +97,17 @@ export class ChatService {
 
             return {
                 id: otherUser.id,
+                chatId: chat.id,
                 firstName: otherUser.firstName,
                 lastName: otherUser.lastName,
                 avatar: otherUser.avatar || null,
                 lastMessage: lastMsg ? lastMsg.text : null,
-                time: lastMsg ? lastMsg.createdAt.toISOString() : null,
+                time: lastMsg ? 
+                    new Date(lastMsg.createdAt).toLocaleTimeString('en-GB', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    }) : null,
                 unread: unreadCount,
                 online: false,
             };
@@ -110,7 +116,75 @@ export class ChatService {
         return result.filter(Boolean);
     }
 
+    async getChatMessages(chatId: number, userId: number) {
+        // 1. Проверяем, что чат существует и пользователь — участник чата
+        const chat = await this.chatRepository.findOne({
+            where: { id: chatId },
+            relations: ['participants'],
+        });
+
+        if (!chat) {
+            throw new NotFoundException('Чат не найден');
+        }
+
+        const isParticipant = chat.participants.some(u => u.id === userId);
+        if (!isParticipant) {
+            throw new ForbiddenException('Вы не участник этого чата');
+        }
+
+        // 2. Загружаем сообщения чата
+        const messages = await this.messageRepository.find({
+            where: { chat: { id: chatId } },
+            relations: ['sender', 'recipient'],
+            order: { createdAt: 'ASC' },
+        });
+
+        return messages.map(msg => ({
+            id: msg.id,
+            text: msg.text,
+            sender: msg.sender.id === userId ? 'me' : 'other',
+            time: new Date(msg.createdAt).toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }),
+        }));
+    }
+
+
+    // Sockets
+    async createMessage(chatId: number, senderId: number, text: string) {
+        const chat = await this.chatRepository.findOne({
+            where: { id: chatId },
+            relations: ['participants'],
+        });
+        if (!chat) throw new NotFoundException('Chat not found');
+
+        const sender = await this.userRepository.findOne({ where: { id: senderId } });
+        if (!sender) throw new NotFoundException('Sender not found');
+
+        const message = this.messageRepository.create({
+            chat,
+            sender,
+            text,
+        });
+
+        await this.messageRepository.save(message);
+
+        return {
+            id: message.id,
+            chatId: chat.id,
+            senderId: sender.id,
+            text: message.text,
+            createdAt: message.createdAt,
+        };
+    }
+
+    async getChatById(chatId: number) {
+        return this.chatRepository.findOne({
+            where: { id: chatId },
+            relations: ['participants'],
+        });
+    }
 
 }
-
-

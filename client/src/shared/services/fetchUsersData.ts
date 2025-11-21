@@ -1,6 +1,6 @@
 import { apiRequest } from "@/shared/api/apiClient";
 
-import type { ProfileUserData } from "@/shared/types/userTypes"
+import type { ProfileUserData } from "@/shared/types/user.types"
 
 export const fetchProfileUserData = async (userId: string, currentUserId: number | undefined): Promise<ProfileUserData> => {
     

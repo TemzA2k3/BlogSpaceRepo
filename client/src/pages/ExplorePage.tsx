@@ -11,7 +11,7 @@ import { UserCard } from "@/components/UserCard";
 import { BlankData } from "@/shared/components/BlankData";
 import { Loader } from "@/shared/components/Loader";
 
-import type { UserCardProps } from "@/shared/types/userTypes";
+import type { UserCardProps } from "@/shared/types/user.types";
 
 export const ExplorePage = () => {
     const { t } = useTranslation();

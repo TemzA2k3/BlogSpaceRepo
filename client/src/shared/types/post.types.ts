@@ -1,5 +1,5 @@
-import type { HashTag } from "./hashTagTypes";
-import type { User } from "./userTypes";
+import type { HashTag } from "./hashTag.types";
+import type { User } from "./user.types";
 
 export interface Post {
     id: number;
