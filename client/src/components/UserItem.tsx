@@ -8,9 +8,7 @@ interface UserItemProps {
     onClick: () => void;
 }
 
-export const UserItem: React.FC<UserItemProps> = ({ user, isSelected, onClick }) => {
-    console.log(user);
-    
+export const UserItem: React.FC<UserItemProps> = ({ user, isSelected, onClick }) => {    
     return (
         <button
             onClick={onClick}

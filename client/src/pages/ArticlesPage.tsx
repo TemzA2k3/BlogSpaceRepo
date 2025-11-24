@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 
 import { fetchArticles } from "@/store/slices/articleSlice";
@@ -9,6 +9,9 @@ import { ArticleCard } from "@/components/ArticleCard";
 
 import { Loader } from "@/shared/components/Loader";
 import { BlankData } from "@/shared/components/BlankData";
+
+import type { HashTag } from "@/shared/types/hashTag.types";
+import type { ArticlePreview } from "@/shared/types/article.types"
 
 export const ArticlesPage = () => {
     const { t } = useTranslation();
@@ -38,12 +41,12 @@ export const ArticlesPage = () => {
         }
     };
 
-    const filteredArticles = articles.filter((article) => {
+    const filteredArticles = articles.filter((article: ArticlePreview) => {
         const term = searchTerm.toLowerCase();
         return (
             article.title.toLowerCase().includes(term) ||
             article.author.toLowerCase().includes(term) ||
-            article.tags.some((tag) => tag.name.toLowerCase().includes(term))
+            article.tags.some((tag: HashTag) => tag.name.toLowerCase().includes(term))
         );
     });
 
@@ -71,7 +74,7 @@ export const ArticlesPage = () => {
                 <Loader />
             ) : filteredArticles.length > 0 ? (
                 <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                    {filteredArticles.map((article) => (
+                    {filteredArticles.map((article: ArticlePreview) => (
                         <ArticleCard
                             key={article.id}
                             id={article.id}

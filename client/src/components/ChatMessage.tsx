@@ -3,7 +3,7 @@ import type { FC } from "react";
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 
 import type { ChatMessageProps } from "@/shared/types/chat.types"
-import { useAppSelector } from "@/hooks/reduxHooks";
+import { useAppSelector } from "@/hooks/redux/reduxHooks";
 
 
 export const ChatMessage: FC<ChatMessageProps> = ({ msg, selectedUser }) => {

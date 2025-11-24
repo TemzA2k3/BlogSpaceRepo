@@ -102,7 +102,7 @@ export class ChatService {
                 lastName: otherUser.lastName,
                 avatar: otherUser.avatar || null,
                 lastMessage: lastMsg ? lastMsg.text : null,
-                time: lastMsg ? 
+                time: lastMsg ?
                     new Date(lastMsg.createdAt).toLocaleTimeString('en-GB', {
                         hour: '2-digit',
                         minute: '2-digit',
@@ -151,6 +151,17 @@ export class ChatService {
         }));
     }
 
+    async markMessagesAsRead(chatId: number, userId: number) {
+        await this.messageRepository
+          .createQueryBuilder()
+          .update(Message)
+          .set({ isRead: true })
+          .where("chatId = :chatId", { chatId })
+          .andWhere("senderId != :userId", { userId })
+          .andWhere("isRead = false")
+          .execute();
+      }
+
 
     // Sockets
     async createMessage(chatId: number, senderId: number, text: string) {
@@ -171,12 +182,18 @@ export class ChatService {
 
         await this.messageRepository.save(message);
 
+        // форматируем время здесь
+        const formattedTime = new Date(message.createdAt).toLocaleTimeString('ru-RU', {
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+
         return {
             id: message.id,
             chatId: chat.id,
             senderId: sender.id,
             text: message.text,
-            createdAt: message.createdAt,
+            createdAt: formattedTime,
         };
     }
 

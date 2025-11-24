@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { useAppDispatch } from "@/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { setCurrentUser } from "@/store/slices/authSlice";
 
 import { PostCard } from "@/components/PostCard";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
-import { useAppSelector } from "@/hooks/reduxHooks";
 import { fetchProfileUserData } from "@/shared/services/fetchUsersData";
 import { changeUserAvatar } from "@/shared/services/changeUserAvatar";
 import { Loader } from "@/shared/components/Loader";

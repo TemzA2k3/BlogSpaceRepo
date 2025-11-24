@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 
-import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { login, clearAuthStatus } from "@/store/slices/authSlice";
 import { getValidationSignInSchema, initialSignInValues } from "@/shared/utils/authValidation";
 import { Button } from "@/shared/components/Button";

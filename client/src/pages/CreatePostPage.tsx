@@ -1,7 +1,7 @@
 import { useState, useRef, type ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 

@@ -11,7 +11,11 @@ import { Server, Socket } from 'socket.io';
 import { Injectable } from '@nestjs/common';
 import { ChatService } from './chat.service';
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({
+    cors: {
+        origin: '*',
+    },
+})
 @Injectable()
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer()
@@ -19,51 +23,44 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     constructor(private readonly chatService: ChatService) { }
 
-    // Подключение клиента
     handleConnection(client: Socket) {
-        console.log(`Client connected: ${client.id}`);
+        console.log('client connected', client.id);
     }
 
     handleDisconnect(client: Socket) {
-        console.log(`Client disconnected: ${client.id}`);
+        console.log('client disconnected', client.id);
     }
 
-    // Отправка сообщения
-    // Отправка сообщения
-    @SubscribeMessage('sendMessage')
-    async handleMessage(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() payload: { chatId: number; text: string; senderId: number }
+    @SubscribeMessage('joinChat')
+    async onJoin(
+        @MessageBody() chatId: number,
+        @ConnectedSocket() client: Socket
     ) {
-        const message = await this.chatService.createMessage(
+        client.join(`chat_${chatId}`);
+    }
+
+    @SubscribeMessage('sendMessage')
+    async sendMessage(
+        @MessageBody() payload: { chatId: number; senderId: number; text: string },
+        @ConnectedSocket() client: Socket
+    ) {
+        const savedMessage = await this.chatService.createMessage(
             payload.chatId,
             payload.senderId,
             payload.text
         );
 
-        // Получаем чат
-        const chat = await this.chatService.getChatById(payload.chatId);
+        this.server.to(`chat_${payload.chatId}`).emit('newMessage', savedMessage);
 
-        if (!chat) {
-            // Если чат не найден — выбрасываем исключение
-            throw new Error('Chat not found');
-        }
-
-        // Отправляем всем участникам чата новое сообщение
-        chat.participants.forEach(user => {
-            this.server.to(`user_${user.id}`).emit('newMessage', message);
-        });
-
-        return message;
+        return savedMessage;
     }
 
-
-    @SubscribeMessage('join')
-    handleJoin(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() userId: number
+    @SubscribeMessage('markAsRead')
+    async markAsRead(
+        @MessageBody() payload: { chatId: number; userId: number }
     ) {
-        client.join(`user_${userId}`);
-        console.log(`User ${userId} joined their personal room`);
+        await this.chatService.markMessagesAsRead(payload.chatId, payload.userId);
     }
+
 }
+

@@ -2,8 +2,6 @@ import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/tool
 
 import type { ArticlePreview, ArticlesState } from "@/shared/types/article.types";
 
-// TODO временные mock-данные — можно заменить API-запросом
-import { mockArticles } from "@/shared/mocks/articles";
 import { apiRequest } from "@/shared/api/apiClient";
 
 

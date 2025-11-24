@@ -2,7 +2,7 @@ import { type FC, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shared/components/Button";
-import { useAppSelector, useAppDispatch } from "@/hooks/reduxHooks";
+import { useAppSelector, useAppDispatch } from "@/hooks/redux/reduxHooks";
 import { logout } from "@/store/slices/authSlice";
 
 interface MobileMenuProps {

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 
-import { useAppSelector } from '@/hooks/reduxHooks';
+import { useAppSelector } from '@/hooks/redux/reduxHooks';
 
 import { UserItem } from './UserItem';
 import { SearchInput } from './SearchInput';

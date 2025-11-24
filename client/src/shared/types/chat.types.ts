@@ -17,6 +17,7 @@ export interface ChatMessage {
     text: string;
     sender: 'me' | 'other';
     time: string;
+    isRead: boolean;
 }
 
 export interface UsersListProps {

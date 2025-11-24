@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 
-import { useDebounce } from "@/hooks/useDebounce";
+import { useDebounce } from "@/hooks/debounce/useDebounce";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 
 import { searchUsers } from "@/shared/services/searchUsers";
