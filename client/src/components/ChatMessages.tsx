@@ -1,7 +1,23 @@
+import { useEffect, useRef } from "react";
 import { ChatMessage } from "@/components/ChatMessage";
 import { BlankData } from "@/shared/components/BlankData";
 
-export const ChatMessages = ({ messages, selectedUser }: any) => {
+interface ChatMessagesProps {
+    messages: any[];
+    selectedUser: any;
+}
+
+export const ChatMessages = ({ messages, selectedUser }: ChatMessagesProps) => {
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const lastMessage = messages[messages.length - 1];
+
+        if (lastMessage?.sender === 'me') {
+            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [messages]);
+
     const isEmpty = messages.length === 0;
 
     return (
@@ -11,16 +27,17 @@ export const ChatMessages = ({ messages, selectedUser }: any) => {
                     <BlankData
                         icon="💬"
                         title="Нет сообщений"
-                        message={`Вы ещё не переписывались с ${selectedUser.firstName}.`}
+                        message={`Вы ещё не переписывались с ${selectedUser?.firstName}.`}
                         bordered={false}
                         background={false}
                     />
                 </div>
             ) : (
                 <div className="space-y-4 mx-auto">
-                    {messages.map((msg: any) => (
+                    {messages.map((msg) => (
                         <ChatMessage key={msg.id} msg={msg} selectedUser={selectedUser} />
                     ))}
+                    <div ref={messagesEndRef} />
                 </div>
             )}
         </div>

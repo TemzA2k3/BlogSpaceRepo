@@ -29,12 +29,11 @@ export const useChats = (socket: Socket | null, currentUserId: number | null) =>
         setUsersList(prev =>
             prev.map(u =>
                 u.chatId === user.chatId
-                    ? { ...u, unread: 0 } // <-- исправил на поле из ChatUser
+                    ? { ...u, unread: 0 }
                     : u
             )
         );
 
-        // Отправляем на сервер, что сообщение прочитано
         if (socket && currentUserId) {
             socket.emit('markAsRead', { chatId: user.chatId, userId: currentUserId });
         }

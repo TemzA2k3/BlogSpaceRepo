@@ -24,27 +24,26 @@ export const useChatSocket = ({
     useEffect(() => {
         if (!socket || !selectedUser) return;
         socket.emit('joinChat', selectedUser.chatId);
-    }, [socket, selectedUser]);
+    }, [socket, selectedUser?.chatId]);
 
     useEffect(() => {
         if (!socket) return;
 
-        const handler = (msgFromServer: any) => {
-            const formatted: ChatMessage = {
-                id: msgFromServer.id,
-                text: msgFromServer.text,
-                sender: msgFromServer.senderId === currentUserId ? 'me' : 'other',
-                time: msgFromServer.createdAt,
-                isRead: selectedUser?.chatId === msgFromServer.chatId, // если чат открыт — прочитано
-            };
 
-            // Обновляем сообщения
+        const handler = (msgFromServer: any) => {
+            const isChatOpen = selectedUser?.chatId === msgFromServer.chatId;
+
             setMessages(prev => ({
                 ...prev,
-                [msgFromServer.chatId]: [...(prev[msgFromServer.chatId] || []), formatted],
+                [msgFromServer.chatId]: [...(prev[msgFromServer.chatId] || []), {
+                    id: msgFromServer.id,
+                    text: msgFromServer.text,
+                    sender: msgFromServer.senderId === currentUserId ? 'me' : 'other',
+                    time: msgFromServer.createdAt,
+                    isRead: isChatOpen,
+                }],
             }));
 
-            // Обновляем список пользователей
             setUsersList(prev =>
                 prev.map(user => {
                     if (user.chatId === msgFromServer.chatId) {
@@ -52,46 +51,41 @@ export const useChatSocket = ({
                             ...user,
                             lastMessage: msgFromServer.text,
                             time: msgFromServer.createdAt,
-                            unread:
-                                selectedUser?.chatId === msgFromServer.chatId
-                                    ? 0
-                                    : (user.unread || 0) + 1,
+                            unread: isChatOpen ? 0 : (user.unread ?? 0) + 1,
                         };
                     }
-                    return user;
+                    return { ...user };
                 })
-            );            
+            );
 
-            // Если чат открыт, уведомляем сервер, что сообщение прочитано
-            if (selectedUser?.chatId === msgFromServer.chatId) {
-                socket?.emit('markAsRead', {
+            if (isChatOpen) {
+                socket.emit('markAsRead', {
                     chatId: msgFromServer.chatId,
                     userId: currentUserId,
                 });
             }
         };
 
-
-
-
         socket.on('newMessage', handler);
         return () => {
             socket.off('newMessage', handler);
         };
-    }, [socket, currentUserId, setMessages, setUsersList]);
+    }, [socket, currentUserId, selectedUser, setMessages, setUsersList]);
+
 
     const sendMessage = useCallback(
         (text: string) => {
             if (!socket || !selectedUser || !currentUserId) return;
+            const chatId = selectedUser.chatId;
             socket.emit('sendMessage', {
-                chatId: selectedUser.chatId,
+                chatId,
                 senderId: currentUserId,
                 text,
             });
 
             setUsersList(prev =>
                 prev.map(user => {
-                    if (user.chatId === selectedUser.chatId) {
+                    if (user.chatId === chatId) {
                         return {
                             ...user,
                             lastMessage: text,
@@ -101,8 +95,10 @@ export const useChatSocket = ({
                     return user;
                 })
             );
-        }, [socket, selectedUser, currentUserId]
+        },
+        [socket, selectedUser?.chatId, currentUserId, setUsersList]
     );
+
 
     return { sendMessage };
 };

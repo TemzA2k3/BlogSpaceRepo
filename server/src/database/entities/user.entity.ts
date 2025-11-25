@@ -50,6 +50,9 @@ export class User {
     @Column({ default: false })
     isBlocked: boolean;
 
+    @Column({ default: false })
+    online: boolean;
+
     @Column({ type: 'text', nullable: true })
     bio?: string;
 

@@ -3,7 +3,7 @@ import { apiRequest } from "@/shared/api/apiClient";
 import type { ChatMessage } from "@/shared/types/chat.types"
 
 
-export const getChatNesasges = async (chatId: number | null) => {
+export const getChatMessages = async (chatId: number | null) => {
     if (!chatId) return [];
 
     try {
