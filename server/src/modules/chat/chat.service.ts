@@ -70,6 +70,8 @@ export class ChatService {
             online: false,
         };
 
+        console.log(result)
+
         return result;
     }
 

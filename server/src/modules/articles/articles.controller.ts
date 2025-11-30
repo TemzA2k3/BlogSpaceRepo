@@ -49,7 +49,6 @@ export class ArticlesController {
     }
 
     @Get()
-    @UseGuards(JwtAuthGuard)
     findAll() {
         return this.articlesService.findAll();
     }
