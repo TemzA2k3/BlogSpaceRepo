@@ -32,10 +32,18 @@ export const router = createBrowserRouter([
             { path: "/", element: <HomePage /> },
 
             { path: "/posts", element: <PostsPage /> },
-            { path: "/posts/create", element: <CreatePostPage /> },
+            { path: "/posts/create", element: (
+                <ProtectedRoute>
+                    <CreatePostPage />
+                </ProtectedRoute>
+            )},
 
             { path: "/articles", element: <ArticlesPage /> },
-            { path: "/articles/create", element: <CreateArticlePage /> },
+            { path: "/articles/create", element: (
+                <ProtectedRoute>
+                    <CreateArticlePage />
+                </ProtectedRoute>
+            )},
             { path: "/articles/:id", element: <SpecificArticlePage /> },
 
             { path: "/explore", element: <ExplorePage /> },
