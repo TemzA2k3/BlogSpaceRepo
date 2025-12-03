@@ -155,14 +155,14 @@ export class ChatService {
 
     async markMessagesAsRead(chatId: number, userId: number) {
         await this.messageRepository
-          .createQueryBuilder()
-          .update(Message)
-          .set({ isRead: true })
-          .where("chatId = :chatId", { chatId })
-          .andWhere("senderId != :userId", { userId })
-          .andWhere("isRead = false")
-          .execute();
-      }
+            .createQueryBuilder()
+            .update(Message)
+            .set({ isRead: true })
+            .where("chatId = :chatId", { chatId })
+            .andWhere("senderId != :userId", { userId })
+            .andWhere("isRead = false")
+            .execute();
+    }
 
 
     // Sockets
@@ -176,15 +176,20 @@ export class ChatService {
         const sender = await this.userRepository.findOne({ where: { id: senderId } });
         if (!sender) throw new NotFoundException('Sender not found');
 
+        const recipient = chat.participants.find(p => p.id !== senderId);
+        if (!recipient) {
+            throw new NotFoundException('Recipient not found for this chat');
+        }
+
         const message = this.messageRepository.create({
             chat,
             sender,
+            recipient,
             text,
         });
 
         await this.messageRepository.save(message);
 
-        // форматируем время здесь
         const formattedTime = new Date(message.createdAt).toLocaleTimeString('ru-RU', {
             hour: '2-digit',
             minute: '2-digit',
@@ -194,10 +199,12 @@ export class ChatService {
             id: message.id,
             chatId: chat.id,
             senderId: sender.id,
+            recipientId: recipient.id,
             text: message.text,
             createdAt: formattedTime,
         };
     }
+
 
     async getChatById(chatId: number) {
         return this.chatRepository.findOne({

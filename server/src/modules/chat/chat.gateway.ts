@@ -33,7 +33,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         private readonly chatService: ChatService,
         private readonly usersService: UsersService,
         private readonly jwtService: JwtService,
-    ) {}
+    ) { }
 
     handleConnection(client: Socket) {
         console.log('client connected', client.id);
@@ -85,7 +85,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('sendMessage')
     async sendMessage(
-        @MessageBody() payload: { chatId: number; senderId: number; text: string }
+        @MessageBody()
+        payload: { chatId: number; senderId: number; recipientId: number; text: string }
     ) {
         const savedMessage = await this.chatService.createMessage(
             payload.chatId,
