@@ -1,24 +1,33 @@
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { ChatMessage } from "@/components/ChatMessage";
 import { BlankData } from "@/shared/components/BlankData";
+import type { ChatMessage as ChatMessageType } from "@/shared/types/chat.types";
 
 interface ChatMessagesProps {
-    messages: any[];
+    messages: ChatMessageType[];
     selectedUser: any;
+    markMessageAsRead?: (msg: ChatMessageType) => void;
 }
 
-export const ChatMessages = ({ messages, selectedUser }: ChatMessagesProps) => {
+export const ChatMessages = ({
+    messages,
+    selectedUser,
+    markMessageAsRead
+}: ChatMessagesProps) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const lastMessage = messages[messages.length - 1];
-
-        if (lastMessage?.sender === 'me') {
-            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-        }
-    }, [messages]);
-
     const isEmpty = messages.length === 0;
+
+    const prevMessagesRef = useRef<ChatMessageType[]>([]);
+
+    useLayoutEffect(() => {
+        const lastCurrent = messages[messages.length - 1];
+
+        if (lastCurrent && lastCurrent.sender === 'me') {
+            messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+        }
+
+        prevMessagesRef.current = messages;
+    }, [messages]);
 
     return (
         <div className="flex-1 overflow-y-auto p-6 relative">
@@ -34,8 +43,13 @@ export const ChatMessages = ({ messages, selectedUser }: ChatMessagesProps) => {
                 </div>
             ) : (
                 <div className="space-y-4 mx-auto">
-                    {messages.map((msg) => (
-                        <ChatMessage key={msg.id} msg={msg} selectedUser={selectedUser} />
+                    {messages.map(msg => (
+                        <ChatMessage
+                            key={msg.id}
+                            msg={msg}
+                            selectedUser={selectedUser}
+                            markMessageAsRead={markMessageAsRead}
+                        />
                     ))}
                     <div ref={messagesEndRef} />
                 </div>

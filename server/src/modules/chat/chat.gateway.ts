@@ -1,4 +1,3 @@
-// chat.gateway.ts
 import {
     SubscribeMessage,
     WebSocketGateway,
@@ -28,6 +27,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     server: Server;
 
     private onlineUsers = new Map<number, string>();
+    private activeChat = new Map<number, number>();
+    private unreadCounts = new Map<number, Map<number, number>>();
 
     constructor(
         private readonly chatService: ChatService,
@@ -35,52 +36,82 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         private readonly jwtService: JwtService,
     ) { }
 
-    handleConnection(client: Socket) {
-        console.log('client connected', client.id);
-
+    private extractUserId(client: Socket): number | null {
         try {
             const cookie = client.handshake.headers.cookie;
-            if (!cookie) return;
+            if (!cookie) return null;
 
             const match = cookie.match(/access_token=([^;]+)/);
-            if (!match) return;
+            if (!match) return null;
 
             const token = match[1];
             const payload = this.jwtService.verify(token);
-            const userId = payload.userId;
 
-            this.onlineUsers.set(userId, client.id);
-
-            this.usersService.setUserOnline(userId);
-
-            this.server.emit('userStatusChanged', { userId, online: true });
-
-            client.emit(
-                "initialOnlineUsers",
-                Array.from(this.onlineUsers.keys())
-            );
-
-        } catch (err) {
-            client.disconnect();
+            return payload.userId || null;
+        } catch {
+            return null;
         }
     }
 
-    handleDisconnect(client: Socket) {
-        console.log('client disconnected', client.id);
+    handleConnection(client: Socket) {
+        const userId = this.extractUserId(client);
+        if (!userId) return client.disconnect();
 
-        const entry = [...this.onlineUsers.entries()].find(([_, socketId]) => socketId === client.id);
+        this.onlineUsers.set(userId, client.id);
+        client.join(`user_${userId}`);
+
+        if (!this.unreadCounts.has(userId)) {
+            this.unreadCounts.set(userId, new Map());
+        }
+
+        this.server.emit('userStatusChanged', { userId, online: true });
+        client.emit("initialOnlineUsers", Array.from(this.onlineUsers.keys()));
+    }
+
+    handleDisconnect(client: Socket) {
+        const entry = [...this.onlineUsers.entries()]
+            .find(([_, sid]) => sid === client.id);
+
         if (!entry) return;
 
         const userId = entry[0];
-        this.onlineUsers.delete(userId);
 
-        this.usersService.setUserOffline(userId);
+        this.onlineUsers.delete(userId);
+        this.activeChat.delete(userId);
+
         this.server.emit('userStatusChanged', { userId, online: false });
     }
 
     @SubscribeMessage('joinChat')
-    async onJoin(@MessageBody() chatId: number, @ConnectedSocket() client: Socket) {
+    onJoin(
+        @MessageBody() chatId: number,
+        @ConnectedSocket() client: Socket
+    ) {
+        const userId = this.extractUserId(client);
+        if (!userId) return;
+
         client.join(`chat_${chatId}`);
+
+        this.activeChat.set(userId, chatId);
+
+        if (!this.unreadCounts.has(userId))
+            this.unreadCounts.set(userId, new Map());
+
+        this.unreadCounts.get(userId)!.set(chatId, 0);
+    }
+
+    @SubscribeMessage('leaveChat')
+    onLeaveChat(
+        @MessageBody() chatId: number,
+        @ConnectedSocket() client: Socket
+    ) {
+        const userId = this.extractUserId(client);
+        if (!userId) return;
+
+        const active = this.activeChat.get(userId);
+        if (active === chatId) {
+            this.activeChat.delete(userId);
+        }
     }
 
     @SubscribeMessage('sendMessage')
@@ -88,18 +119,76 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         @MessageBody()
         payload: { chatId: number; senderId: number; recipientId: number; text: string }
     ) {
-        const savedMessage = await this.chatService.createMessage(
-            payload.chatId,
-            payload.senderId,
-            payload.text
-        );
+        const { chatId, senderId, recipientId, text } = payload;
 
-        this.server.to(`chat_${payload.chatId}`).emit('newMessage', savedMessage);
-        return savedMessage;
+        const savedMessage = await this.chatService.createMessage(chatId, senderId, text);
+
+        this.server.to(`chat_${chatId}`).emit("newMessage", savedMessage);
+
+        const sender = await this.usersService.findOneByParams({ id: senderId });
+
+        if (!this.unreadCounts.has(recipientId))
+            this.unreadCounts.set(recipientId, new Map());
+
+        const userUnread = this.unreadCounts.get(recipientId)!;
+
+        const isActive = this.activeChat.get(recipientId) === chatId;
+        const prevUnread = userUnread.get(chatId) ?? 0;
+
+        const unread = isActive ? 0 : prevUnread + 1;
+
+        userUnread.set(chatId, unread);
+
+        const chatPayload = {
+            id: sender.id,
+            chatId,
+            firstName: sender.firstName,
+            lastName: sender.lastName,
+            avatar: sender.avatar,
+            lastMessage: savedMessage.text,
+            time: savedMessage.createdAt,
+            online: this.onlineUsers.has(sender.id),
+            unread
+        };
+
+        if (isActive) {
+            this.server.to(`user_${recipientId}`).emit("chatUnread", chatPayload);
+        } else {
+            this.server.to(`user_${recipientId}`).emit("newChat", chatPayload);
+        }
     }
 
     @SubscribeMessage('markAsRead')
-    async markAsRead(@MessageBody() payload: { chatId: number; userId: number }) {
-        await this.chatService.markMessagesAsRead(payload.chatId, payload.userId);
+    async markAsRead(
+        @MessageBody() payload: { chatId: number; userId: number }
+    ) {
+        const { chatId, userId } = payload;
+
+        const readMessages = await this.chatService.markMessagesAsRead(chatId, userId);
+
+        if (!this.unreadCounts.has(userId))
+            this.unreadCounts.set(userId, new Map());
+
+        this.unreadCounts.get(userId)!.set(chatId, 0);
+
+        this.activeChat.set(userId, chatId);
+
+        readMessages.forEach(msg => {
+            const socketId = this.onlineUsers.get(userId);
+            if (socketId) {
+                this.server
+                    .to(`chat_${chatId}`)
+                    .except(socketId)
+                    .emit('messageRead', {
+                        chatId,
+                        messageIds: [msg.id],
+                    });
+            } else {
+                this.server.to(`chat_${chatId}`).emit('messageRead', {
+                    chatId,
+                    messageIds: [msg.id],
+                });
+            }
+        });
     }
 }

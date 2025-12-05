@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 
 import { Chat } from '@/database/entities/chat.entity';
 import { Message } from '@/database/entities/message.entity';
@@ -57,10 +57,9 @@ export class ChatService {
             chat = await this.chatRepository.save(newChat);
         }
 
-        // Маппинг под фронтенд — возвращаем объект ChatUser для targetUser + chatId
         const result = {
             id: targetUser.id,
-            chatId: chat.id,  // <-- добавили chatId
+            chatId: chat.id,
             firstName: targetUser.firstName,
             lastName: targetUser.lastName,
             avatar: targetUser.avatar,
@@ -70,7 +69,6 @@ export class ChatService {
             online: false,
         };
 
-        console.log(result)
 
         return result;
     }
@@ -150,19 +148,34 @@ export class ChatService {
                 minute: '2-digit',
                 hour12: false
             }),
+            isRead: msg.isRead
         }));
     }
 
     async markMessagesAsRead(chatId: number, userId: number) {
-        await this.messageRepository
-            .createQueryBuilder()
-            .update(Message)
-            .set({ isRead: true })
-            .where("chatId = :chatId", { chatId })
-            .andWhere("senderId != :userId", { userId })
-            .andWhere("isRead = false")
-            .execute();
+        const unreadMessages = await this.messageRepository.find({
+            where: {
+                chat: { id: chatId },
+                sender: { id: Not(userId) },
+                isRead: false,
+            },
+            relations: ['chat', 'sender', 'recipient'],
+        });
+    
+        if (unreadMessages.length > 0) {
+            await this.messageRepository
+                .createQueryBuilder()
+                .update(Message)
+                .set({ isRead: true })
+                .where("chatId = :chatId", { chatId })
+                .andWhere("senderId != :userId", { userId })
+                .andWhere("isRead = false")
+                .execute();
+        }
+    
+        return unreadMessages;
     }
+    
 
 
     // Sockets

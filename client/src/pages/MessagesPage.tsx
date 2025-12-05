@@ -12,53 +12,90 @@ import { BlankData } from '@/shared/components/BlankData';
 import { useChats } from '@/hooks/chat/useChats';
 import { useChatMessages } from '@/hooks/chat/useChatMessages';
 import { useChatSocket } from '@/hooks/chat/useChatSocket';
+import { useMessageSocket } from '@/hooks/chat/useMessageSocket';
+
 
 export const MessagesPage = () => {
-  const { currentUser } = useAppSelector(state => state.auth);
-  const { socket, usersStatus } = useSocketContext();
-  
-  const { usersList, selectedUser, loading, setUsersList, handleSelectUser } = useChats(socket, currentUser?.id ?? null);
-  const { messages, setMessages } = useChatMessages(selectedUser);
-  const { sendMessage } = useChatSocket({ socket, currentUserId: currentUser?.id ?? null, selectedUser, setMessages, setUsersList });
+    const { currentUser } = useAppSelector(state => state.auth);
+    const { socket, usersStatus } = useSocketContext();
 
-  const filteredUsers = useMemo(() => usersList.filter(user =>
-    `${user.firstName} ${user.lastName}`.toLowerCase().includes('')
-  ), [usersList]);
+    const { 
+        usersList, 
+        selectedUser, 
+        loading, 
+        setUsersList, 
+        handleSelectUser 
+    } = useChats(socket, currentUser?.id ?? null);
 
-  const currentMessages = useMemo(() => selectedUser ? messages[selectedUser.chatId] || [] : [], [selectedUser, messages]);
-  
+    const { messages, setMessages } = useChatMessages(selectedUser);
+    
+    const { sendMessage } = useChatSocket({ 
+        socket, 
+        currentUserId: currentUser?.id ?? null, 
+        selectedUser, 
+        setMessages, 
+        setUsersList 
+    });
+    const { markMessageAsRead } = useMessageSocket({
+        socket,
+        currentUserId: currentUser?.id ?? null,
+        selectedChatId: selectedUser?.chatId ?? null,
+        setMessages,
+    });
 
-  if (loading) return <Loader />;
+    const filteredUsers = useMemo(() =>
+        usersList.filter(user => `${user.firstName} ${user.lastName}`.toLowerCase().includes('')),
+        [usersList]
+    );
 
-  return (
-    <div className="flex h-auto w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
-      <UsersList
-        users={filteredUsers}
-        setUsers={setUsersList}
-        selectedUser={selectedUser}
-        setSelectedUser={handleSelectUser}
-        searchQuery=""
-        setSearchQuery={() => {}}
-      />
+    const currentMessages = useMemo(() =>
+        selectedUser ? messages[selectedUser.chatId] || [] : [],
+        [selectedUser, messages]
+    );
 
-      <div className="flex-1 flex flex-col relative" style={{ height: 'calc(100vh - 64px)' }}>
-        {!selectedUser || !filteredUsers.length ? (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <BlankData icon="💬" title="Нет переписок" message="Выберите пользователя слева, чтобы начать диалог." bordered={false} />
-          </div>
-        ) : (
-          <>
-            <ChatHeader 
-                firstName={selectedUser.firstName} 
-                lastName={selectedUser.lastName} 
-                avatar={selectedUser.avatar} 
-                online={usersStatus[selectedUser.id] ?? false}
+
+    if (loading) return <Loader />;
+
+    return (
+        <div className="flex h-auto w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+            <UsersList
+                users={filteredUsers}
+                setUsers={setUsersList}
+                selectedUser={selectedUser}
+                setSelectedUser={handleSelectUser}
+                searchQuery=""
+                setSearchQuery={() => {}}
             />
-            <ChatMessages messages={currentMessages} selectedUser={selectedUser} />
-            <ChatInput onSend={sendMessage} />
-          </>
-        )}
-      </div>
-    </div>
-  );
+
+            <div className="flex-1 flex flex-col relative" style={{ height: 'calc(100vh - 64px)' }}>
+                {!selectedUser || !filteredUsers.length ? (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <BlankData
+                            icon="💬"
+                            title="Нет переписок"
+                            message="Выберите пользователя слева, чтобы начать диалог."
+                            bordered={false}
+                        />
+                    </div>
+                ) : (
+                    <>
+                        <ChatHeader
+                            firstName={selectedUser.firstName}
+                            lastName={selectedUser.lastName}
+                            avatar={selectedUser.avatar}
+                            online={usersStatus[selectedUser.id] ?? false}
+                        />
+
+                        <ChatMessages
+                            messages={currentMessages}
+                            selectedUser={selectedUser}
+                            markMessageAsRead={markMessageAsRead}
+                        />
+
+                        <ChatInput onSend={sendMessage} />
+                    </>
+                )}
+            </div>
+        </div>
+    );
 };

@@ -60,11 +60,11 @@ export const PostsPage = () => {
         setUserPosts(posts);
     }, [posts]);
 
-    // useEffect(() => {
-    //     if (!error) return
+    useEffect(() => {
+        if (!error) return
 
-    //     showAlert(error, "error")
-    // }, [error])
+        showAlert(error, "error")
+    }, [error])
 
     return (
         <main className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row justify-center gap-6 lg:gap-10 text-gray-800 dark:text-gray-100">
