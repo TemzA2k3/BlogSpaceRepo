@@ -13,28 +13,29 @@ import { useChats } from '@/hooks/chat/useChats';
 import { useChatMessages } from '@/hooks/chat/useChatMessages';
 import { useChatSocket } from '@/hooks/chat/useChatSocket';
 import { useMessageSocket } from '@/hooks/chat/useMessageSocket';
+import { useTypingStatus } from '@/hooks/chat/useTypingStatus';
 
 
 export const MessagesPage = () => {
     const { currentUser } = useAppSelector(state => state.auth);
     const { socket, usersStatus } = useSocketContext();
 
-    const { 
-        usersList, 
-        selectedUser, 
-        loading, 
-        setUsersList, 
-        handleSelectUser 
+    const {
+        usersList,
+        selectedUser,
+        loading,
+        setUsersList,
+        handleSelectUser
     } = useChats(socket, currentUser?.id ?? null);
 
     const { messages, setMessages } = useChatMessages(selectedUser);
-    
-    const { sendMessage } = useChatSocket({ 
-        socket, 
-        currentUserId: currentUser?.id ?? null, 
-        selectedUser, 
-        setMessages, 
-        setUsersList 
+
+    const { sendMessage } = useChatSocket({
+        socket,
+        currentUserId: currentUser?.id ?? null,
+        selectedUser,
+        setMessages,
+        setUsersList
     });
     const { markMessageAsRead } = useMessageSocket({
         socket,
@@ -42,6 +43,8 @@ export const MessagesPage = () => {
         selectedChatId: selectedUser?.chatId ?? null,
         setMessages,
     });
+
+    useTypingStatus({ socket, setUsersList });
 
     const filteredUsers = useMemo(() =>
         usersList.filter(user => `${user.firstName} ${user.lastName}`.toLowerCase().includes('')),
@@ -64,7 +67,7 @@ export const MessagesPage = () => {
                 selectedUser={selectedUser}
                 setSelectedUser={handleSelectUser}
                 searchQuery=""
-                setSearchQuery={() => {}}
+                setSearchQuery={() => { }}
             />
 
             <div className="flex-1 flex flex-col relative" style={{ height: 'calc(100vh - 64px)' }}>
@@ -84,6 +87,7 @@ export const MessagesPage = () => {
                             lastName={selectedUser.lastName}
                             avatar={selectedUser.avatar}
                             online={usersStatus[selectedUser.id] ?? false}
+                            typing={selectedUser.typing}
                         />
 
                         <ChatMessages
@@ -92,7 +96,12 @@ export const MessagesPage = () => {
                             markMessageAsRead={markMessageAsRead}
                         />
 
-                        <ChatInput onSend={sendMessage} />
+                        <ChatInput
+                            onSend={sendMessage}
+                            socket={socket}
+                            currentUserId={currentUser?.id ?? null}
+                            selectedUserId={selectedUser?.id ?? null}
+                        />
                     </>
                 )}
             </div>

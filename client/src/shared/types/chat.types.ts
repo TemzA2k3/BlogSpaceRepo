@@ -1,3 +1,5 @@
+import { Socket } from "socket.io-client";
+
 import type { UserCardProps } from "./user.types";
 
 export interface ChatUser {
@@ -10,6 +12,7 @@ export interface ChatUser {
     time: string | null;
     unread: number;
     online: boolean;
+    typing?: boolean
 }
 
 export interface ChatMessage {
@@ -41,4 +44,11 @@ export interface ModalContentUsersListProps {
 export interface ChatMessageProps {
     msg: ChatMessage;
     selectedUser: ChatUser;
+}
+
+export interface ChatInputProps {
+    socket: Socket | null;
+    currentUserId: number | null;
+    selectedUserId: number | null;
+    onSend: (text: string) => void;
 }

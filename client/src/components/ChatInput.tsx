@@ -1,24 +1,17 @@
-import { useState, type KeyboardEvent } from "react";
+import { useChatInput } from "@/hooks/chat/useChatInput";
+import { useTyping } from "@/hooks/chat/useTyping";
 
-interface ChatInputProps {
-    onSend: (text: string) => void;
-}
+import type { ChatInputProps } from "@/shared/types/chat.types";
 
-export const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
-    const [text, setText] = useState("");
+export const ChatInput = ({ onSend, socket, currentUserId, selectedUserId }: ChatInputProps) => {
+    const { text, setText, handleSend, handleKeyDown } = useChatInput({
+        socket,
+        currentUserId,
+        selectedUserId,
+        onSend,
+    });
 
-    const handleSend = () => {
-        if (!text.trim()) return;
-        onSend(text.trim());
-        setText("");
-    };
-
-    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            handleSend();
-        }
-    };
+    useTyping({ text, socket, currentUserId, selectedUserId });
 
     return (
         <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800">

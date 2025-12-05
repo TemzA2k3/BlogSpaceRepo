@@ -6,10 +6,11 @@ interface ChatHeaderProps {
     firstName: string;
     lastName: string;
     avatar: string | null;
-    online: boolean
+    online: boolean,
+    typing?: boolean;
 }
 
-export const ChatHeader: FC<ChatHeaderProps> = ({ firstName, lastName, avatar, online }) => {
+export const ChatHeader: FC<ChatHeaderProps> = ({ firstName, lastName, avatar, online, typing }) => {
 
     return (
         <div className="h-16 border-b border-gray-200 dark:border-gray-700 px-6 flex items-center justify-between bg-gray-50 dark:bg-gray-800">
@@ -29,7 +30,7 @@ export const ChatHeader: FC<ChatHeaderProps> = ({ firstName, lastName, avatar, o
                 <div>
                     <h2 className="font-semibold">{firstName + ' ' + lastName}</h2>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {online ? 'В сети' : 'Не в сети'}
+                        {typing ? "Печатает..." : online ? "В сети" : "Не в сети"}
                     </p>
                 </div>
             </div>

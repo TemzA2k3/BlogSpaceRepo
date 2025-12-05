@@ -191,4 +191,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             }
         });
     }
+
+    @SubscribeMessage('typing')
+    handleTyping(@MessageBody() payload: { userId: number }) {
+        const { userId } = payload;
+        this.server.emit('userTyping', { userId, typing: true });
+    }
+
+    @SubscribeMessage('stopTyping')
+    handleStopTyping(@MessageBody() payload: { userId: number }) {
+        const { userId } = payload;
+        this.server.emit('userTyping', { userId, typing: false });
+    }
+
 }
