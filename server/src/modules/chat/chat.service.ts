@@ -102,12 +102,12 @@ export class ChatService {
                 lastName: otherUser.lastName,
                 avatar: otherUser.avatar || null,
                 lastMessage: lastMsg ? lastMsg.text : null,
-                time: lastMsg ?
-                    new Date(lastMsg.createdAt).toLocaleTimeString('en-GB', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false
-                    }) : null,
+                time: lastMsg ? lastMsg.createdAt : null,
+                    // new Date().toLocaleTimeString('en-GB', {
+                    //     hour: '2-digit',
+                    //     minute: '2-digit',
+                    //     hour12: false
+                    // }) : null,
                 unread: unreadCount,
                 online: false,
             };
@@ -143,11 +143,12 @@ export class ChatService {
             id: msg.id,
             text: msg.text,
             sender: msg.sender.id === userId ? 'me' : 'other',
-            time: new Date(msg.createdAt).toLocaleTimeString('en-GB', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            }),
+            // time: new Date(msg.createdAt).toLocaleTimeString('en-GB', {
+            //     hour: '2-digit',
+            //     minute: '2-digit',
+            //     hour12: false
+            // }),
+            time: msg.createdAt,
             isRead: msg.isRead
         }));
     }
@@ -203,10 +204,10 @@ export class ChatService {
 
         await this.messageRepository.save(message);
 
-        const formattedTime = new Date(message.createdAt).toLocaleTimeString('ru-RU', {
-            hour: '2-digit',
-            minute: '2-digit',
-        });
+        // const formattedTime = new Date(message.createdAt).toLocaleTimeString('ru-RU', {
+        //     hour: '2-digit',
+        //     minute: '2-digit',
+        // });
 
         return {
             id: message.id,
@@ -214,7 +215,7 @@ export class ChatService {
             senderId: sender.id,
             recipientId: recipient.id,
             text: message.text,
-            createdAt: formattedTime,
+            createdAt: message.createdAt,
         };
     }
 

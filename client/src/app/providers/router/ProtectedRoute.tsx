@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAppSelector } from "@/hooks/redux/reduxHooks";
 import type { ReactNode } from "react";
+import { Loader } from "@/shared/components/Loader";
 
 interface ProtectedRouteProps {
     children: ReactNode;
@@ -8,7 +9,11 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children, redirectTo = "/signin" }: ProtectedRouteProps) => {
-    const { currentUser } = useAppSelector((state) => state.auth);
+    const { currentUser, initialized } = useAppSelector((state) => state.auth);
+
+    if (!initialized) {
+        return <Loader />;
+    }
 
     if (!currentUser) {
         return <Navigate to={redirectTo} replace />;
@@ -16,3 +21,4 @@ export const ProtectedRoute = ({ children, redirectTo = "/signin" }: ProtectedRo
 
     return <>{children}</>;
 };
+

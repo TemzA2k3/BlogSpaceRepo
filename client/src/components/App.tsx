@@ -1,5 +1,8 @@
 import { useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
+import { ErrorBoundary } from "react-error-boundary";
+
+import { ErrorFallback } from "./ErrorFallback";
 
 import { AlertProvider } from "@/app/providers/alert/AlertProvider"
 import { ThemeProvider } from "@/app/providers/theme/ThemeProvider";
@@ -16,7 +19,7 @@ export const App = () => {
     }, [dispatch])
 
     return (
-        <>
+        <ErrorBoundary FallbackComponent={ErrorFallback}>
             <ThemeProvider>
                 <AlertProvider>
                     <SocketProvider>
@@ -24,6 +27,6 @@ export const App = () => {
                     </SocketProvider>
                 </AlertProvider>
             </ThemeProvider>
-        </>
+        </ErrorBoundary>
     )
 };

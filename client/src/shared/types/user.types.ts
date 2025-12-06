@@ -40,6 +40,7 @@ export interface AuthState {
     loading: boolean;
     success: boolean;
     error: string | null;
+    initialized: boolean;
 }
 
 export interface UserCardProps {

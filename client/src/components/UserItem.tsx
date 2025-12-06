@@ -1,6 +1,7 @@
-// client/src/components/UserItem.tsx
-import type { ChatUser } from '@/shared/types/chat.types';
 import { getAvatarUrl } from '@/shared/utils/getImagesUrls';
+import { formatTime } from "@/shared/utils/timeFormatter"
+
+import type { ChatUser } from '@/shared/types/chat.types';
 
 interface UserItemProps {
     user: ChatUser;
@@ -8,7 +9,7 @@ interface UserItemProps {
     onClick: () => void;
 }
 
-export const UserItem: React.FC<UserItemProps> = ({ user, isSelected, onClick }) => {    
+export const UserItem: React.FC<UserItemProps> = ({ user, isSelected, onClick }) => {        
     return (
         <button
             onClick={onClick}
@@ -27,7 +28,7 @@ export const UserItem: React.FC<UserItemProps> = ({ user, isSelected, onClick })
             <div className="flex-1 min-w-0 text-left">
                 <div className="flex items-center justify-between mb-1">
                     <h3 className="font-semibold text-sm truncate">{user.firstName} {user.lastName}</h3>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">{user.time}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{formatTime(user.time)}</span>
                 </div>
                 <div className="flex items-center justify-between">
                     <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{user.lastMessage}</p>

@@ -1,9 +1,13 @@
 import { type FC, useRef } from "react";
-import type { ChatMessage as ChatMessageType } from "@/shared/types/chat.types";
+
 import { useAppSelector } from "@/hooks/redux/reduxHooks";
 import { useMessageAvatar } from '@/hooks/chat/useMessageAvatar';
 import { useIsSingleLine } from '@/hooks/chat/useIsSingleLine';
 import { useMarkMessageInView } from '@/hooks/chat/useMarkMessageInView';
+
+import { formatTime } from "@/shared/utils/timeFormatter";
+
+import type { ChatMessage as ChatMessageType } from "@/shared/types/chat.types";
 
 interface Props {
     msg: ChatMessageType;
@@ -29,7 +33,7 @@ export const ChatMessage: FC<Props> = ({ msg, selectedUser, markMessageAsRead })
                 <p ref={textRef} className="text-sm leading-relaxed">{msg.text}</p>
 
                 <div className={`text-xs mt-1 ${isSingleLine ? 'inline-flex items-center' : 'absolute bottom-1 flex items-center'} ${msg.sender === 'me' ? 'self-end right-2' : 'left-2'}`}>
-                    <span>{msg.time}</span>
+                    <span>{formatTime(msg.time)}</span>
                     {msg.sender === 'me' && (
                         <span className="relative w-4 h-4">
                             <i className={`fa fa-check text-white absolute bottom-0 ${msg.isRead ? "right-[3px]" : "right-0"}`}></i>

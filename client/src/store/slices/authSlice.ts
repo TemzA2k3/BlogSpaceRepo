@@ -17,6 +17,7 @@ const initialState: AuthState = {
     loading: false,
     success: false,
     error: null,
+    initialized: false,
 };
 
 export const login = createAsyncThunk(
@@ -159,14 +160,14 @@ const authSlice = createSlice({
                 state.currentUser = action.payload;
                 state.success = true;
                 state.error = null;
-
-                // localStorage.setItem("currentUser", JSON.stringify(action.payload));
+                state.initialized = true;
             })
             .addCase(getMe.rejected, (state, action) => {
                 state.loading = false;
                 state.currentUser = null;
                 state.error = action.payload as string;
                 state.success = false;
+                state.initialized = true;
             });
 
 },
