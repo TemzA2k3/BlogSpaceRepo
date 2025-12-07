@@ -74,14 +74,15 @@ export const ArticlesPage = () => {
                 <Loader />
             ) : filteredArticles.length > 0 ? (
                 <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                    {filteredArticles.map((article: ArticlePreview) => (
+                    {filteredArticles.map((article) => (
                         <ArticleCard
                             key={article.id}
                             id={article.id}
                             title={article.title}
                             author={article.author}
                             authorId={article.authorId}
-                            content={article.content}
+                            description={article.description}
+                            sections={article.sections}
                             tags={article.tags}
                             imageUrl={article.imageUrl}
                         />

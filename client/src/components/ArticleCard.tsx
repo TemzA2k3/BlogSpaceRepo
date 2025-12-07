@@ -6,16 +6,17 @@ import { type ArticlePreview } from "@/shared/types/article.types";
 import { getImageUrl } from "@/shared/utils/getImagesUrls"
 
 
-export const ArticleCard: FC<ArticlePreview> = ({ 
-    id, 
-    title, 
-    author, 
-    authorId, 
-    content, 
-    tags, 
-    imageUrl 
+export const ArticleCard: FC<ArticlePreview> = ({
+    id,
+    title,
+    author,
+    authorId,
+    description,
+    sections,
+    tags,
+    imageUrl
 }) => {
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     return (
         <article
@@ -45,7 +46,14 @@ export const ArticleCard: FC<ArticlePreview> = ({
                     </Link>
                 </p>
 
-                <p className="text-gray-700 dark:text-gray-300 mb-4 flex-grow">{content}</p>
+                <p className="text-gray-700 dark:text-gray-300 mb-4 flex-grow line-clamp-2">
+                    {description
+                        ? description
+                        : sections.length > 0
+                            ? sections[0].content || "Нет содержания"
+                            : "Нет содержания"}
+                </p>
+
 
                 <div className="flex flex-wrap gap-2 mb-4">
                     {tags.map((tag) => (
