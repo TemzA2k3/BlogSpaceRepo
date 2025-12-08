@@ -17,6 +17,13 @@ export interface ArticleSections {
     content: string;
 }
 
+export interface ArticleAuthor {
+    id: number;
+    userName: string;
+    fullName: string;
+    avatar: string | null;
+}
+
 export interface SectionsEditorProps {
     sections: ArticleSections[]
     lastFocusedTextarea: React.MutableRefObject<HTMLTextAreaElement | null>
@@ -40,9 +47,13 @@ export interface ArticlesState {
 export interface ArticleData {
     id: number;
     title: string;
-    author: string;
-    authorId: number
-    content: string;
-    tags: HashTag[];
-    imageUrl: string;
+    description: string;
+    sections: ArticleSections[];
+    coverImage: string;
+    createdAt: string;
+    author: ArticleAuthor;
+    hashtags: HashTag[];
+    likes: number;
+    comments: number;
+    saved: number;
 }

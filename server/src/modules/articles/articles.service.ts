@@ -19,7 +19,7 @@ export class ArticlesService {
 
         @InjectRepository(Hashtag)
         private readonly hashtagRepository: Repository<Hashtag>,
-    ) {}
+    ) { }
 
     async createArticle(
         userId: number,
@@ -93,4 +93,36 @@ export class ArticlesService {
             imageUrl: `/uploads/articles/${article.coverImage}`,
         }));
     }
+
+    async getArticleData(articleId: number) {
+        const article = await this.articleRepository.findOne({
+            where: { id: articleId },
+            relations: ['user', 'hashtags'],
+        });
+
+        if (!article) throw new Error('Article not found');
+        
+        return {
+            id: article.id,
+            title: article.title,
+            description: article.description,
+            sections: article.sections,
+            coverImage: `/uploads/articles/${article.coverImage}`,
+            createdAt: article.createdAt,
+            author: {
+                id: article.user.id,
+                userName: article.user.userName,
+                fullName: `${article.user.firstName} ${article.user.lastName}`,
+                avatar: article.user.avatar || null,
+            },
+            hashtags: article.hashtags.map(tag => ({
+                id: tag.id,
+                name: tag.name,
+            })),
+            likes: article.likes,
+            comments: article.comments,
+            saved: article.saved,
+        };
+    }
+
 }

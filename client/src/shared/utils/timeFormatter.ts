@@ -1,4 +1,5 @@
 import type { ChatMessage } from "@/shared/types/chat.types";
+import type { ArticleSections } from "@/shared/types/article.types"
 
 export const formatTime = (dateStr: string | Date | null) => {
     if (!dateStr) return ""
@@ -30,3 +31,8 @@ export const groupMessagesByDate = (messages: ChatMessage[]) => {
 
     return groups;
 };
+
+export const calculateReadTime = (sections: ArticleSections[]) => {
+    if (!sections) return "unknown"
+    return Math.ceil(sections.reduce((acc, s) => acc + s.content.length, 0) / 1000)
+}

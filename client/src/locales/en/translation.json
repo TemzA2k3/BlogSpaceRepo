@@ -40,7 +40,12 @@
   "auth": {
     "unauthorizedUserText": "Don’t have an account?",
     "authorizedUserText": "Already have an account?",
-    "notAuthorized": "Failed to authenticate. Please sign in again."
+    "notAuthorized": "Failed to authenticate. Please sign in again.",
+    "enterEmail": "Enter your email",
+    "resetEmailSent": "Password reset link has been sent to your email.",
+    "resetEmailError": "An error occurred while sending the password reset email.",
+    "sendResetLink": "Send Reset Link",
+    "sending": "Sending..."
   },
   "forms": {
     "error": "Error",
@@ -66,7 +71,17 @@
     "nameMinLength": "Name must be at least {{count}} characters long!",
     "registrationSuccess": "Registation was succesessful!",
     "loginSuccess": "Successful login!",
-    "logoutSuccess": "Successfully logged out"
+    "logoutSuccess": "Successfully logged out",
+    "forgotPasswordTitle": "Forgot Password",
+    "forgotPasswordDescription": "Enter your email to receive a password reset link.",
+    "resetPasswordTitle": "Reset Password",
+    "resetPasswordDescription": "Enter a new password to restore access to your account.",
+    "passwordsRequired": "Both fields are required",
+    "passwordsNotMatch": "Passwords do not match!",
+    "resetPasswordSuccess": "Password successfully changed! Log In now",
+    "resetPasswordError": "Error resetting password",
+    "newPassword": "New Password",
+    "sendResetLink": "Change Password"
   },
   "posts": {
     "published": "Published",

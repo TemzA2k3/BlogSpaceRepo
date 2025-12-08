@@ -18,34 +18,56 @@ export const initialSignUpValues = {
 }
 
 export const getValidationSignInSchema = (t: (key: string, options?: any) => string) => {
-  return Yup.object({
-    email: Yup.string()
-      .email(t("forms.invalidEmail"))
-      .required(t("forms.required")),
-    password: Yup.string()
-      .min(minPassLength, t("forms.passwordMinLength", { count: minPassLength }))
-      .required(t("forms.required")),
-  });
+    return Yup.object({
+        email: Yup.string()
+            .email(t("forms.invalidEmail"))
+            .required(t("forms.required")),
+        password: Yup.string()
+            .min(minPassLength, t("forms.passwordMinLength", { count: minPassLength }))
+            .required(t("forms.required")),
+    });
 };
 
 export const getValidationSignUpSchema = (t: (key: string, options?: any) => string) => {
     return Yup.object({
-      fname: Yup.string()
-        .trim()
-        .min(minNameLength, t("forms.nameMinLength", { count: minNameLength }))
-        .required(t("forms.required")),
-      lname: Yup.string()
-        .trim()
-        .min(minNameLength, t("forms.nameMinLength", { count: minNameLength }))
-        .required(t("forms.required")),
-      email: Yup.string()
-        .email(t("forms.invalidEmail"))
-        .required(t("forms.required")),
-      password: Yup.string()
-        .min(minPassLength, t("forms.passwordMinLength", { count: minPassLength }))
-        .required(t("forms.required")),
-      confirmPassword: Yup.string()
-        .oneOf([Yup.ref("password")], t("forms.passwordMismatch"))
-        .required(t("forms.required")),
+        fname: Yup.string()
+            .trim()
+            .min(minNameLength, t("forms.nameMinLength", { count: minNameLength }))
+            .required(t("forms.required")),
+        lname: Yup.string()
+            .trim()
+            .min(minNameLength, t("forms.nameMinLength", { count: minNameLength }))
+            .required(t("forms.required")),
+        email: Yup.string()
+            .email(t("forms.invalidEmail"))
+            .required(t("forms.required")),
+        password: Yup.string()
+            .min(minPassLength, t("forms.passwordMinLength", { count: minPassLength }))
+            .required(t("forms.required")),
+        confirmPassword: Yup.string()
+            .oneOf([Yup.ref("password")], t("forms.passwordMismatch"))
+            .required(t("forms.required")),
     })
-  }
+}
+
+export const initialResetPasswordValues = {
+    password: "",
+    confirmPassword: "",
+};
+
+export const getResetPasswordSchema = (t: (key: string, options?: any) => string) => {
+    return Yup.object({
+        email: Yup.string()
+            .matches(
+                /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                t("forms.invalidEmail")
+            )
+            .required(t("forms.required")),
+        password: Yup.string()
+            .min(6, t("forms.passwordMinLength", { count: 6 }))
+            .required(t("forms.passwordsRequired")),
+        confirmPassword: Yup.string()
+            .oneOf([Yup.ref("password")], t("forms.passwordsNotMatch"))
+            .required(t("forms.passwordsRequired")),
+    })
+};

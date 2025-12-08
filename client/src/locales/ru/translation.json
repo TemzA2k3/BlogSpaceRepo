@@ -40,7 +40,12 @@
   "auth": {
     "unauthorizedUserText": "Нет аккаунта?",
     "authorizedUserText": "Уже есть аккаунт?",
-    "notAuthorized": "Не удалось выполнить аутентификацию. Пожалуйста, войдите заново."
+    "notAuthorized": "Не удалось выполнить аутентификацию. Пожалуйста, войдите заново.",
+    "enterEmail": "Введите ваш email",
+    "resetEmailSent": "Ссылка для сброса пароля отправлена на ваш email.",
+    "resetEmailError": "Произошла ошибка при отправке письма для сброса пароля.",
+    "sendResetLink": "Отправить ссылку для сброса",
+     "sending": "Отправка..."
   },
   "forms": {
     "error": "Ошибка",
@@ -66,7 +71,17 @@
     "nameMinLength": "Минимальная длина имени или фамилии {{count}} символов!",
     "registrationSuccess": "Регистрация прошла успешно!",
     "loginSuccess": "Вход выполнен успешно!",
-    "logoutSuccess": "Вы успешно вышли из системы"
+    "logoutSuccess": "Вы успешно вышли из системы",
+    "forgotPasswordTitle": "Восстановление пароля",
+    "forgotPasswordDescription": "Введите ваш email, чтобы получить ссылку для сброса пароля.",
+    "resetPasswordTitle": "Сброс пароля",
+    "resetPasswordDescription": "Введите новый пароль для восстановления доступа к аккаунту.",
+    "passwordsRequired": "Оба поля обязательны для заполнения",
+    "passwordsNotMatch": "Пароли не совпадают!",
+    "resetPasswordSuccess": "Пароль успешно изменён! Теперь войдите в аккаунт",
+    "resetPasswordError": "Произошла ошибка при сбросе пароля",
+    "newPassword": "Новый пароль",
+    "sendResetLink": "Сменить пароль"
   },
   "posts": {
     "published": "Опубликовано",

@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import { ProtectedRoute } from "./ProtectedRoute";
+import { PublicOnlyRoute } from "./PublicOnlyRoute";
 
 import { MainLayout } from "@/layouts/MainLayout";
 import { HeaderLayout } from "@/layouts/HeaderLayout";
@@ -15,6 +16,8 @@ import { ExplorePage } from "@/pages/ExplorePage";
 import { AboutPage } from "@/pages/AboutPage";
 import { SignInPage } from "@/pages/SignInPage";
 import { SignUpPage } from "@/pages/SignUpPage";
+import { ForgotPasswordPage } from "@/pages/ForgotPasswordPage"
+import { ResetPasswordPage } from "@/pages/ResetPasswordPage";
 import { ProfilePage } from "@/pages/ProfilePage";
 import { UserFollowingPage } from "@/pages/UserFollowingPage";
 import { UserFollowersPage } from "@/pages/UserFollowersPage";
@@ -64,6 +67,12 @@ export const router = createBrowserRouter([
 
       { path: "/signin", ...withErrorElement(<SignInPage />) },
       { path: "/signup", ...withErrorElement(<SignUpPage />) },
+      { path: "/forgot-password", ...withErrorElement(
+                                                    <PublicOnlyRoute>
+                                                        <ForgotPasswordPage />
+                                                    </PublicOnlyRoute>
+                                                )},
+      { path: "/reset-password", ...withErrorElement(<ResetPasswordPage />) },
 
       { path: "/users/:id", ...withErrorElement(<ProfilePage />) },
       { path: "/users/:id/following", ...withErrorElement(<UserFollowingPage />) },

@@ -13,7 +13,7 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-    "email": "kikotik91@gmail.com",
+    "email": "qwerty1522003@gmail.com",
     "password": "123123",
     "remember": false
 }

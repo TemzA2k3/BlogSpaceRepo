@@ -5,7 +5,9 @@ import {
     UseGuards,
     UseInterceptors,
     Body,
-    UploadedFile
+    UploadedFile,
+    Param,
+    BadRequestException
 } from '@nestjs/common';
 import { File as MulterFile } from 'multer';
 
@@ -59,5 +61,10 @@ export class ArticlesController {
     @Get()
     findAll() {
         return this.articlesService.findAll();
+    }
+
+    @Get(':id')
+    getArticleData(@Param('id') id: string){  
+        return this.articlesService.getArticleData(+id);
     }
 }
