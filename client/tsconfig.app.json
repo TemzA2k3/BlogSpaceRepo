@@ -21,8 +21,8 @@
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": false, // поменять потом на тру
-    "noUnusedParameters": false, // поменять потом на тру
+    "noUnusedLocals": true, // поменять потом на тру
+    "noUnusedParameters": true, // поменять потом на тру
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
