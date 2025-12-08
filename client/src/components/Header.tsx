@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { Button } from "@/shared/components/Button";
 import { logout, clearAuthStatus } from "@/store/slices/authSlice";
 import { useAlert } from "@/app/providers/alert/AlertProvider";

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 
-import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { register, clearAuthStatus } from "@/store/slices/authSlice";
 import { Button } from "@/shared/components/Button";
 import { useAlert } from "@/app/providers/alert/AlertProvider";

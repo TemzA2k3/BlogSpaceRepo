@@ -1,6 +1,6 @@
 import { apiRequest } from "@/shared/api/apiClient";
 
-import type { UserCardProps } from "@/shared/types/userTypes"
+import type { UserCardProps } from "@/shared/types/user.types"
 
 export const searchUsers = async (searchStr: string) => {
     try {

@@ -1,4 +1,4 @@
-import { type Post } from "./postTypes";
+import { type Post } from "./post.types";
 
 export interface User {
     id: number;
@@ -40,6 +40,7 @@ export interface AuthState {
     loading: boolean;
     success: boolean;
     error: string | null;
+    initialized: boolean;
 }
 
 export interface UserCardProps {

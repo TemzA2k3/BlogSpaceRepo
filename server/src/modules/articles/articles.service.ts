@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm'
+import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { File as MulterFile } from 'multer';
 
@@ -8,10 +8,8 @@ import { Hashtag } from '@/database/entities/hashtag.entity';
 import { User } from '@/database/entities/user.entity';
 import { CreateArticleDto } from './dtos/create-article.dto';
 
-
 @Injectable()
 export class ArticlesService {
-
     constructor(
         @InjectRepository(Article)
         private readonly articleRepository: Repository<Article>,
@@ -27,80 +25,72 @@ export class ArticlesService {
         userId: number,
         articleData: CreateArticleDto,
         image: MulterFile,
-      ) {
+    ) {
         const user = await this.userRepository.findOne({ where: { id: userId } });
-      
-        if (!user) {
-          throw new Error('User not found');
-        }
-      
+        if (!user) throw new Error('User not found');
+
         let hashtags: Hashtag[] = [];
-      
         if (articleData.hashtags?.length) {
-          hashtags = await Promise.all(
-            articleData.hashtags.map(async (tagName) => {
-              const name = tagName.trim().toLowerCase();
-      
-              let hashtag = await this.hashtagRepository.findOne({ where: { name } });
-      
-              if (!hashtag) {
-                hashtag = this.hashtagRepository.create({ name });
-                await this.hashtagRepository.save(hashtag);
-              }
-      
-              return hashtag;
-            }),
-          );
+            hashtags = await Promise.all(
+                articleData.hashtags.map(async (tagName) => {
+                    const name = tagName.trim().toLowerCase();
+                    let hashtag = await this.hashtagRepository.findOne({ where: { name } });
+                    if (!hashtag) {
+                        hashtag = this.hashtagRepository.create({ name });
+                        await this.hashtagRepository.save(hashtag);
+                    }
+                    return hashtag;
+                }),
+            );
         }
-      
+
         const newArticle = this.articleRepository.create({
-          title: articleData.title,
-          description: articleData.description || null,
-          content: articleData.content,
-          coverImage: image.filename,
-          user: user,
-          hashtags: hashtags,
+            title: articleData.title,
+            description: articleData.description,
+            sections: articleData.sections,
+            coverImage: image.filename,
+            user,
+            hashtags,
         });
-      
+
         await this.articleRepository.save(newArticle);
-      
+
         const preview = {
-          id: newArticle.id,
-          title: newArticle.title,
-          author: user.userName,
-          authorId: user.id,
-          content: newArticle.content,
-          tags: hashtags.map((h) => ({
-            id: h.id,
-            name: h.name.startsWith('#') ? h.name : `#${h.name}`,
-          })),
-          imageUrl: `/uploads/${newArticle.coverImage}`,
+            id: newArticle.id,
+            title: newArticle.title,
+            author: user.userName,
+            authorId: user.id,
+            description: newArticle.description,
+            sections: newArticle.sections,
+            tags: hashtags.map((h) => ({
+                id: h.id,
+                name: h.name.startsWith('#') ? h.name : `#${h.name}`,
+            })),
+            imageUrl: `/uploads/articles/${newArticle.coverImage}`,
         };
-      
+
         return preview;
-      }
-      
-      async findAll() {
+    }
+
+    async findAll() {
         const articles = await this.articleRepository.find({
-          relations: ['user', 'hashtags'],
-          order: { createdAt: 'DESC' },
-          take: 12,
+            relations: ['user', 'hashtags'],
+            order: { createdAt: 'DESC' },
+            take: 12,
         });
-      
-        const previews = articles.map((article) => ({
-          id: article.id,
-          title: article.title,
-          author: article.user.userName,
-          authorId: article.user.id,
-          content: article.content,
-          tags: article.hashtags.map((tag) => ({
-            id: tag.id,
-            name: tag.name.startsWith('#') ? tag.name : `#${tag.name}`,
-          })),
-          imageUrl: `/uploads/${article.coverImage}`,
+
+        return articles.map((article) => ({
+            id: article.id,
+            title: article.title,
+            author: article.user.userName,
+            authorId: article.user.id,
+            description: article.description,
+            sections: article.sections,
+            tags: article.hashtags.map((tag) => ({
+                id: tag.id,
+                name: tag.name.startsWith('#') ? tag.name : `#${tag.name}`,
+            })),
+            imageUrl: `/uploads/articles/${article.coverImage}`,
         }));
-      
-        return previews;
-      }
-      
+    }
 }

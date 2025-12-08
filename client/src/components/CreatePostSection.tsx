@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 
-import type { CreatePostSectionProps } from "@/shared/types/postTypes"
+import type { CreatePostSectionProps } from "@/shared/types/post.types"
 
 export const CreatePostSection: FC<CreatePostSectionProps> = ({ firstName, lastName, avatar, userName }) => {
     const navigate = useNavigate();

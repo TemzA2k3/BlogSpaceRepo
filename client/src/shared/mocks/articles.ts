@@ -1,4 +1,4 @@
-import { type ArticlePreview } from "@/shared/types/articleTypes"
+import { type ArticlePreview } from "@/shared/types/article.types"
 
 export const mockArticles: ArticlePreview[] = [
     {

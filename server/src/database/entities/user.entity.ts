@@ -9,6 +9,7 @@ import {
 import { Post } from './post.entity';
 import { UserRelation } from './user-relation.entity'
 import { Article } from './article.entity';
+import { Message } from './message.entity';
 
 export enum UserRole {
     USER = 'user',
@@ -49,6 +50,9 @@ export class User {
     @Column({ default: false })
     isBlocked: boolean;
 
+    @Column({ default: false })
+    online: boolean;
+
     @Column({ type: 'text', nullable: true })
     bio?: string;
 
@@ -72,6 +76,12 @@ export class User {
 
     @OneToMany(() => UserRelation, (relation) => relation.targetUser)
     relationsTo: UserRelation[];
+
+    @OneToMany(() => Message, (msg) => msg.sender)
+    sentMessages: Message[];
+
+    @OneToMany(() => Message, (msg) => msg.recipient)
+    receivedMessages: Message[];
 
     @BeforeInsert()
     generateUsername() {

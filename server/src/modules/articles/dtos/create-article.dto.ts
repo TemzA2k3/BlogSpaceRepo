@@ -3,7 +3,13 @@ import {
     IsOptional,
     IsArray,
     ArrayNotEmpty,
+    ValidateNested,
+    IsNumber,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+
+import { SectionDto } from './sections.dto'
+
 
 export class CreateArticleDto {
     @IsString()
@@ -11,11 +17,13 @@ export class CreateArticleDto {
 
     @IsOptional()
     @IsString()
-    description?: string;  
+    description?: string;
 
-    @IsOptional()
-    @IsString()
-    content?: string;
+    @IsArray()
+    @ArrayNotEmpty()
+    @ValidateNested({ each: true })
+    @Type(() => SectionDto)
+    sections: SectionDto[];
 
     @IsOptional()
     @IsArray()

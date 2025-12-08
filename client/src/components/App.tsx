@@ -1,10 +1,14 @@
 import { useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
+import { ErrorBoundary } from "react-error-boundary";
+
+import { ErrorFallback } from "./ErrorFallback";
 
 import { AlertProvider } from "@/app/providers/alert/AlertProvider"
 import { ThemeProvider } from "@/app/providers/theme/ThemeProvider";
+import { SocketProvider } from "@/app/providers/socket/SocketProvider";
 import { router } from "@/app/providers/router/router";
-import { useAppDispatch } from "@/hooks/reduxHooks";
+import { useAppDispatch } from "@/hooks/redux/reduxHooks";
 import { getMe } from "@/store/slices/authSlice";
 
 export const App = () => {
@@ -15,13 +19,14 @@ export const App = () => {
     }, [dispatch])
 
     return (
-        <>
+        <ErrorBoundary FallbackComponent={ErrorFallback}>
             <ThemeProvider>
                 <AlertProvider>
-                    <RouterProvider router={router} />
+                    <SocketProvider>
+                        <RouterProvider router={router} />
+                    </SocketProvider>
                 </AlertProvider>
             </ThemeProvider>
-
-        </>
+        </ErrorBoundary>
     )
 };

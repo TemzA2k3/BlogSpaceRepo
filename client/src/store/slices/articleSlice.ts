@@ -1,9 +1,7 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 
-import type { ArticlePreview, ArticlesState } from "@/shared/types/articleTypes";
+import type { ArticlePreview, ArticlesState } from "@/shared/types/article.types";
 
-// TODO временные mock-данные — можно заменить API-запросом
-import { mockArticles } from "@/shared/mocks/articles";
 import { apiRequest } from "@/shared/api/apiClient";
 
 
@@ -18,7 +16,7 @@ export const fetchArticles = createAsyncThunk<ArticlePreview[]>(
     "articles/fetchAll",
     async (_, { rejectWithValue }) => {
         try {
-            
+
             const data = await apiRequest<ArticlePreview[]>("/articles", "GET", {
                 credentials: "include",
             })
@@ -30,34 +28,26 @@ export const fetchArticles = createAsyncThunk<ArticlePreview[]>(
     }
 );
 
-
-/**
- * ✅ Создание новой статьи
- * принимает FormData (title, content, tags[], coverImage)
- */
 export const createArticle = createAsyncThunk<
-  ArticlePreview,
-  FormData,
-  { rejectValue: string }
+    ArticlePreview,
+    FormData,
+    { rejectValue: string }
 >("articles/create", async (formData, { rejectWithValue }) => {
-  try {
-    // for (const [key, value] of formData.entries()) {
-    //     console.log(key, value);
-    // }
+    try {
+        // for (const [key, value] of formData.entries()) {
+        //     console.log(key, value);
+        // }
 
-    const data = await apiRequest<ArticlePreview>("/articles", "POST", {
-        credentials: "include",
-        body: formData
-    })
-
-    console.log('qwerty')
-    console.log(data)
+        const data = await apiRequest<ArticlePreview>("/articles", "POST", {
+            credentials: "include",
+            body: formData
+        })
 
 
-    return data as ArticlePreview
-  } catch (err: any) {
-    return rejectWithValue(err.message || "Ошибка при создании статьи")
-  }
+        return data as ArticlePreview
+    } catch (err: any) {
+        return rejectWithValue(err.message || "Ошибка при создании статьи")
+    }
 })
 
 

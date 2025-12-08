@@ -48,9 +48,9 @@ export class PostsController {
     }
 
     @Get()
-    @UseGuards(JwtAuthGuard)
-    findAll(@UserReq() user: JwtPayload) {
-        return this.postsService.findAll(user.userId);
+    // @UseGuards(JwtAuthGuard)
+    findAll(@UserReq() user?: JwtPayload) {
+        return this.postsService.findAll(user?.userId);
     }
 
     @Delete('/:id')

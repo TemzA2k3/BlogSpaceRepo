@@ -1,4 +1,4 @@
-import { 
+import {
     Controller,
     Post,
     Get,
@@ -20,36 +20,43 @@ import { type JwtPayload } from '@/shared/types/jwt-payload.interface';
 import { ImageUploadInterceptor } from "@/common/interceptors/image-upload.interceptor"
 
 import { CreateArticleDto } from './dtos/create-article.dto';
+import { SectionDto } from './dtos/sections.dto'
 
 @Controller('articles')
 export class ArticlesController {
 
-    constructor(private readonly articlesService: ArticlesService) {}
+    constructor(private readonly articlesService: ArticlesService) { }
 
     @Post()
     @UseGuards(JwtAuthGuard)
-    @UseInterceptors(ImageUploadInterceptor({
-        fieldName: 'coverImage',
-        folder: 'articles',
-        prefix: 'article',
-        maxSizeMB: 5,
-    }))
+    @UseInterceptors(
+        ImageUploadInterceptor({
+            fieldName: 'coverImage',
+            folder: 'articles',
+            prefix: 'article',
+            maxSizeMB: 5,
+        }),
+    )
     createArticle(
         @UserReq() user: JwtPayload,
         @Body('title') title: string,
-        @UploadedFile() file: MulterFile,
-        @Body('description') description?: string,
-        @Body('content') content?: string,
+        @Body('description') description: string,
+        @Body('sections', new ParseJsonArrayPipe(true)) sections: SectionDto[],
         @Body('hashtags', new ParseJsonArrayPipe(true)) hashtags?: string[],
-        
-    ) {        
-        const articleData: CreateArticleDto = { title, description, content, hashtags }
-    
+        @UploadedFile() file?: MulterFile,
+    ) { 
+        const articleData: CreateArticleDto = {
+            title,
+            description,
+            sections,
+            hashtags,
+        };
+
         return this.articlesService.createArticle(user.userId, articleData, file);
     }
 
+
     @Get()
-    @UseGuards(JwtAuthGuard)
     findAll() {
         return this.articlesService.findAll();
     }

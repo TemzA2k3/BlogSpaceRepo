@@ -2,38 +2,51 @@ import { type FC } from "react";
 import { Link } from "react-router-dom";
 
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
+import { type UserCardProps } from "@/shared/types/user.types";
 
-import { type UserCardProps } from "@/shared/types/userTypes";
+interface UserCardWithMessageProps extends UserCardProps {
+    showMessageButton?: boolean;
+    onMessageClick?: (id: string | number) => void;
+}
 
-export const UserCard: FC<UserCardProps> = ({
+export const UserCard: FC<UserCardWithMessageProps> = ({
     id,
     firstName,
     lastName,
     userName,
     avatar,
+    showMessageButton = false,
+    onMessageClick,
 }) => {
     return (
-        <Link
-            to={`/users/${id}`}
-            className="self-stretch min-h-16 px-4 py-2 bg-slate-50 dark:bg-darkbg inline-flex justify-start items-center gap-4 rounded-xl"
-        >
-            <img
-                className="w-14 h-14 relative rounded-3xl object-cover"
-                src={getAvatarUrl(firstName, lastName, avatar)}
-                alt={userName}
-            />
-            <div className="inline-flex flex-col justify-center items-start">
-                <div className="flex flex-col justify-start items-start">
-                    <div className="justify-start text-neutral-900 dark:text-gray-100 text-base font-medium leading-6">
+        <div className="relative flex items-center justify-between self-stretch min-h-16 px-4 py-2 bg-slate-50 dark:bg-darkbg gap-4 rounded-xl">
+            <Link
+                to={`/users/${id}`}
+                className="flex items-center gap-4 flex-1"
+            >
+                <img
+                    className="w-14 h-14 rounded-3xl object-cover"
+                    src={getAvatarUrl(firstName, lastName, avatar)}
+                    alt={userName}
+                />
+                <div className="flex flex-col justify-center items-start">
+                    <div className="text-neutral-900 dark:text-gray-100 text-base font-medium leading-6">
                         {firstName} {lastName}
                     </div>
-                </div>
-                <div className="w-24 flex flex-col justify-start items-start">
-                    <div className="self-stretch justify-start text-slate-500 dark:text-gray-400 text-sm font-normal leading-5">
+                    <div className="text-slate-500 dark:text-gray-400 text-sm font-normal leading-5">
                         {userName}
                     </div>
                 </div>
-            </div>
-        </Link>
+            </Link>
+
+            {showMessageButton && (
+                <button
+                    onClick={() => onMessageClick?.(id)}
+                    className="ml-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg"
+                >
+                    Написать
+                </button>
+            )}
+        </div>
     );
 };

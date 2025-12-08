@@ -1,6 +1,6 @@
 import { apiRequest } from "@/shared/api/apiClient";
 
-import type { User } from "@/shared/types/userTypes"
+import type { User } from "@/shared/types/user.types"
 
 export const changeUserAvatar = async (file: File): Promise<User> => {
 

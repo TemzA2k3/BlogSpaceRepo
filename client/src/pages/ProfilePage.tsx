@@ -1,106 +1,40 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { useAppDispatch } from "@/hooks/reduxHooks";
-import { setCurrentUser } from "@/store/slices/authSlice";
+import { useAlert } from "@/app/providers/alert/AlertProvider"; 
+import { useAppSelector } from "@/hooks/redux/reduxHooks";
+
+import { useProfile } from "@/hooks/profile/useProfile";
+import { useAvatarUpdater } from "@/hooks/profile/useAvatarUpdater";
+import { useFollow } from "@/hooks/profile/useFollow";
+import { useCreateChat } from "@/hooks/profile/useCreateChat";
 
 import { PostCard } from "@/components/PostCard";
-import { useAlert } from "@/app/providers/alert/AlertProvider";
-import { useAppSelector } from "@/hooks/reduxHooks";
-import { fetchProfileUserData } from "@/shared/services/fetchUsersData";
-import { changeUserAvatar } from "@/shared/services/changeUserAvatar";
 import { Loader } from "@/shared/components/Loader";
 
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
-import { followUser, unfollowUser } from "@/shared/services/userSubscriptions"
-
-import { type ProfileUserData } from "@/shared/types/userTypes";
-
 
 
 export const ProfilePage = () => {
     const { t } = useTranslation();
+    const { showAlert } = useAlert();
     const navigate = useNavigate();
     const { currentUser } = useAppSelector((state) => state.auth);
     const { id } = useParams<{ id: string }>();
-    const { showAlert } = useAlert();
-    const dispatch = useAppDispatch();
 
-    const [userData, setUserData] = useState<ProfileUserData | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-    const [isMyProfile, setIsMyProfile] = useState<boolean>(false);
-
-    const [followLoading, setFollowLoading] = useState<boolean>(false);
+    const { userData, loading, error, isMyProfile, setUserData } = useProfile(id, currentUser?.id);
+    const { handleAvatarChange } = useAvatarUpdater((prev) => prev && setUserData(prev));
+    const { handleFollow, loading: followLoading } = useFollow(userData, setUserData, currentUser?.id);
+    const { handleMessageClick } = useCreateChat();
 
     useEffect(() => {
-        if (!id || !currentUser) return;
-
-        setLoading(true);
-        setIsMyProfile(!!currentUser && +id === currentUser.id);
-
-        fetchProfileUserData(id, currentUser?.id)
-            .then(profileUserData => {
-                setUserData(profileUserData)
-            })
-            .catch((e) => {
-                setError(e.message || t('error.fetchError'))
-                navigate(`/users/${currentUser.id}`)
-            })
-            .finally(() => setLoading(false));
-    }, [id, currentUser]);
-
-    useEffect(() => {
-        if (!error) return;
-        showAlert(error, "error");
-    }, [error]);
-
-    const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        try {
-            const updatedUser = await changeUserAvatar(file);
-
-            dispatch(setCurrentUser(updatedUser));
-            showAlert(t('profile.updatedAvatar'), "success");
-        } catch (err: any) {
-            showAlert(err.message || t('profile.errorUpdatingAvatar'), "error");
+        if (error) {
+            showAlert(error, "error");
         }
-    };
+    }, [error, showAlert]);
 
-    const handleFollow = async () => {
-        if (!userData) return;
-
-        setFollowLoading(true);
-
-        try {
-            if (userData.isFollowing) {
-                await unfollowUser(userData.id);
-                setUserData(prev => prev && ({
-                    ...prev,
-                    isFollowing: false,
-                    followersCount: Math.max((prev.followersCount || 1) - 1, 0),
-                }));
-                showAlert(t('profile.unsubscribe'), "success");
-            } else {
-                await followUser(userData.id);
-                setUserData(prev => prev && ({
-                    ...prev,
-                    isFollowing: true,
-                    followersCount: (prev.followersCount || 0) + 1,
-                }));
-                showAlert(t('profile.subscribe'), "success");
-            }
-        } catch (err: any) {
-            showAlert(err.message || t('profile.subError'), "error");
-        } finally {
-            setFollowLoading(false);
-        }
-    };
-
-    if (!userData || loading) return <Loader />;
+    if (loading || !userData) return <Loader />;
 
     return (
         <main className="max-w-5xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-gray-800 dark:text-gray-100">
@@ -132,7 +66,7 @@ export const ProfilePage = () => {
                                     type="file"
                                     accept="image/*"
                                     className="hidden"
-                                    onChange={handleAvatarChange}
+                                    onChange={(e) => handleAvatarChange(e.target.files?.[0])}
                                 />
                             </label>
                         )}
@@ -213,7 +147,10 @@ export const ProfilePage = () => {
                                             : "Follow"}
                                 </button>
 
-                                <button className="px-5 py-2 rounded-xl bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium transition">
+                                <button 
+                                    className="px-5 py-2 rounded-xl bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium transition"
+                                    onClick={() => handleMessageClick(userData.id, currentUser?.id)}
+                                    >
                                     Message
                                 </button>
                             </div>

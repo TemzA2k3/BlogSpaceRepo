@@ -6,6 +6,7 @@ import { DatabaseModule } from '@/database/database.module';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { ArticlesModule } from './modules/articles/articles.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ArticlesModule } from './modules/articles/articles.module';
     AuthModule,
     PostsModule,
     ArticlesModule,
+    ChatModule,
   ],
   providers: [],
 })

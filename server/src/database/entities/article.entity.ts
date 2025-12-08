@@ -11,6 +11,8 @@ import {
 import { User } from './user.entity';
 import { Hashtag } from './hashtag.entity';
 
+import type { ArticleSection } from '@/shared/types/articles-types'
+
 @Entity('articles')
 export class Article {
     @PrimaryGeneratedColumn()
@@ -20,10 +22,10 @@ export class Article {
     title: string;
 
     @Column({ type: 'text', nullable: true })
-    description: string | null;
+    description?: string;
 
-    @Column({ type: 'text' })
-    content: string;
+    @Column({ type: 'json' })
+    sections: ArticleSection[];
 
     @Column({ default: 0 })
     likes: number;

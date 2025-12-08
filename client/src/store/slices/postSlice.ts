@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/tool
 
 import { apiRequest } from "@/shared/api/apiClient";
 
-import type { Post, UsersPosts, PostsState } from "@/shared/types/postTypes";
+import type { Post, UsersPosts, PostsState } from "@/shared/types/post.types";
 
 
 const initialState: PostsState = {

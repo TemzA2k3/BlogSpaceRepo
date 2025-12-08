@@ -1,6 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 
+import { ProtectedRoute } from "./ProtectedRoute";
+
 import { MainLayout } from "@/layouts/MainLayout";
+import { HeaderLayout } from "@/layouts/HeaderLayout";
 import { EmptyLayout } from "@/layouts/EmptyLayout";
 
 import { HomePage } from "@/pages/HomePage";
@@ -14,42 +17,76 @@ import { SignInPage } from "@/pages/SignInPage";
 import { SignUpPage } from "@/pages/SignUpPage";
 import { ProfilePage } from "@/pages/ProfilePage";
 import { UserFollowingPage } from "@/pages/UserFollowingPage";
-import { UserFollowersPage } from "@/pages/UserFollowersPage"
+import { UserFollowersPage } from "@/pages/UserFollowersPage";
 import { SpecificArticlePage } from "@/pages/SpecificArticlePage";
+import { MessagesPage } from "@/pages/MessagesPage";
+
+import { ErrorFallback } from "@/components/ErrorFallback";
 
 import { NotFoundPage } from "@/pages/NotFoundPage";
 
+const withErrorElement = (element: React.ReactNode) => ({
+  element,
+  errorElement: <ErrorFallback />
+});
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <MainLayout />,
+    ...withErrorElement(<MainLayout />),
     children: [
-      { path: "/", element: <HomePage /> },
+      { path: "/", ...withErrorElement(<HomePage />) },
 
-      { path: "/posts", element: <PostsPage /> },
-      { path: "/posts/create", element: <CreatePostPage /> },
+      { path: "/posts", ...withErrorElement(<PostsPage />) },
+      {
+        path: "/posts/create",
+        ...withErrorElement(
+          <ProtectedRoute>
+            <CreatePostPage />
+          </ProtectedRoute>
+        ),
+      },
 
-      { path: "/articles", element: <ArticlesPage /> },
-      { path: "/articles/create", element: <CreateArticlePage /> },
-      { path: "/articles/:id", element: <SpecificArticlePage /> },
+      { path: "/articles", ...withErrorElement(<ArticlesPage />) },
+      {
+        path: "/articles/create",
+        ...withErrorElement(
+          <ProtectedRoute>
+            <CreateArticlePage />
+          </ProtectedRoute>
+        ),
+      },
+      { path: "/articles/:id", ...withErrorElement(<SpecificArticlePage />) },
 
-      { path: "/explore", element: <ExplorePage /> },
+      { path: "/explore", ...withErrorElement(<ExplorePage />) },
 
-      { path: "/about", element: <AboutPage /> },
+      { path: "/about", ...withErrorElement(<AboutPage />) },
 
-      { path: "/signin", element: <SignInPage /> },
-      { path: "/signup", element: <SignUpPage /> },
-      
-      { path: "/users/:id", element: <ProfilePage /> },
-      { path: "/users/:id/following", element: <UserFollowingPage /> },
-      { path: "/users/:id/followers", element: <UserFollowersPage /> },
+      { path: "/signin", ...withErrorElement(<SignInPage />) },
+      { path: "/signup", ...withErrorElement(<SignUpPage />) },
+
+      { path: "/users/:id", ...withErrorElement(<ProfilePage />) },
+      { path: "/users/:id/following", ...withErrorElement(<UserFollowingPage />) },
+      { path: "/users/:id/followers", ...withErrorElement(<UserFollowersPage />) },
     ],
   },
   {
-    element: <EmptyLayout />,
+    ...withErrorElement(<HeaderLayout />),
     children: [
-        { path: "*", element: <NotFoundPage /> },
+      {
+        path: "/messages",
+        ...withErrorElement(
+          <ProtectedRoute>
+            <MessagesPage />
+          </ProtectedRoute>
+        ),
+      },
+    ],
+  },
+  {
+    ...withErrorElement(<EmptyLayout />),
+    children: [
+      { path: "*", ...withErrorElement(<NotFoundPage />) },
     ],
   },
 ]);

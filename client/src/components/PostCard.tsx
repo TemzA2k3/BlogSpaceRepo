@@ -2,11 +2,11 @@ import { type FC, useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { useAppDispatch, useAppSelector } from "@/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 import { getImageUrl } from "@/shared/utils/getImagesUrls";
 import { deletePost } from "@/store/slices/postSlice"
-import type { PostCardProps } from "@/shared/types/postTypes";
+import type { PostCardProps } from "@/shared/types/post.types";
 
 
 export const PostCard: FC<PostCardProps> = ({

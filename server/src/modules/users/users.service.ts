@@ -42,6 +42,15 @@ export class UsersService {
         return safeUser;
     }
 
+    async setUserOnline(userId: number) {
+        await this.userRepository.update(userId, { online: true });
+    }
+
+    async setUserOffline(userId: number) {
+        await this.userRepository.update(userId, { online: false });
+    }
+
+
     async getUserProfileData(
         targetUserId: number,
         currentUserId?: number
@@ -200,12 +209,12 @@ export class UsersService {
             relation === "sourceUser"
                 ? { targetUser: { id: userId }, type: RelationType.FOLLOW } // подписчики
                 : { sourceUser: { id: userId }, type: RelationType.FOLLOW }; // подписки
-    
+
         const relations = await this.relationRepository.find({
             where: whereCondition,
             relations: [relation],
         });
-    
+
         return relations.map(rel => {
             const user = rel[relation];
             return {
@@ -217,5 +226,5 @@ export class UsersService {
             };
         });
     }
-    
+
 }
