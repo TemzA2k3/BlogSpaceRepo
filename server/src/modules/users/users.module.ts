@@ -8,10 +8,11 @@ import { UserRelation } from '@/database/entities/user-relation.entity';
 import { JwtSharedModule } from '@/common/jwt/jwt.module';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
+import { PostLike } from '@/database/entities/post-likes.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, UserRelation, Post]),
+    TypeOrmModule.forFeature([User, UserRelation, Post, PostLike]),
     JwtSharedModule
 ],
   providers: [UsersService],

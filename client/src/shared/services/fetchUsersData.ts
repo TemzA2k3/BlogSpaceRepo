@@ -2,18 +2,12 @@ import { apiRequest } from "@/shared/api/apiClient";
 
 import type { ProfileUserData } from "@/shared/types/user.types"
 
-export const fetchProfileUserData = async (userId: string, currentUserId: number | undefined): Promise<ProfileUserData> => {
-    
-    const url = currentUserId && currentUserId !== +userId
-                ? `/users/${userId}?currentUserId=${currentUserId}` 
-                : `/users/${userId}`
+export const fetchProfileUserData = async (userId: string): Promise<ProfileUserData> => {
 
     try {
-        const data = await apiRequest<ProfileUserData>(url, "GET", {
+        const data = await apiRequest<ProfileUserData>(`/users/${userId}`, "GET", {
             credentials: "include",
         });
-
-        console.log(data)
 
         return data as ProfileUserData;
     } catch (err: any) {

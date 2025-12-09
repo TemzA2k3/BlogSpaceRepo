@@ -16,7 +16,7 @@ export function useProfile(userId: string | undefined, currentUserId?: number) {
         setLoading(true);
         setIsMyProfile(currentUserId ? +userId === currentUserId : false);
 
-        fetchProfileUserData(userId, currentUserId)
+        fetchProfileUserData(userId)
             .then(setUserData)
             .catch((e) => {
                 setError(e.message || "Failed to fetch profile");

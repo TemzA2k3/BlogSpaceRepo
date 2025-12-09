@@ -10,6 +10,7 @@ import { Post } from './post.entity';
 import { UserRelation } from './user-relation.entity'
 import { Article } from './article.entity';
 import { Message } from './message.entity';
+import { PostLike } from './post-likes.entity';
 
 export enum UserRole {
     USER = 'user',
@@ -57,6 +58,7 @@ export class User {
     bio?: string;
 
     @Column({ type: 'varchar', nullable: true })
+    // geo data type
     location?: string;
 
     @Column({ type: 'varchar', nullable: true })
@@ -82,6 +84,9 @@ export class User {
 
     @OneToMany(() => Message, (msg) => msg.recipient)
     receivedMessages: Message[];
+
+    @OneToMany(() => PostLike, like => like.user)
+    likedPosts: PostLike[];
 
     @BeforeInsert()
     generateUsername() {

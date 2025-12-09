@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
-import { useAlert } from "@/app/providers/alert/AlertProvider";
+import { useAppSelector } from "@/hooks/redux/reduxHooks";
 
 import { PostCard } from "@/components/PostCard";
 import { TrendingTopicsCard } from "@/components/TrendingTopicsCard";
@@ -10,14 +8,13 @@ import { TopCommunitiesCard } from "@/components/TopCommunitiesCard";
 import { SuggestionsCard } from "@/components/SuggestionsCard";
 import { CreatePostSection } from "@/components/CreatePostSection";
 
-import { getPosts } from "@/store/slices/postSlice"
-
-import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
-
-import type { UsersPosts } from "@/shared/types/post.types";
 import { Loader } from "@/shared/components/Loader";
 import { BlankData } from "@/shared/components/BlankData";
+import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 
+import { usePosts } from "@/hooks/posts/usePosts";
+
+import "@/app/styles/scroll.css"
 
 const trendingTopics = [
     { tag: "#react", count: 123 },
@@ -41,30 +38,8 @@ const suggestedUsers = [
 
 export const PostsPage = () => {
     const { t } = useTranslation();
-    const { currentUser } = useAppSelector(state => state.auth)
-    const { posts, loading, error } = useAppSelector(state => state.posts)
-    const { showAlert } = useAlert();
-    const dispatch = useAppDispatch();
-
-    const [userPosts, setUserPosts] = useState<UsersPosts[]>([]);
-
-    useEffect(() => {
-        dispatch(getPosts())
-            .unwrap()
-            .catch((err: any) => {
-                showAlert(err.message || "Ошибка при загрузке постов", "error");
-            });
-    }, [dispatch, showAlert]);
-
-    useEffect(() => {
-        setUserPosts(posts);
-    }, [posts]);
-
-    useEffect(() => {
-        if (!error) return
-
-        showAlert(error, "error")
-    }, [error])
+    const { userPosts, loading } = usePosts();
+    const { currentUser } = useAppSelector(state => state.auth);
 
     return (
         <main className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row justify-center gap-6 lg:gap-10 text-gray-800 dark:text-gray-100">
@@ -77,7 +52,7 @@ export const PostsPage = () => {
                         <TopCommunitiesCard communities={topCommunities} />
                     </aside>
 
-                    <div className="w-full max-w-3xl h-[70vh] sm:h-[75vh] md:h-[80vh] overflow-y-auto flex flex-col gap-6">
+                    <div className="w-full max-w-3xl h-[70vh] sm:h-[75vh] md:h-[80vh] overflow-y-auto flex flex-col gap-6 custom-scroll">
                         {currentUser && (
                             <CreatePostSection
                                 firstName={currentUser.firstName}
@@ -106,10 +81,11 @@ export const PostsPage = () => {
                                         content={post.content}
                                         image={post.image}
                                         hashtags={post.hashtags}
-                                        date={post.createdAt}
+                                        createdAt={post.createdAt}
                                         likes={post.likes}
                                         comments={post.comments}
                                         saved={post.saved}
+                                        likedByCurrentUser={post.likedByCurrentUser}
                                     />
                                 ))
                             )}

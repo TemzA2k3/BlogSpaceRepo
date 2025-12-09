@@ -20,6 +20,7 @@ import { type JwtPayload } from '@/shared/types/jwt-payload.interface';
 
 import { UserReq } from '@/common/decorators/user.decorator';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '@/common/guards/optional-jwt-auth.guard';
 import { ImageUploadInterceptor } from '@/common/interceptors/image-upload.interceptor';
 
 @Controller('users')
@@ -27,11 +28,12 @@ export class UsersController {
     constructor(private usersService: UsersService) {}
 
     @Get(':id')
+    @UseGuards(OptionalJwtAuthGuard)
     getUserProfileData(
         @Param('id') id: string,
-        @Query('currentUserId') currentUserId?: string
+        @UserReq() user?: JwtPayload
     ) {
-        return this.usersService.getUserProfileData(+id, currentUserId ? +currentUserId : undefined);
+        return this.usersService.getUserProfileData(+id, user?.userId);
     }
 
     @Patch('avatar')

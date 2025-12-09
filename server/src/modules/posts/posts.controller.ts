@@ -7,12 +7,14 @@ import {
     UploadedFile,
     UseGuards,
     Delete,
-    Param
+    Param,
+    Patch
 } from '@nestjs/common';
 import { File as MulterFile } from 'multer';
 
 import { UserReq } from '@/common/decorators/user.decorator';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '@/common/guards/optional-jwt-auth.guard';
 import { type JwtPayload } from '@/shared/types/jwt-payload.interface';
 
 import { ImageUploadInterceptor } from "@/common/interceptors/image-upload.interceptor"
@@ -26,7 +28,7 @@ import { CreatePostDto } from "./dtos/create-post.dto"
 
 @Controller('posts')
 export class PostsController {
-    constructor(private postsService: PostsService) {}
+    constructor(private postsService: PostsService) { }
 
     @Post()
     @UseGuards(JwtAuthGuard)
@@ -43,12 +45,12 @@ export class PostsController {
         @UploadedFile() file?: MulterFile,
     ) {
         const createPostDto: CreatePostDto = { content, hashtags };
-    
+
         return this.postsService.createPost(user.userId, createPostDto, file);
     }
 
     @Get()
-    // @UseGuards(JwtAuthGuard)
+    @UseGuards(OptionalJwtAuthGuard)
     findAll(@UserReq() user?: JwtPayload) {
         return this.postsService.findAll(user?.userId);
     }
@@ -58,8 +60,17 @@ export class PostsController {
     deletePost(
         @UserReq() user: JwtPayload,
         @Param('id') postId: string
-    ){
+    ) {
         return this.postsService.deletePost(+postId, user.userId)
+    }
+
+    @Patch(':id/like')
+    @UseGuards(JwtAuthGuard)
+    async toggleLike(
+        @UserReq() user: JwtPayload,
+        @Param('id') postId: string,
+    ) {
+        return this.postsService.toggleLike(+postId, user.userId);
     }
 
 }

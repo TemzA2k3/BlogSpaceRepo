@@ -1,162 +1,171 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm'
+import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { File as MulterFile } from 'multer';
 
 import { Post } from '@/database/entities/post.entity';
 import { User, UserRole } from '@/database/entities/user.entity';
 import { UserRelation, RelationType } from '@/database/entities/user-relation.entity';
-import { Hashtag } from '@/database/entities/hashtag.entity'
+import { Hashtag } from '@/database/entities/hashtag.entity';
+import { PostLike } from '@/database/entities/post-likes.entity';
 
-import { CreatePostDto } from '@/modules/posts/dtos/create-post.dto'
+import { CreatePostDto } from '@/modules/posts/dtos/create-post.dto';
 
 @Injectable()
 export class PostsService {
-    constructor(
-        @InjectRepository(Post)
-        private readonly postRepository: Repository<Post>,
+  constructor(
+    @InjectRepository(Post)
+    private readonly postRepository: Repository<Post>,
 
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
 
-        @InjectRepository(Hashtag)
-        private readonly hashtagRepository: Repository<Hashtag>,
+    @InjectRepository(Hashtag)
+    private readonly hashtagRepository: Repository<Hashtag>,
 
-        @InjectRepository(UserRelation)
-        private readonly userRelationRepository: Repository<UserRelation>
-    ) { }
+    @InjectRepository(UserRelation)
+    private readonly userRelationRepository: Repository<UserRelation>,
 
-    async createPost(userId: number, postData: CreatePostDto, image?: MulterFile) {
-        const { content, hashtags = [] } = postData;
+    @InjectRepository(PostLike)
+    private readonly postLikeRepository: Repository<PostLike>,
+  ) {}
 
-        // Найти пользователя
-        const user = await this.userRepository.findOne({ where: { id: userId } });
-        if (!user) throw new NotFoundException('User not found');
+  private async mapToUsersPosts(post: Post, currentUserId?: number): Promise<any> {
+    // Получаем все лайки для поста
+    const likes = await this.postLikeRepository.find({
+      where: { post: { id: post.id } },
+      relations: ['user'],
+    });
 
-        // Подготовка хэштегов
-        const hashtagEntities: Hashtag[] = [];
+    const likedByCurrentUser = currentUserId
+      ? likes.some(like => like.user.id === currentUserId)
+      : false;
 
-        for (const tagName of hashtags) {
-            const lowerTag = tagName.toLowerCase().trim();
-            if (!lowerTag) continue;
+    return {
+      id: post.id,
+      content: post.content,
+      hashtags: post.hashtags?.map(h => ({ id: h.id, name: h.name })) || [],
+      likes: likes.length,
+      comments: post.comments,
+      saved: post.saved,
+      image: post.image ?? null,
+      createdAt: post.createdAt,
+      userId: post.user.id,
+      avatar: post.user.avatar,
+      firstName: post.user.firstName,
+      lastName: post.user.lastName,
+      username: post.user.userName,
+      likedByCurrentUser,
+    };
+  }
 
-            let hashtag = await this.hashtagRepository.findOne({ where: { name: lowerTag } });
-            if (!hashtag) {
-                hashtag = this.hashtagRepository.create({ name: lowerTag });
-                await this.hashtagRepository.save(hashtag);
-            }
+  async createPost(userId: number, postData: CreatePostDto, image?: MulterFile) {
+    const { content, hashtags = [] } = postData;
 
-            hashtagEntities.push(hashtag);
-        }
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
 
-        // Создать пост
-        const relativeImagePath = image ? `/uploads/posts/${image.filename}` : undefined;
+    const hashtagEntities: Hashtag[] = [];
+    for (const tagName of hashtags) {
+      const lowerTag = tagName.toLowerCase().trim();
+      if (!lowerTag) continue;
 
-        const newPost = this.postRepository.create({
-            content,
-            image: relativeImagePath,
-            user,
-            hashtags: hashtagEntities,
-        });
+      let hashtag = await this.hashtagRepository.findOne({ where: { name: lowerTag } });
+      if (!hashtag) {
+        hashtag = this.hashtagRepository.create({ name: lowerTag });
+        await this.hashtagRepository.save(hashtag);
+      }
 
-        await this.postRepository.save(newPost);
-
-        // Повторно получаем пост с нужными связями
-        const savedPost = await this.postRepository.findOne({
-            where: { id: newPost.id },
-            relations: ['user', 'hashtags'],
-        });
-
-        if (!savedPost) {
-            throw new NotFoundException('Post not found after creation');
-        }
-
-        // Преобразуем под нужную структуру
-        return {
-            id: savedPost.id,
-            content: savedPost.content,
-            hashtags: savedPost.hashtags?.map(h => ({ id: h.id, name: h.name })) || [],
-            likes: savedPost.likes,
-            comments: savedPost.comments,
-            saved: savedPost.saved,
-            image: savedPost.image ?? null,
-            createdAt: savedPost.createdAt,
-            user: {
-                id: savedPost.user.id,
-                firstName: savedPost.user.firstName,
-                lastName: savedPost.user.lastName,
-                username: savedPost.user.userName,
-                avatar: savedPost.user.avatar,
-            },
-        };
+      hashtagEntities.push(hashtag);
     }
 
+    const relativeImagePath = image ? `/uploads/posts/${image.filename}` : undefined;
 
-    async findAll(userId?: number) {
-        let followedUserIds: number[] = [];
+    const newPost = this.postRepository.create({
+      content,
+      image: relativeImagePath,
+      user,
+      hashtags: hashtagEntities,
+    });
 
-        if (userId) {
-            const followRelations = await this.userRelationRepository.find({
-                where: {
-                    sourceUser: { id: userId },
-                    type: RelationType.FOLLOW,
-                },
-                relations: ['targetUser'],
-            });
+    await this.postRepository.save(newPost);
 
-            followedUserIds = followRelations.map(rel => rel.targetUser.id);
-            followedUserIds.push(userId); 
-        }
+    const savedPost = await this.postRepository.findOne({
+      where: { id: newPost.id },
+      relations: ['user', 'hashtags'],
+    });
 
-        const whereCondition = userId
-            ? { user: { id: In(followedUserIds) } }
-            : {};
+    if (!savedPost) throw new NotFoundException('Post not found after creation');
 
-        const posts = await this.postRepository.find({
-            where: whereCondition,
-            relations: ['user', 'hashtags'],
-            order: { createdAt: 'DESC' },
-        });
+    return this.mapToUsersPosts(savedPost, userId);
+  }
 
-        return posts.map(post => ({
-            id: post.id,
-            content: post.content,
-            hashtags: post.hashtags?.map(h => ({ id: h.id, name: h.name })) || [],
-            likes: post.likes,
-            comments: post.comments,
-            saved: post.saved,
-            image: post.image ?? null,
-            createdAt: post.createdAt,
-            avatar: post.user.avatar,
-            firstName: post.user.firstName,
-            lastName: post.user.lastName,
-            username: post.user.userName,
-            userId: post.user.id
-        }));
+  async findAll(userId?: number) {
+    let followedUserIds: number[] = [];
+
+    if (userId) {
+      const followRelations = await this.userRelationRepository.find({
+        where: { sourceUser: { id: userId }, type: RelationType.FOLLOW },
+        relations: ['targetUser'],
+      });
+
+      followedUserIds = followRelations.map(rel => rel.targetUser.id);
+      followedUserIds.push(userId);
     }
 
+    const whereCondition = userId ? { user: { id: In(followedUserIds) } } : {};
 
-    async deletePost(postId: number, userId: number) {
-        const post = await this.postRepository.findOne({
-            where: { id: postId },
-            relations: ['user', 'hashtags'],
-        });
+    const posts = await this.postRepository.find({
+      where: whereCondition,
+      relations: ['user', 'hashtags'],
+      order: { createdAt: 'DESC' },
+    });
 
-        if (!post) {
-            throw new NotFoundException('Post not found');
-        }
+    // Мапим все посты сразу
+    return Promise.all(posts.map(post => this.mapToUsersPosts(post, userId)));
+  }
 
-        const user = await this.userRepository.findOne({ where: { id: userId } });
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
+  async deletePost(postId: number, userId: number) {
+    const post = await this.postRepository.findOne({
+      where: { id: postId },
+      relations: ['user', 'hashtags'],
+    });
 
-        if (post.user.id !== user.id && user.role !== UserRole.ADMIN) {
-            throw new ForbiddenException('You are not allowed to delete this post');
-        }
+    if (!post) throw new NotFoundException('Post not found');
 
-        await this.postRepository.remove(post);
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
 
-        return { message: 'Post successfully deleted', postId };
+    if (post.user.id !== user.id && user.role !== UserRole.ADMIN) {
+      throw new ForbiddenException('You are not allowed to delete this post');
     }
+
+    await this.postRepository.remove(post);
+
+    return { message: 'Post successfully deleted', postId };
+  }
+
+  async toggleLike(postId: number, userId: number) {
+    const post = await this.postRepository.findOne({
+      where: { id: postId },
+      relations: ['user', 'hashtags'],
+    });
+    if (!post) throw new NotFoundException('Post not found');
+
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+
+    const existingLike = await this.postLikeRepository.findOne({
+      where: { post: { id: postId }, user: { id: userId } },
+    });
+
+    if (existingLike) {
+      await this.postLikeRepository.remove(existingLike);
+    } else {
+      const like = this.postLikeRepository.create({ post, user });
+      await this.postLikeRepository.save(like);
+    }
+
+    return this.mapToUsersPosts(post, userId);
+  }
 }

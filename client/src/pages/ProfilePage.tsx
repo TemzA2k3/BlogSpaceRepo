@@ -174,10 +174,11 @@ export const ProfilePage = () => {
                             content={post.content}
                             image={post.image}
                             hashtags={post.hashtags}
-                            date={post.createdAt}
+                            createdAt={post.createdAt}
                             likes={post.likes}
                             comments={post.comments}
                             saved={post.saved}
+                            likedByCurrentUser={post.likedByCurrentUser}
                         />
                     ))}
                 </div>

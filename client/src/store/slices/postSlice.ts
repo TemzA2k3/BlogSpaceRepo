@@ -45,17 +45,18 @@ export const createPost = createAsyncThunk<UsersPosts, FormData>(
     }
 );
 
-// export const likePost = createAsyncThunk<Post, number>(
-//   "posts/likePost",
-//   async (postId, { rejectWithValue }) => {
-//     try {
-//       const data = await apiRequest<Post>(`/posts/${postId}/like`, "POST");
-//       return data as Post;
-//     } catch (err: any) {
-//       return rejectWithValue(err.message || "Failed to like post");
-//     }
-//   }
-// );
+export const likePost = createAsyncThunk<UsersPosts | null, number>(
+    "posts/likePost",
+    async (postId, { rejectWithValue }) => {
+        try {
+            const data = await apiRequest<UsersPosts>(`/posts/${postId}/like`, "PATCH");
+            return data ?? null;
+        } catch (err: any) {
+            return rejectWithValue(err.message || "Failed to like post");
+        }
+    }
+);
+
 
 // export const savePost = createAsyncThunk<Post, number>(
 //   "posts/savePost",
@@ -72,15 +73,15 @@ export const createPost = createAsyncThunk<UsersPosts, FormData>(
 export const deletePost = createAsyncThunk<number, number>(
     "posts/deletePost",
     async (postId, { rejectWithValue }) => {
-      try {
-        await apiRequest(`/posts/${postId}`, "DELETE");
-        return postId;
-      } catch (err: any) {
-        return rejectWithValue(err.message || "Failed to delete post");
-      }
+        try {
+            await apiRequest(`/posts/${postId}`, "DELETE");
+            return postId;
+        } catch (err: any) {
+            return rejectWithValue(err.message || "Failed to delete post");
+        }
     }
-  );
-  
+);
+
 
 // Slice
 const postSlice = createSlice({
@@ -124,28 +125,35 @@ const postSlice = createSlice({
                 state.error = action.payload as string;
             })
 
-             // DELETE POST
+            // DELETE POST
             .addCase(deletePost.pending, (state) => {
-                state.loading = true;
                 state.error = null;
-              })
-              .addCase(deletePost.fulfilled, (state, action: PayloadAction<number>) => {
-                state.loading = false;
+            })
+            .addCase(deletePost.fulfilled, (state, action: PayloadAction<number>) => {
                 state.posts = state.posts.filter((post) => post.id !== action.payload);
                 state.success = true;
-              })
-              .addCase(deletePost.rejected, (state, action) => {
-                state.loading = false;
+            })
+            .addCase(deletePost.rejected, (state, action) => {
                 state.error = action.payload as string;
-              });
+            })
 
-        // LIKE POST
-        //   .addCase(likePost.fulfilled, (state, action: PayloadAction<Post>) => {
-        //     const index = state.posts.findIndex(p => p.id === action.payload.id);
-        //     if (index !== -1) {
-        //       state.posts[index] = action.payload;
-        //     }
-        //   })
+            // LIKE POST
+            .addCase(likePost.pending, (state) => {
+                state.error = null;
+            })
+            .addCase(likePost.fulfilled, (state, action: PayloadAction<UsersPosts | null>) => {
+                if (!action.payload) return;
+
+                const index = state.posts.findIndex(p => p.id === action.payload!.id);
+                if (index !== -1) {
+                    state.posts[index] = action.payload!;
+                }
+            })
+            .addCase(likePost.rejected, (state, action) => {
+                state.error = (action.payload as string) ?? "Ошибка при лайке поста";
+            });
+
+
 
         // SAVE POST
         //   .addCase(savePost.fulfilled, (state, action: PayloadAction<Post>) => {

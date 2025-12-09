@@ -10,6 +10,7 @@ export interface Post {
     saved: number;
     image: string | null;
     createdAt: string;
+    likedByCurrentUser: boolean;
 }
 
 export interface UsersPosts extends Post {
@@ -31,22 +32,6 @@ export interface CreatePostData {
     content: string | null;
     hashtags: string[] | null;
     image: File | null
-}
-
-export interface PostCardProps {
-    id: number;
-    userId: number;
-    avatar: string;
-    firstName: string;
-    lastName: string;
-    username: string;
-    content: string;
-    image: string | null;
-    hashtags: HashTag[]
-    date: string;
-    likes: number;
-    comments: number;
-    saved: number;
 }
 
 export type CreatePostSectionProps = Pick<
