@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useAppSelector } from '@/hooks/redux/reduxHooks';
-import { useSocketContext } from '@/app/providers/socket/SocketProvider';
+import { useSocketContext } from '@/app/providers/socket/index';
 
 import { UsersList } from '@/components/UsersList';
 import { ChatHeader } from '@/components/ChatHeader';

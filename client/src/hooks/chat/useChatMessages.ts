@@ -41,7 +41,7 @@ export const useChatMessages = (selectedUser: ChatUser | null) => {
     useEffect(() => {
         if (!selectedUser) return;
         fetchMessagesForCurrentChat(selectedUser.chatId);
-    }, [selectedUser, fetchMessagesForCurrentChat]);
+    }, [selectedUser?.chatId]);
 
     return { messages, setMessages, fetchMessagesForCurrentChat };
 };
