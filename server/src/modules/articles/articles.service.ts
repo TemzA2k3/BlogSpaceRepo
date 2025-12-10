@@ -6,7 +6,11 @@ import { File as MulterFile } from 'multer';
 import { Article } from '@/database/entities/article.entity';
 import { Hashtag } from '@/database/entities/hashtag.entity';
 import { User } from '@/database/entities/user.entity';
+import { ArticleLike } from '@/database/entities/article-like.entity';
+import { ArticleSave } from '@/database/entities/article-save.entity';
+
 import { CreateArticleDto } from './dtos/create-article.dto';
+
 
 @Injectable()
 export class ArticlesService {
@@ -19,6 +23,12 @@ export class ArticlesService {
 
         @InjectRepository(Hashtag)
         private readonly hashtagRepository: Repository<Hashtag>,
+
+        @InjectRepository(ArticleLike)
+        private readonly articleLikeRepository: Repository<ArticleLike>,
+
+        @InjectRepository(ArticleSave)
+        private readonly articleSaveRepository: Repository<ArticleSave>,
     ) { }
 
     async createArticle(
@@ -55,7 +65,7 @@ export class ArticlesService {
 
         await this.articleRepository.save(newArticle);
 
-        const preview = {
+        return {
             id: newArticle.id,
             title: newArticle.title,
             author: user.userName,
@@ -68,13 +78,11 @@ export class ArticlesService {
             })),
             imageUrl: `/uploads/articles/${newArticle.coverImage}`,
         };
-
-        return preview;
     }
 
     async findAll() {
         const articles = await this.articleRepository.find({
-            relations: ['user', 'hashtags'],
+            relations: ['user', 'hashtags', 'likesRelation', 'savesRelation'],
             order: { createdAt: 'DESC' },
             take: 12,
         });
@@ -88,20 +96,39 @@ export class ArticlesService {
             sections: article.sections,
             tags: article.hashtags.map((tag) => ({
                 id: tag.id,
-                name: tag.name.startsWith('#') ? tag.name : `#${tag.name}`,
+                name: tag.name,
             })),
             imageUrl: `/uploads/articles/${article.coverImage}`,
+            likes: article.likesRelation?.length ?? 0,
+            saved: article.savesRelation?.length ?? 0,
         }));
     }
 
-    async getArticleData(articleId: number) {
-        const article = await this.articleRepository.findOne({
-            where: { id: articleId },
-            relations: ['user', 'hashtags'],
-        });
-
+    async getArticleData(articleId: number, userId?: number) {
+        const article = await this.articleRepository
+            .createQueryBuilder('article')
+            .leftJoinAndSelect('article.user', 'user')
+            .leftJoinAndSelect('article.hashtags', 'hashtags')
+            .leftJoinAndSelect('article.likesRelation', 'likes')
+            .leftJoinAndSelect('likes.user', 'likeUser')
+            .leftJoinAndSelect('article.savesRelation', 'saves')
+            .leftJoinAndSelect('saves.user', 'saveUser')
+            .where('article.id = :articleId', { articleId })
+            .getOne();
+    
         if (!article) throw new Error('Article not found');
-        
+    
+        const likes = article.likesRelation?.length ?? 0;
+        const saved = article.savesRelation?.length ?? 0;
+    
+        const likedByCurrentUser = userId
+            ? article.likesRelation?.some(like => like.user?.id === userId) ?? false
+            : false;
+    
+        const savedByCurrentUser = userId
+            ? article.savesRelation?.some(save => save.user?.id === userId) ?? false
+            : false;
+    
         return {
             id: article.id,
             title: article.title,
@@ -119,10 +146,68 @@ export class ArticlesService {
                 id: tag.id,
                 name: tag.name,
             })),
-            likes: article.likes,
+            likes,
+            saved,
+            likedByCurrentUser,
+            savedByCurrentUser,
             comments: article.comments,
-            saved: article.saved,
+        };
+    }
+    
+    
+    async toggleLike(userId: number, articleId: number) {
+        const existing = await this.articleLikeRepository.findOne({
+            where: { user: { id: userId }, article: { id: articleId } },
+        });
+
+        if (existing) {
+            await this.articleLikeRepository.remove(existing);
+        } else {
+            const newLike = this.articleLikeRepository.create({
+                user: { id: userId },
+                article: { id: articleId },
+            });
+
+            await this.articleLikeRepository.save(newLike);
+        }
+
+        const totalLikes = await this.articleLikeRepository.count({
+            where: { article: { id: articleId } },
+        });
+
+        const likedByCurrentUser = !existing;
+
+        return {
+            likedByCurrentUser,
+            likes: totalLikes,
         };
     }
 
+    async toggleSave(userId: number, articleId: number) {
+        const existing = await this.articleSaveRepository.findOne({
+            where: { user: { id: userId }, article: { id: articleId } },
+        });
+
+        if (existing) {
+            await this.articleSaveRepository.remove(existing);
+        } else {
+            const newSave = this.articleSaveRepository.create({
+                user: { id: userId },
+                article: { id: articleId },
+            });
+
+            await this.articleSaveRepository.save(newSave);
+        }
+
+        const totalSaved = await this.articleSaveRepository.count({
+            where: { article: { id: articleId } },
+        });
+
+        const savedByCurrentUser = !existing;
+
+        return {
+            savedByCurrentUser,
+            saved: totalSaved,
+        };
+    }
 }

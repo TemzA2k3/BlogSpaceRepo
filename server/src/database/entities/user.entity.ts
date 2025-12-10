@@ -12,6 +12,8 @@ import { Article } from './article.entity';
 import { Message } from './message.entity';
 import { PostLike } from './post-likes.entity';
 import { PostSave } from './post-saves.entity';
+import { ArticleLike } from './article-like.entity';
+import { ArticleSave } from './article-save.entity';
 
 export enum UserRole {
     USER = 'user',
@@ -91,6 +93,12 @@ export class User {
 
     @OneToMany(() => PostSave, save => save.user)
     savedPosts: PostSave[];
+
+    @OneToMany(() => ArticleLike, (like) => like.user)
+    articleLikes: ArticleLike[];
+
+    @OneToMany(() => ArticleSave, (save) => save.user)
+    articleSaves: ArticleSave[];
 
     @BeforeInsert()
     generateUsername() {

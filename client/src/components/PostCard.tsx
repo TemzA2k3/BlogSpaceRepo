@@ -1,9 +1,13 @@
 import { type FC } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+
+import { HashTagsDisplay } from "@/components/HashTagsDisplay"
+
 import { getImageUrl } from "@/shared/utils/getImagesUrls";
 import { formatDate } from "@/shared/utils/timeFormatter";
 import type { UsersPosts } from "@/shared/types/post.types";
+
 import { usePostCard } from "@/hooks/posts/usePostCard";
 
 interface PostCardProps extends UsersPosts {
@@ -62,14 +66,11 @@ export const PostCard: FC<PostCardProps> = ({ onPostUpdate, onPostDelete, ...pos
                     </div>
 
                     {post.content && <div className="text-slate-700 dark:text-gray-300 text-[15px] font-normal leading-relaxed mt-2 whitespace-pre-wrap">{post.content}</div>}
+
                     {post.image && <img className="w-full mt-2 rounded-xl object-cover" src={getImageUrl(post.image)} alt="Post image" />}
-                    {post.hashtags?.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-2">
-                            {post.hashtags.map(tag => (
-                                <span key={tag.id || tag.name} className="text-blue-500 dark:text-blue-400 text-sm cursor-pointer">#{tag.name}</span>
-                            ))}
-                        </div>
-                    )}
+
+                    {post.hashtags?.length > 0 && <HashTagsDisplay tags={post.hashtags} />}
+
 
                     <div className="text-slate-400 dark:text-gray-500 text-sm font-normal mt-2 italic">
                         {t('posts.published')} {formatDate(post.createdAt)}

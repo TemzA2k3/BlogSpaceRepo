@@ -51,7 +51,7 @@ export const ExplorePage = () => {
     // Ошибки
     useEffect(() => {
         if (error) showAlert(error, "error");
-    }, [error, showAlert]);
+    }, [error]);
 
     return (
         <main className="max-w-3xl mx-auto py-10 px-4 text-gray-800 dark:text-gray-100">

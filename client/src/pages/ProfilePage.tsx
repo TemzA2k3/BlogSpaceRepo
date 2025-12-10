@@ -34,7 +34,7 @@ export const ProfilePage = () => {
         if (error) {
             showAlert(error, "error");
         }
-    }, [error, showAlert]);
+    }, [error]);
 
     const handlePostUpdate = (updatedPost: UsersPosts | null) => {
         if (!updatedPost) return;

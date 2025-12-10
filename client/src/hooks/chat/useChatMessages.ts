@@ -35,7 +35,7 @@ export const useChatMessages = (selectedUser: ChatUser | null) => {
                 }
             }
         },
-        [selectedUser, fetchBlocked, showAlert]
+        [selectedUser, fetchBlocked]
     );
 
     useEffect(() => {

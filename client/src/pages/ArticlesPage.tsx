@@ -1,22 +1,21 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+
 import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 
 import { fetchArticles } from "@/store/slices/articleSlice";
-import { ArticleCard } from "@/components/ArticleCard";
-
+import { ArticlesGrid } from "@/components/ArticlesGrid";
 import { Loader } from "@/shared/components/Loader";
 import { BlankData } from "@/shared/components/BlankData";
 
-import type { HashTag } from "@/shared/types/hashTag.types";
-import type { ArticlePreview } from "@/shared/types/article.types"
+import type { ArticlePreview } from "@/shared/types/article.types";
 
 export const ArticlesPage = () => {
     const { t } = useTranslation();
-    const { currentUser } = useAppSelector((state) => state.auth);
-    const { articles, isLoading, error } = useAppSelector((state) => state.articles);
+    const { currentUser } = useAppSelector(state => state.auth);
+    const { articles, isLoading, error } = useAppSelector(state => state.articles);
     const { showAlert } = useAlert();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -28,10 +27,8 @@ export const ArticlesPage = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        if (error) {
-            showAlert(error, "error");
-        }
-    }, [error, showAlert]);
+        if (error) showAlert(error, "error");
+    }, [error]);
 
     const handleNavigate = () => {
         if (currentUser) navigate("create");
@@ -43,22 +40,22 @@ export const ArticlesPage = () => {
 
     const filteredArticles = articles.filter((article: ArticlePreview) => {
         const term = searchTerm.toLowerCase();
-        return (
-            article.title.toLowerCase().includes(term) ||
-            article.author.toLowerCase().includes(term) ||
-            article.tags.some((tag: HashTag) => tag.name.toLowerCase().includes(term))
-        );
+        return Object.values(article).some(value => {
+            if (typeof value === "string") return value.toLowerCase().includes(term);
+            if (Array.isArray(value)) return value.some(item => item.name?.toLowerCase().includes(term));
+            return false;
+        });
     });
 
     return (
         <main className="max-w-6xl mx-auto py-10 px-6 text-gray-800 dark:text-gray-100">
-            {/* Поисковая строка */}
+            {/* Search & Create */}
             <div className="mb-8 flex flex-col sm:flex-row justify-start gap-3">
                 <input
                     type="text"
                     placeholder={t("articles.searchArticles")}
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                     className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-darkbg px-4 py-2 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 />
                 <button
@@ -69,30 +66,16 @@ export const ArticlesPage = () => {
                 </button>
             </div>
 
-            {/* Сетка статей */}
+            {/* Articles */}
             {isLoading ? (
                 <Loader />
             ) : filteredArticles.length > 0 ? (
-                <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                    {filteredArticles.map((article) => (
-                        <ArticleCard
-                            key={article.id}
-                            id={article.id}
-                            title={article.title}
-                            author={article.author}
-                            authorId={article.authorId}
-                            description={article.description}
-                            sections={article.sections}
-                            tags={article.tags}
-                            imageUrl={article.imageUrl}
-                        />
-                    ))}
-                </div>
+                <ArticlesGrid articles={filteredArticles} />
             ) : (
                 <BlankData
                     icon="📚"
-                    title={t('articles.articlesNotFound')}
-                    message={t('articles.articlesNotFoundHint')}
+                    title={t("articles.articlesNotFound")}
+                    message={t("articles.articlesNotFoundHint")}
                 />
             )}
         </main>

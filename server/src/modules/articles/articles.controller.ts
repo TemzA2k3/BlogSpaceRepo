@@ -7,7 +7,7 @@ import {
     Body,
     UploadedFile,
     Param,
-    BadRequestException
+    Patch
 } from '@nestjs/common';
 import { File as MulterFile } from 'multer';
 
@@ -23,6 +23,7 @@ import { ImageUploadInterceptor } from "@/common/interceptors/image-upload.inter
 
 import { CreateArticleDto } from './dtos/create-article.dto';
 import { SectionDto } from './dtos/sections.dto'
+import { OptionalJwtAuthGuard } from '@/common/guards/optional-jwt-auth.guard';
 
 @Controller('articles')
 export class ArticlesController {
@@ -57,14 +58,36 @@ export class ArticlesController {
         return this.articlesService.createArticle(user.userId, articleData, file);
     }
 
-
     @Get()
     findAll() {
         return this.articlesService.findAll();
     }
 
     @Get(':id')
-    getArticleData(@Param('id') id: string){  
-        return this.articlesService.getArticleData(+id);
+    @UseGuards(OptionalJwtAuthGuard)
+    getArticleData(
+        @UserReq() user: JwtPayload,
+        @Param('id') id: string,
+    ){  
+        return this.articlesService.getArticleData(+id, user?.userId);
     }
+
+    @Patch(':id/like')
+    @UseGuards(JwtAuthGuard)
+    toggleArticleLike(
+        @UserReq() user: JwtPayload,
+        @Param('id') id: string,
+    ) {
+        return this.articlesService.toggleLike(user.userId, +id);
+    }
+
+    @Patch(':id/save')
+    @UseGuards(JwtAuthGuard)
+    toggleArticleSave(
+        @UserReq() user: JwtPayload,
+        @Param('id') id: string,
+    ) {
+        return this.articlesService.toggleSave(user.userId, +id);
+    }
+
 }

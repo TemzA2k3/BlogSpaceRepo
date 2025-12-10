@@ -2,9 +2,9 @@ import { type FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { type ArticlePreview } from "@/shared/types/article.types";
+import { getImageUrl } from "@/shared/utils/getImagesUrls";
 
-import { getImageUrl } from "@/shared/utils/getImagesUrls"
-
+import { HashTagsDisplay } from "./HashTagsDisplay";
 
 export const ArticleCard: FC<ArticlePreview> = ({
     id,
@@ -22,6 +22,7 @@ export const ArticleCard: FC<ArticlePreview> = ({
         <article
             onClick={() => navigate(`/articles/${id}`)}
             className="rounded-2xl bg-white dark:bg-darkbg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
+            
             {/* Картинка сверху */}
             <div className="h-48 w-full overflow-hidden rounded-t-2xl">
                 <img
@@ -54,17 +55,8 @@ export const ArticleCard: FC<ArticlePreview> = ({
                             : "Нет содержания"}
                 </p>
 
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                    {tags.map((tag) => (
-                        <span
-                            key={tag.id}
-                            className="text-blue-600 dark:text-blue-400 text-sm font-medium"
-                        >
-                            {tag.name}
-                        </span>
-                    ))}
-                </div>
+                {/* Хештеги через компонент */}
+                <HashTagsDisplay tags={tags} />
             </div>
         </article>
     );

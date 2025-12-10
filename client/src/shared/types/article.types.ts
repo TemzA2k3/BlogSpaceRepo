@@ -56,4 +56,16 @@ export interface ArticleData {
     likes: number;
     comments: number;
     saved: number;
+    likedByCurrentUser: boolean;
+    savedByCurrentUser: boolean;
+}
+
+export interface ToggleLikeResponse {
+    likes: number;
+    likedByCurrentUser: boolean;
+}
+
+export interface ToggleSaveResponse {
+    saved: number;
+    savedByCurrentUser: boolean;
 }
