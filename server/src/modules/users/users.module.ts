@@ -9,10 +9,15 @@ import { JwtSharedModule } from '@/common/jwt/jwt.module';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { PostLike } from '@/database/entities/post-likes.entity';
+import { PostSave } from '@/database/entities/post-saves.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, UserRelation, Post, PostLike]),
+    TypeOrmModule.forFeature([
+        User, UserRelation, 
+        Post, PostLike,
+        PostSave
+    ]),
     JwtSharedModule
 ],
   providers: [UsersService],

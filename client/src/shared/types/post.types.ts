@@ -11,6 +11,7 @@ export interface Post {
     image: string | null;
     createdAt: string;
     likedByCurrentUser: boolean;
+    savedByCurrentUser: boolean;
 }
 
 export interface UsersPosts extends Post {

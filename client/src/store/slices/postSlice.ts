@@ -57,18 +57,18 @@ export const likePost = createAsyncThunk<UsersPosts | null, number>(
     }
 );
 
+export const toggleSavePost = createAsyncThunk<UsersPosts | null, number>(
+    "posts/toggleSavePost",
+    async (postId, { rejectWithValue }) => {
+        try {
+            const data = await apiRequest<UsersPosts>(`/posts/${postId}/save`, "PATCH");
+            return data ?? null;
+        } catch (err: any) {
+            return rejectWithValue(err.message || "Failed to toggle save post");
+        }
+    }
+);
 
-// export const savePost = createAsyncThunk<Post, number>(
-//   "posts/savePost",
-//   async (postId, { rejectWithValue }) => {
-//     try {
-//       const data = await apiRequest<Post>(`/posts/${postId}/save`, "POST");
-//       return data as Post;
-//     } catch (err: any) {
-//       return rejectWithValue(err.message || "Failed to save post");
-//     }
-//   }
-// );
 
 export const deletePost = createAsyncThunk<number, number>(
     "posts/deletePost",
@@ -117,7 +117,7 @@ const postSlice = createSlice({
             })
             .addCase(createPost.fulfilled, (state, action: PayloadAction<UsersPosts>) => {
                 state.loading = false;
-                state.posts.unshift(action.payload); // добавляем новый пост в начало
+                state.posts.unshift(action.payload);
                 state.success = true;
             })
             .addCase(createPost.rejected, (state, action) => {
@@ -151,17 +151,25 @@ const postSlice = createSlice({
             })
             .addCase(likePost.rejected, (state, action) => {
                 state.error = (action.payload as string) ?? "Ошибка при лайке поста";
+            })
+
+
+            // SAVE POST
+            .addCase(toggleSavePost.pending, (state) => {
+                state.error = null;
+            })
+            .addCase(toggleSavePost.fulfilled, (state, action: PayloadAction<UsersPosts | null>) => {
+                if (!action.payload) return;
+            
+                const index = state.posts.findIndex(p => p.id === action.payload!.id);
+                if (index !== -1) {
+                    state.posts[index] = action.payload!;
+                }
+            })
+            .addCase(toggleSavePost.rejected, (state, action) => {
+                state.error = (action.payload as string) ?? "Ошибка при сохранении поста";
             });
 
-
-
-        // SAVE POST
-        //   .addCase(savePost.fulfilled, (state, action: PayloadAction<Post>) => {
-        //     const index = state.posts.findIndex(p => p.id === action.payload.id);
-        //     if (index !== -1) {
-        //       state.posts[index] = action.payload;
-        //     }
-        //   });
     },
 });
 

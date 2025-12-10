@@ -11,6 +11,7 @@ import * as fs from "fs";
 import { User } from "@/database/entities/user.entity";
 import { Post } from "@/database/entities/post.entity";
 import { PostLike } from "@/database/entities/post-likes.entity";
+import { PostSave } from "@/database/entities/post-saves.entity";
 
 import {
     RelationType,
@@ -31,7 +32,10 @@ export class UsersService {
         private readonly postRepository: Repository<Post>,
 
         @InjectRepository(PostLike)
-        private readonly postLikeRepository: Repository<PostLike>
+        private readonly postLikeRepository: Repository<PostLike>,
+
+        @InjectRepository(PostSave)
+        private readonly postSaveRepository: Repository<PostSave>,
     ) { }
 
     findByEmail(email: string) {
@@ -56,107 +60,87 @@ export class UsersService {
         await this.userRepository.update(userId, { online: false });
     }
 
-
     async getUserProfileData(targetUserId: number, currentUserId?: number) {
-        const user = await this.userRepository.findOne({
-            where: { id: targetUserId },
-        });
-    
+        const user = await this.userRepository.findOne({ where: { id: targetUserId } });
         if (!user) throw new NotFoundException('User not found');
-    
+
         const { password, ...safeUser } = user;
-    
+
         const isFollowing = currentUserId
             ? !!(await this.relationRepository.findOne({
-                  where: {
-                      sourceUser: { id: currentUserId },
-                      targetUser: { id: targetUserId },
-                      type: RelationType.FOLLOW,
-                  },
-              }))
+                where: {
+                    sourceUser: { id: currentUserId },
+                    targetUser: { id: targetUserId },
+                    type: RelationType.FOLLOW,
+                },
+            }))
             : false;
-    
+
         const [followersCount, followingCount] = await Promise.all([
-            this.relationRepository.count({
-                where: { targetUser: { id: targetUserId }, type: RelationType.FOLLOW },
-            }),
-            this.relationRepository.count({
-                where: { sourceUser: { id: targetUserId }, type: RelationType.FOLLOW },
-            }),
+            this.relationRepository.count({ where: { targetUser: { id: targetUserId }, type: RelationType.FOLLOW } }),
+            this.relationRepository.count({ where: { sourceUser: { id: targetUserId }, type: RelationType.FOLLOW } }),
         ]);
-    
+
         const posts = await this.postRepository
             .createQueryBuilder('post')
             .leftJoinAndSelect('post.hashtags', 'hashtag')
             .where('post.userId = :userId', { userId: targetUserId })
             .orderBy('post.createdAt', 'DESC')
             .getMany();
-    
+
         const postIds = posts.map(p => p.id);
-    
         let likesMap: Record<number, { count: number; likedByCurrentUser: boolean }> = {};
-    
-        if (postIds.length > 0) {
+        let savesMap: Record<number, { count: number; savedByCurrentUser: boolean }> = {};
+
+        if (postIds.length) {
             const likes = await this.postLikeRepository
                 .createQueryBuilder('like')
                 .select('like.postId', 'postId')
                 .addSelect('COUNT(like.id)', 'likesCount')
-                .addSelect(
-                    `SUM(CASE WHEN like.userId = :currentUserId THEN 1 ELSE 0 END)`,
-                    'likedByCurrentUser'
-                )
+                .addSelect(`SUM(CASE WHEN like.userId = :currentUserId THEN 1 ELSE 0 END)`, 'likedByCurrentUser')
                 .where('like.postId IN (:...postIds)', { postIds })
                 .setParameter('currentUserId', currentUserId || 0)
                 .groupBy('like.postId')
                 .getRawMany();
-    
+
             likes.forEach(like => {
-                likesMap[like.postId] = {
-                    count: Number(like.likesCount),
-                    likedByCurrentUser: Number(like.likedByCurrentUser) > 0,
-                };
+                likesMap[like.postId] = { count: Number(like.likesCount), likedByCurrentUser: Number(like.likedByCurrentUser) > 0 };
             });
-            
+
+            const saves = await this.postSaveRepository
+                .createQueryBuilder('save')
+                .select('save.postId', 'postId')
+                .addSelect('COUNT(save.id)', 'savedCount')
+                .addSelect(`SUM(CASE WHEN save.userId = :currentUserId THEN 1 ELSE 0 END)`, 'savedByCurrentUser')
+                .where('save.postId IN (:...postIds)', { postIds })
+                .setParameter('currentUserId', currentUserId || 0)
+                .groupBy('save.postId')
+                .getRawMany();
+
+            saves.forEach(save => {
+                savesMap[save.postId] = { count: Number(save.savedCount), savedByCurrentUser: Number(save.savedByCurrentUser) > 0 };
+            });
         }
-    
-        const postsWithLikes = await Promise.all(
-            posts.map(async post => {
-              const likes = await this.postLikeRepository.find({
-                where: { post: { id: post.id } },
-                relations: ['user'],
-              });
-          
-              const likedByCurrentUser = currentUserId
-                ? likes.some(like => like.user.id === currentUserId)
-                : false;
-          
-              return {
-                id: post.id,
-                content: post.content,
-                comments: post.comments,
-                saved: post.saved,
-                image: post.image ?? null,
-                createdAt: post.createdAt,
-                hashtags: post.hashtags?.map(h => ({ id: h.id, name: h.name })) || [],
-                userId: targetUserId,
-                avatar: user.avatar,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                username: user.userName,
-                likes: likes.length,
-                likedByCurrentUser,
-              };
-            })
-          );
-          
-    
-        return {
-            ...safeUser,
-            isFollowing,
-            followersCount,
-            followingCount,
-            posts: postsWithLikes,
-        };
+
+        const postsWithData = posts.map(post => ({
+            id: post.id,
+            content: post.content,
+            comments: post.comments,
+            saved: savesMap[post.id]?.count || 0,
+            savedByCurrentUser: savesMap[post.id]?.savedByCurrentUser || false,
+            image: post.image ?? null,
+            createdAt: post.createdAt,
+            hashtags: post.hashtags?.map(h => ({ id: h.id, name: h.name })) || [],
+            userId: targetUserId,
+            avatar: user.avatar,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            username: user.userName,
+            likes: likesMap[post.id]?.count || 0,
+            likedByCurrentUser: likesMap[post.id]?.likedByCurrentUser || false,
+        }));
+
+        return { ...safeUser, isFollowing, followersCount, followingCount, posts: postsWithData };
     }
 
     create(data: Partial<User>) {

@@ -19,12 +19,13 @@ export const PostCard: FC<PostCardProps> = ({ onPostUpdate, onPostDelete, ...pos
         dropdownRef,
         handleToggleLike,
         handleDeletePost,
+        handleToggleSave,
         currentUser,
     } = usePostCard(post, onPostUpdate, onPostDelete);
 
     return (
         <div className="relative self-stretch px-5 py-4 bg-slate-50 dark:bg-darkbg border border-gray-200 dark:border-gray-700 rounded-2xl flex justify-start items-start gap-4 shadow-sm hover:shadow-md transition-all duration-200">
-            {/* Дропдаун */}
+            {/* Dropdown */}
             <div className="absolute top-3 right-3" ref={dropdownRef}>
                 <button onClick={() => setShowDropdown(!showDropdown)}
                     className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
@@ -47,10 +48,10 @@ export const PostCard: FC<PostCardProps> = ({ onPostUpdate, onPostDelete, ...pos
                 )}
             </div>
 
-            {/* Аватар */}
+            {/* Avatar */}
             <img className="w-16 h-16 rounded-full object-cover" src={post.avatar} alt={`${post.firstName} ${post.lastName}`} />
 
-            {/* Контент */}
+            {/* Content */}
             <div className="flex-1 flex flex-col justify-between">
                 <div className="flex flex-col gap-1">
                     <div className="flex flex-col">
@@ -75,27 +76,41 @@ export const PostCard: FC<PostCardProps> = ({ onPostUpdate, onPostDelete, ...pos
                     </div>
                 </div>
 
-                {/* Нижняя панель */}
+                {/* Bottom panel */}
                 <div className="flex justify-start items-center gap-6 mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
-                    {/* Лайки */}
+                    {/* Like */}
+                    {/* Likes */}
                     <div
                         onClick={handleToggleLike}
-                        className={`flex items-center gap-2 text-sm cursor-pointer transition-colors ${post.likedByCurrentUser ? 'text-red-500' : 'text-slate-600 dark:text-gray-400'}`}>
+                        className={`flex items-center gap-2 text-sm cursor-pointer transition-colors 
+                                    ${post.likedByCurrentUser ? 'text-red-500' : 'text-slate-600 dark:text-gray-400'}
+                                    hover:text-red-500 dark:hover:text-red-400`}
+                    >
                         <i className={`far fa-heart ${post.likedByCurrentUser ? 'fas' : ''}`}></i>
                         <span>{post.likes}</span>
                     </div>
 
-                    {/* Комментарии */}
-                    <div className="flex items-center gap-2 text-slate-600 dark:text-gray-400 text-sm hover:text-blue-500 dark:hover:text-blue-400 transition-colors cursor-pointer">
+                    {/* Comments */}
+                    <div className="flex items-center gap-2 text-slate-600 
+                                    dark:text-gray-400 text-sm 
+                                    hover:text-blue-500 dark:hover:text-blue-400 
+                                    transition-colors cursor-pointer"
+                    >
                         <i className="far fa-comment"></i>
                         <span>{post.comments}</span>
                     </div>
 
-                    {/* Закладки */}
-                    <div className="flex items-center gap-2 text-slate-600 dark:text-gray-400 text-sm hover:text-yellow-500 dark:hover:text-yellow-400 transition-colors cursor-pointer">
-                        <i className="far fa-bookmark"></i>
+                    {/* Save */}
+                    <div
+                        onClick={handleToggleSave}
+                        className={`flex items-center gap-2 text-sm cursor-pointer transition-colors 
+                                    ${post.savedByCurrentUser ? 'text-yellow-500' : 'text-slate-600 dark:text-gray-400'}
+                                    hover:text-yellow-500 dark:hover:text-yellow-400`}
+                    >
+                        <i className={`far fa-bookmark ${post.savedByCurrentUser ? 'fas' : ''}`}></i>
                         <span>{post.saved}</span>
                     </div>
+
                 </div>
             </div>
         </div>

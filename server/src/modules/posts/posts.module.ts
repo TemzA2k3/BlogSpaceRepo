@@ -11,10 +11,15 @@ import { Hashtag } from '@/database/entities/hashtag.entity';
 import { User } from '@/database/entities/user.entity';
 import { UserRelation } from '@/database/entities/user-relation.entity';
 import { PostLike } from '@/database/entities/post-likes.entity'; 
+import { PostSave } from '@/database/entities/post-saves.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Post, Hashtag, User, UserRelation, PostLike]),
+        TypeOrmModule.forFeature([
+            Post, Hashtag, 
+            User, UserRelation, 
+            PostLike, PostSave
+        ]),
         JwtSharedModule,
     ],
   providers: [PostsService],

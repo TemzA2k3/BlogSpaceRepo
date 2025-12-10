@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
-import { likePost, deletePost } from "@/store/slices/postSlice";
+import { likePost, deletePost, toggleSavePost } from "@/store/slices/postSlice";
 import type { UsersPosts } from "@/shared/types/post.types";
 
 export const usePostCard = (
@@ -31,9 +31,20 @@ export const usePostCard = (
 
         try {
             const updatedPost = await dispatch(likePost(post.id)).unwrap();
-            if (onPostUpdate) onPostUpdate(updatedPost);
+            onPostUpdate?.(updatedPost);
         } catch (err: any) {
             showAlert(err.message ?? "Ошибка при лайке", "error");
+        }
+    };
+
+    const handleToggleSave = async () => {
+        if (!currentUser) return;
+
+        try {
+            const updatedPost = await dispatch(toggleSavePost(post.id)).unwrap();
+            onPostUpdate?.(updatedPost);
+        } catch (err: any) {
+            showAlert(err.message ?? "Ошибка при сохранении", "error");
         }
     };
 
@@ -42,7 +53,7 @@ export const usePostCard = (
             const resultAction = await dispatch(deletePost(post.id));
             if (deletePost.fulfilled.match(resultAction)) {
                 showAlert("Пост успешно удален", "success");
-                if (onPostDelete) onPostDelete(post.id);
+                onPostDelete?.(post.id);
             } else {
                 showAlert(resultAction.payload as string ?? "Ошибка при удалении", "error");
             }
@@ -56,6 +67,7 @@ export const usePostCard = (
         setShowDropdown,
         dropdownRef,
         handleToggleLike,
+        handleToggleSave,
         handleDeletePost,
         currentUser,
     };

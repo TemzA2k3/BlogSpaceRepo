@@ -72,20 +72,8 @@ export const PostsPage = () => {
                                 userPosts.map(post => (
                                     <PostCard
                                         key={post.id}
-                                        id={post.id}
-                                        userId={post.userId}
+                                        {...post}
                                         avatar={getAvatarUrl(post.firstName, post.lastName, post.avatar)}
-                                        firstName={post.firstName}
-                                        lastName={post.lastName}
-                                        username={post.username}
-                                        content={post.content}
-                                        image={post.image}
-                                        hashtags={post.hashtags}
-                                        createdAt={post.createdAt}
-                                        likes={post.likes}
-                                        comments={post.comments}
-                                        saved={post.saved}
-                                        likedByCurrentUser={post.likedByCurrentUser}
                                     />
                                 ))
                             )}

@@ -38,7 +38,7 @@ export const ProfilePage = () => {
 
     const handlePostUpdate = (updatedPost: UsersPosts | null) => {
         if (!updatedPost) return;
-    
+
         setUserData(prev => {
             if (!prev) return prev;
             return {
@@ -47,7 +47,7 @@ export const ProfilePage = () => {
             };
         });
     };
-    
+
 
     const handlePostDelete = (postId: number) => {
         setUserData(prev => ({
@@ -187,24 +187,17 @@ export const ProfilePage = () => {
                     {userData.posts.map((post) => (
                         <PostCard
                             key={post.id}
-                            id={post.id}
+                            {...post}
                             userId={userData.id}
                             firstName={userData.firstName}
                             lastName={userData.lastName}
                             username={userData.userName}
-                            content={post.content}
-                            image={post.image}
-                            hashtags={post.hashtags}
-                            createdAt={post.createdAt}
-                            likes={post.likes}
-                            comments={post.comments}
-                            saved={post.saved}
-                            likedByCurrentUser={post.likedByCurrentUser}
                             avatar={getAvatarUrl(userData.firstName, userData.lastName, userData.avatar)}
                             onPostUpdate={handlePostUpdate}
                             onPostDelete={handlePostDelete}
                         />
                     ))}
+
                 </div>
             </section>
         </main>

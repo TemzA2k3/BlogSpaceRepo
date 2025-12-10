@@ -73,4 +73,13 @@ export class PostsController {
         return this.postsService.toggleLike(+postId, user.userId);
     }
 
+    @Patch(':id/save')
+    @UseGuards(JwtAuthGuard)
+    async toggleSave(
+        @UserReq() user: JwtPayload,
+        @Param('id') postId: string,
+    ) {
+        return this.postsService.toggleSave(+postId, user.userId);
+    }
+
 }
