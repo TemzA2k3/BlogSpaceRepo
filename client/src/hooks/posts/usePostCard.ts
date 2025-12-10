@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from "react";
-
 import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
-
-import { deletePost, likePost } from "@/store/slices/postSlice";
+import { likePost, deletePost } from "@/store/slices/postSlice";
 import type { UsersPosts } from "@/shared/types/post.types";
 
-export const usePostCard = (post: UsersPosts) => {
+export const usePostCard = (
+    post: UsersPosts,
+    onPostUpdate?: (updatedPost: UsersPosts | null) => void,
+    onPostDelete?: (postId: number) => void
+) => {
     const dispatch = useAppDispatch();
     const { showAlert } = useAlert();
     const { currentUser } = useAppSelector(state => state.auth);
@@ -28,7 +30,8 @@ export const usePostCard = (post: UsersPosts) => {
         if (!currentUser) return;
 
         try {
-            await dispatch(likePost(post.id)).unwrap();
+            const updatedPost = await dispatch(likePost(post.id)).unwrap();
+            if (onPostUpdate) onPostUpdate(updatedPost);
         } catch (err: any) {
             showAlert(err.message ?? "Ошибка при лайке", "error");
         }
@@ -39,6 +42,7 @@ export const usePostCard = (post: UsersPosts) => {
             const resultAction = await dispatch(deletePost(post.id));
             if (deletePost.fulfilled.match(resultAction)) {
                 showAlert("Пост успешно удален", "success");
+                if (onPostDelete) onPostDelete(post.id);
             } else {
                 showAlert(resultAction.payload as string ?? "Ошибка при удалении", "error");
             }

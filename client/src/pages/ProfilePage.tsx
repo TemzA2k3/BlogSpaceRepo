@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { useAlert } from "@/app/providers/alert/AlertProvider"; 
+import { useAlert } from "@/app/providers/alert/AlertProvider";
 import { useAppSelector } from "@/hooks/redux/reduxHooks";
 
 import { useProfile } from "@/hooks/profile/useProfile";
@@ -14,6 +14,8 @@ import { PostCard } from "@/components/PostCard";
 import { Loader } from "@/shared/components/Loader";
 
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
+
+import type { UsersPosts } from "@/shared/types/post.types";
 
 
 export const ProfilePage = () => {
@@ -33,6 +35,26 @@ export const ProfilePage = () => {
             showAlert(error, "error");
         }
     }, [error, showAlert]);
+
+    const handlePostUpdate = (updatedPost: UsersPosts | null) => {
+        if (!updatedPost) return;
+    
+        setUserData(prev => {
+            if (!prev) return prev;
+            return {
+                ...prev,
+                posts: prev.posts.map(p => p.id === updatedPost.id ? updatedPost : p)
+            };
+        });
+    };
+    
+
+    const handlePostDelete = (postId: number) => {
+        setUserData(prev => ({
+            ...prev!,
+            posts: prev!.posts.filter(p => p.id !== postId)
+        }));
+    };
 
     if (loading || !userData) return <Loader />;
 
@@ -147,10 +169,10 @@ export const ProfilePage = () => {
                                             : "Follow"}
                                 </button>
 
-                                <button 
+                                <button
                                     className="px-5 py-2 rounded-xl bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium transition"
                                     onClick={() => handleMessageClick(userData.id, currentUser?.id)}
-                                    >
+                                >
                                     Message
                                 </button>
                             </div>
@@ -167,7 +189,6 @@ export const ProfilePage = () => {
                             key={post.id}
                             id={post.id}
                             userId={userData.id}
-                            avatar={getAvatarUrl(userData.firstName, userData.lastName, userData.avatar)}
                             firstName={userData.firstName}
                             lastName={userData.lastName}
                             username={userData.userName}
@@ -179,6 +200,9 @@ export const ProfilePage = () => {
                             comments={post.comments}
                             saved={post.saved}
                             likedByCurrentUser={post.likedByCurrentUser}
+                            avatar={getAvatarUrl(userData.firstName, userData.lastName, userData.avatar)}
+                            onPostUpdate={handlePostUpdate}
+                            onPostDelete={handlePostDelete}
                         />
                     ))}
                 </div>

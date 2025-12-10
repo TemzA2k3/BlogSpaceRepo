@@ -6,7 +6,12 @@ import { formatDate } from "@/shared/utils/timeFormatter";
 import type { UsersPosts } from "@/shared/types/post.types";
 import { usePostCard } from "@/hooks/posts/usePostCard";
 
-export const PostCard: FC<UsersPosts> = (post) => {
+interface PostCardProps extends UsersPosts {
+    onPostUpdate?: (updatedPost: UsersPosts | null) => void;
+    onPostDelete?: (postId: number) => void;
+}
+
+export const PostCard: FC<PostCardProps> = ({ onPostUpdate, onPostDelete, ...post }) => {
     const { t } = useTranslation();
     const {
         showDropdown,
@@ -15,7 +20,7 @@ export const PostCard: FC<UsersPosts> = (post) => {
         handleToggleLike,
         handleDeletePost,
         currentUser,
-    } = usePostCard(post);
+    } = usePostCard(post, onPostUpdate, onPostDelete);
 
     return (
         <div className="relative self-stretch px-5 py-4 bg-slate-50 dark:bg-darkbg border border-gray-200 dark:border-gray-700 rounded-2xl flex justify-start items-start gap-4 shadow-sm hover:shadow-md transition-all duration-200">
