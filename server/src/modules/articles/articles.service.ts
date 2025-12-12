@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { File as MulterFile } from 'multer';
@@ -8,8 +8,10 @@ import { Hashtag } from '@/database/entities/hashtag.entity';
 import { User } from '@/database/entities/user.entity';
 import { ArticleLike } from '@/database/entities/article-like.entity';
 import { ArticleSave } from '@/database/entities/article-save.entity';
+import { Comment } from '@/database/entities/comment.entity';
 
 import { CreateArticleDto } from './dtos/create-article.dto';
+import type { CommentDto } from '@/shared/types/comment.types';
 
 
 @Injectable()
@@ -29,6 +31,9 @@ export class ArticlesService {
 
         @InjectRepository(ArticleSave)
         private readonly articleSaveRepository: Repository<ArticleSave>,
+
+        @InjectRepository(Comment)
+        private readonly commentRepository: Repository<Comment>,
     ) { }
 
     async createArticle(
@@ -104,6 +109,56 @@ export class ArticlesService {
         }));
     }
 
+    // async getArticleData(articleId: number, userId?: number) {
+    //     const article = await this.articleRepository
+    //         .createQueryBuilder('article')
+    //         .leftJoinAndSelect('article.user', 'user')
+    //         .leftJoinAndSelect('article.hashtags', 'hashtags')
+    //         .leftJoinAndSelect('article.likesRelation', 'likes')
+    //         .leftJoinAndSelect('likes.user', 'likeUser')
+    //         .leftJoinAndSelect('article.savesRelation', 'saves')
+    //         .leftJoinAndSelect('saves.user', 'saveUser')
+    //         .where('article.id = :articleId', { articleId })
+    //         .getOne();
+
+    //     if (!article) throw new Error('Article not found');
+
+    //     const likes = article.likesRelation?.length ?? 0;
+    //     const saved = article.savesRelation?.length ?? 0;
+
+    //     const likedByCurrentUser = userId
+    //         ? article.likesRelation?.some(like => like.user?.id === userId) ?? false
+    //         : false;
+
+    //     const savedByCurrentUser = userId
+    //         ? article.savesRelation?.some(save => save.user?.id === userId) ?? false
+    //         : false;
+
+    //     return {
+    //         id: article.id,
+    //         title: article.title,
+    //         description: article.description,
+    //         sections: article.sections,
+    //         coverImage: `/uploads/articles/${article.coverImage}`,
+    //         createdAt: article.createdAt,
+    //         author: {
+    //             id: article.user.id,
+    //             userName: article.user.userName,
+    //             fullName: `${article.user.firstName} ${article.user.lastName}`,
+    //             avatar: article.user.avatar || null,
+    //         },
+    //         hashtags: article.hashtags.map(tag => ({
+    //             id: tag.id,
+    //             name: tag.name,
+    //         })),
+    //         likes,
+    //         saved,
+    //         likedByCurrentUser,
+    //         savedByCurrentUser,
+    //         comments: article.comments,
+    //     };
+    // }
+
     async getArticleData(articleId: number, userId?: number) {
         const article = await this.articleRepository
             .createQueryBuilder('article')
@@ -115,27 +170,64 @@ export class ArticlesService {
             .leftJoinAndSelect('saves.user', 'saveUser')
             .where('article.id = :articleId', { articleId })
             .getOne();
-    
-        if (!article) throw new Error('Article not found');
-    
+
+        if (!article) throw new NotFoundException('Article not found');
+
         const likes = article.likesRelation?.length ?? 0;
         const saved = article.savesRelation?.length ?? 0;
-    
+
         const likedByCurrentUser = userId
             ? article.likesRelation?.some(like => like.user?.id === userId) ?? false
             : false;
-    
+
         const savedByCurrentUser = userId
             ? article.savesRelation?.some(save => save.user?.id === userId) ?? false
             : false;
-    
+
+        // Получаем комментарии
+        const commentsEntities = await this.commentRepository.find({
+            where: { article: { id: articleId } },
+            relations: ['user', 'parent'],
+            order: { createdAt: 'ASC' },
+        });
+
+        // Формируем дерево комментариев для фронта
+        const commentsMap: Record<number, CommentDto> = {};
+        const rootComments: CommentDto[] = [];
+
+        commentsEntities.forEach(c => {
+            const comment: CommentDto = {
+                id: c.id,
+                firstName: c.user.firstName,
+                lastName: c.user.lastName,
+                authorId: c.user.id,
+                avatar: c.user.avatar || '',
+                date: c.createdAt.toISOString(),
+                content: c.content,
+                indent: !!c.parent,
+                replies: [],
+            };
+
+            commentsMap[c.id] = comment;
+
+            if (c.parent?.id) {
+                const parentComment = commentsMap[c.parent.id];
+                if (parentComment) {
+                    parentComment.replies = parentComment.replies || [];
+                    parentComment.replies.push(comment);
+                }
+            } else {
+                rootComments.push(comment);
+            }
+        });
+
         return {
             id: article.id,
             title: article.title,
             description: article.description,
             sections: article.sections,
             coverImage: `/uploads/articles/${article.coverImage}`,
-            createdAt: article.createdAt,
+            createdAt: article.createdAt.toISOString(),
             author: {
                 id: article.user.id,
                 userName: article.user.userName,
@@ -150,11 +242,12 @@ export class ArticlesService {
             saved,
             likedByCurrentUser,
             savedByCurrentUser,
-            comments: article.comments,
+            comments: rootComments,
+            commentsCount: commentsEntities.length,
         };
     }
-    
-    
+
+
     async toggleLike(userId: number, articleId: number) {
         const existing = await this.articleLikeRepository.findOne({
             where: { user: { id: userId }, article: { id: articleId } },

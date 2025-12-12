@@ -1,5 +1,7 @@
 import type { HashTag } from "./hashTag.types";
 
+import type { Comment } from "./comment.types";
+
 export interface ArticlePreview {
     id: number;
     title: string;
@@ -54,10 +56,11 @@ export interface ArticleData {
     author: ArticleAuthor;
     hashtags: HashTag[];
     likes: number;
-    comments: number;
+    commentsCount: number;
     saved: number;
     likedByCurrentUser: boolean;
     savedByCurrentUser: boolean;
+    comments: Comment[];
 }
 
 export interface ToggleLikeResponse {

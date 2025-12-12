@@ -13,6 +13,7 @@ import { User } from './user.entity';
 import { Hashtag } from './hashtag.entity';
 import { PostLike } from './post-likes.entity';
 import { PostSave } from './post-saves.entity';
+import { Comment } from './comment.entity'; 
 
 @Entity('posts')
 export class Post {
@@ -33,6 +34,9 @@ export class Post {
 
     @ManyToOne(() => User, (user) => user.posts, { onDelete: 'CASCADE' })
     user: User;
+
+    @OneToMany(() => Comment, (comment) => comment.post)
+    commentsRelation: Comment[];
 
     @OneToMany(() => PostLike, like => like.post)
     likesRelation: PostLike[];

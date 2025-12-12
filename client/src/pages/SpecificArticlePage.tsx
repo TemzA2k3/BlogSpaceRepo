@@ -14,36 +14,12 @@ import { CommentsSection } from "@/components/CommentsSection";
 
 export const SpecificArticlePage = () => {
     const { id } = useParams<{ id: string }>();
-    const { articleData, loading, handleLike, handleSave } = useArticleData(id);
+    const { articleData, loading, handleLike, handleSave, addCommentToArticle } = useArticleData(id);
     const navigate = useNavigate();
 
     if (loading) return <Loader />;
-    if (!articleData) return <NotFoundPage />;
-
-    const hardcodedComments = [
-        {
-            id: 1,
-            author: "Mark Thompson",
-            date: "2 days ago",
-            content:
-                "Great article! I especially appreciated the section on ethical considerations. It's something we need to discuss more.",
-        },
-        {
-            id: 2,
-            author: "Emily Clark",
-            date: "1 day ago",
-            content:
-                "I agree, Mark. The ethical implications of AI are often overlooked. This article provides a good overview of the key issues.",
-            indent: true,
-        },
-        {
-            id: 3,
-            author: "David Lee",
-            date: "1 day ago",
-            content:
-                "The future of AI is exciting, but we need to be cautious. The potential for job displacement is a real concern that needs to be addressed proactively.",
-        },
-    ];
+    if (!articleData || !id) return <NotFoundPage />;
+    
 
     return (
         <div className="min-h-screen dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300">
@@ -105,7 +81,7 @@ export const SpecificArticlePage = () => {
 
                         <button className="flex items-center gap-2 text-sm cursor-pointer transition-colors text-slate-600 dark:text-gray-400 hover:text-blue-500">
                             <i className="far fa-comment"></i>
-                            <span className="text-sm font-medium">{articleData.comments}</span>
+                            <span className="text-sm font-medium">{articleData.commentsCount}</span>
                         </button>
 
                         <button
@@ -120,7 +96,11 @@ export const SpecificArticlePage = () => {
                 </article>
 
                 {/* Comments Section */}
-                <CommentsSection comments={hardcodedComments} />
+                <CommentsSection
+                    articleId={+id}
+                    comments={articleData.comments}
+                    addCommentToArticle={addCommentToArticle}
+                />
             </section>
         </div>
     );

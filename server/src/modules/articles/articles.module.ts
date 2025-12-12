@@ -10,13 +10,14 @@ import { Hashtag } from '@/database/entities/hashtag.entity';
 import { User } from '@/database/entities/user.entity';
 import { ArticleLike } from '@/database/entities/article-like.entity';
 import { ArticleSave } from '@/database/entities/article-save.entity';
+import { Comment } from '@/database/entities/comment.entity';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([
             Article, Hashtag, 
             User, ArticleLike,
-            ArticleSave
+            ArticleSave, Comment
         ]),
         JwtSharedModule,
     ],
