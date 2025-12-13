@@ -14,7 +14,13 @@ import { CommentsSection } from "@/components/CommentsSection";
 
 export const SpecificArticlePage = () => {
     const { id } = useParams<{ id: string }>();
-    const { articleData, loading, handleLike, handleSave, addCommentToArticle } = useArticleData(id);
+    const { 
+        articleData,
+        loading,
+        handleLike,
+        handleSave,
+        submitArticleComment,
+    } = useArticleData(id);
     const navigate = useNavigate();
 
     if (loading) return <Loader />;
@@ -97,9 +103,8 @@ export const SpecificArticlePage = () => {
 
                 {/* Comments Section */}
                 <CommentsSection
-                    articleId={+id}
                     comments={articleData.comments}
-                    addCommentToArticle={addCommentToArticle}
+                    onSubmitComment={submitArticleComment}
                 />
             </section>
         </div>

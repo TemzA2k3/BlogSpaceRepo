@@ -3,51 +3,94 @@ import { useAlert } from "@/app/providers/alert/AlertProvider";
 
 import { fetchArticleData } from "@/shared/services/fetchArticleData";
 import { toggleArticleLike, toggleArticleSave } from "@/shared/services/toggleArticleActions";
+import { createArticleComment } from "@/shared/services/articleComments";
+
+import { addReplyToTree } from "@/shared/utils/addCommentReply";
 
 import type { ArticleData } from "@/shared/types/article.types";
-import type { Comment } from "@/shared/types/comment.types"
 
-export const useArticleData = (articleId: string | undefined) => {
+export const useArticleData = (articleId?: string) => {
     const [articleData, setArticleData] = useState<ArticleData | null>(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
 
     const { showAlert } = useAlert();
 
-    const getArticleData = async (id: string) => {
-        setLoading(true);
-        try {
-            const data = await fetchArticleData(id);
-            setArticleData(data || null);
-        } catch (err: any) {
-            setError(err.message || "Ошибка загрузки статьи");
-        } finally {
-            setLoading(false);
-        }
-    };
+    console.log(articleData);
+    
 
     useEffect(() => {
         if (!articleId) return;
-        getArticleData(articleId);
+
+        (async () => {
+            try {
+                setLoading(true);
+                const data = await fetchArticleData(articleId);
+                setArticleData(data || null);
+            } catch (err: any) {
+                showAlert(err.message || "Ошибка загрузки статьи");
+            } finally {
+                setLoading(false);
+            }
+        })();
     }, [articleId]);
 
-    useEffect(() => {
-        if (!error) return;
-        showAlert(error);
-    }, [error]);
+    const submitArticleComment = useCallback(
+        async (content: string, parentId?: number) => {
+            if (!articleData) return null;
+    
+            try {
+                const comment = await createArticleComment(articleData.id, {
+                    content,
+                    parentId,
+                });
+    
+                if (!comment) return null;
+    
+                setArticleData(prev => {
+                    if (!prev) return prev;
+    
+                    if (!parentId) {
+                        return {
+                            ...prev,
+                            comments: [...prev.comments, comment],
+                            commentsCount: prev.commentsCount + 1,
+                        };
+                    }
+    
+                    return {
+                        ...prev,
+                        comments: addReplyToTree(prev.comments, parentId, {
+                            ...comment,
+                            indent: true,
+                        }),
+                        commentsCount: prev.commentsCount + 1,
+                    };
+                });
+    
+                return comment;
+            } catch (err: any) {
+                showAlert(err.message || "Ошибка добавления комментария");
+                return null;
+            }
+        },
+        [articleData]
+    );
+    
 
     const handleLike = useCallback(async () => {
         if (!articleData) return;
 
         try {
-            const result = await toggleArticleLike(articleData.id);
+            const res = await toggleArticleLike(articleData.id);
+            if (!res) return;
+
             setArticleData(prev =>
-                !prev || !result
-                    ? prev
-                    : { ...prev, likes: result.likes, likedByCurrentUser: result.likedByCurrentUser }
+                prev
+                    ? { ...prev, likes: res.likes, likedByCurrentUser: res.likedByCurrentUser }
+                    : prev
             );
         } catch (err: any) {
-            showAlert(err.message || "Ошибка при лайке статьи");
+            showAlert(err.message);
         }
     }, [articleData]);
 
@@ -55,29 +98,24 @@ export const useArticleData = (articleId: string | undefined) => {
         if (!articleData) return;
 
         try {
-            const result = await toggleArticleSave(articleData.id);
+            const res = await toggleArticleSave(articleData.id);
+            if (!res) return;
+
             setArticleData(prev =>
-                !prev || !result
-                    ? prev
-                    : { ...prev, saved: result.saved, savedByCurrentUser: result.savedByCurrentUser }
+                prev
+                    ? { ...prev, saved: res.saved, savedByCurrentUser: res.savedByCurrentUser }
+                    : prev
             );
         } catch (err: any) {
-            showAlert(err.message || "Ошибка при сохранении статьи");
+            showAlert(err.message);
         }
     }, [articleData]);
 
-    // Новая функция для добавления комментария и обновления счётчика
-    const addCommentToArticle = useCallback((newComment: Comment) => {
-        setArticleData(prev =>
-            !prev
-                ? prev
-                : {
-                      ...prev,
-                      comments: [...prev.comments, newComment],
-                      commentsCount: prev.commentsCount + 1,
-                  }
-        );
-    }, []);
-
-    return { articleData, loading, handleLike, handleSave, addCommentToArticle };
+    return {
+        articleData,
+        loading,
+        handleLike,
+        handleSave,
+        submitArticleComment,
+    };
 };

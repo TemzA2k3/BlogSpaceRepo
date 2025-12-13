@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, IsNull } from 'typeorm';
 import { File as MulterFile } from 'multer';
 
 import { Article } from '@/database/entities/article.entity';
@@ -109,56 +109,6 @@ export class ArticlesService {
         }));
     }
 
-    // async getArticleData(articleId: number, userId?: number) {
-    //     const article = await this.articleRepository
-    //         .createQueryBuilder('article')
-    //         .leftJoinAndSelect('article.user', 'user')
-    //         .leftJoinAndSelect('article.hashtags', 'hashtags')
-    //         .leftJoinAndSelect('article.likesRelation', 'likes')
-    //         .leftJoinAndSelect('likes.user', 'likeUser')
-    //         .leftJoinAndSelect('article.savesRelation', 'saves')
-    //         .leftJoinAndSelect('saves.user', 'saveUser')
-    //         .where('article.id = :articleId', { articleId })
-    //         .getOne();
-
-    //     if (!article) throw new Error('Article not found');
-
-    //     const likes = article.likesRelation?.length ?? 0;
-    //     const saved = article.savesRelation?.length ?? 0;
-
-    //     const likedByCurrentUser = userId
-    //         ? article.likesRelation?.some(like => like.user?.id === userId) ?? false
-    //         : false;
-
-    //     const savedByCurrentUser = userId
-    //         ? article.savesRelation?.some(save => save.user?.id === userId) ?? false
-    //         : false;
-
-    //     return {
-    //         id: article.id,
-    //         title: article.title,
-    //         description: article.description,
-    //         sections: article.sections,
-    //         coverImage: `/uploads/articles/${article.coverImage}`,
-    //         createdAt: article.createdAt,
-    //         author: {
-    //             id: article.user.id,
-    //             userName: article.user.userName,
-    //             fullName: `${article.user.firstName} ${article.user.lastName}`,
-    //             avatar: article.user.avatar || null,
-    //         },
-    //         hashtags: article.hashtags.map(tag => ({
-    //             id: tag.id,
-    //             name: tag.name,
-    //         })),
-    //         likes,
-    //         saved,
-    //         likedByCurrentUser,
-    //         savedByCurrentUser,
-    //         comments: article.comments,
-    //     };
-    // }
-
     async getArticleData(articleId: number, userId?: number) {
         const article = await this.articleRepository
             .createQueryBuilder('article')
@@ -170,57 +120,65 @@ export class ArticlesService {
             .leftJoinAndSelect('saves.user', 'saveUser')
             .where('article.id = :articleId', { articleId })
             .getOne();
-
+    
         if (!article) throw new NotFoundException('Article not found');
-
+    
         const likes = article.likesRelation?.length ?? 0;
         const saved = article.savesRelation?.length ?? 0;
-
+    
         const likedByCurrentUser = userId
             ? article.likesRelation?.some(like => like.user?.id === userId) ?? false
             : false;
-
+    
         const savedByCurrentUser = userId
             ? article.savesRelation?.some(save => save.user?.id === userId) ?? false
             : false;
-
-        // Получаем комментарии
-        const commentsEntities = await this.commentRepository.find({
-            where: { article: { id: articleId } },
-            relations: ['user', 'parent'],
-            order: { createdAt: 'ASC' },
+    
+        // 1️⃣ Получаем последние 5 корневых комментариев
+        const rootComments = await this.commentRepository.find({
+            where: {
+                article: { id: articleId },
+                parent: IsNull(),
+            },
+            relations: ['user'],
+            order: { createdAt: 'DESC' },
+            take: 5,
         });
-
-        // Формируем дерево комментариев для фронта
-        const commentsMap: Record<number, CommentDto> = {};
-        const rootComments: CommentDto[] = [];
-
-        commentsEntities.forEach(c => {
-            const comment: CommentDto = {
-                id: c.id,
-                firstName: c.user.firstName,
-                lastName: c.user.lastName,
-                authorId: c.user.id,
-                avatar: c.user.avatar || '',
-                date: c.createdAt.toISOString(),
-                content: c.content,
-                indent: !!c.parent,
-                replies: [],
-            };
-
-            commentsMap[c.id] = comment;
-
-            if (c.parent?.id) {
-                const parentComment = commentsMap[c.parent.id];
-                if (parentComment) {
-                    parentComment.replies = parentComment.replies || [];
-                    parentComment.replies.push(comment);
-                }
-            } else {
-                rootComments.push(comment);
-            }
-        });
-
+    
+        // 2️⃣ Для каждого корневого комментария получаем максимум 3 ответа
+        const commentsDto: CommentDto[] = [];
+    
+        for (const root of rootComments) {
+            const replies = await this.commentRepository.find({
+                where: { parent: { id: root.id } },
+                relations: ['user'],
+                order: { createdAt: 'DESC' },
+                take: 3,
+            });
+    
+            commentsDto.push({
+                id: root.id,
+                firstName: root.user.firstName,
+                lastName: root.user.lastName,
+                authorId: root.user.id,
+                avatar: root.user.avatar || '',
+                date: root.createdAt.toISOString(),
+                content: root.content,
+                indent: false,
+                replies: replies.map(r => ({
+                    id: r.id,
+                    firstName: r.user.firstName,
+                    lastName: r.user.lastName,
+                    authorId: r.user.id,
+                    avatar: r.user.avatar || '',
+                    date: r.createdAt.toISOString(),
+                    content: r.content,
+                    indent: true,
+                    replies: [],
+                })),
+            });
+        }
+    
         return {
             id: article.id,
             title: article.title,
@@ -234,19 +192,16 @@ export class ArticlesService {
                 fullName: `${article.user.firstName} ${article.user.lastName}`,
                 avatar: article.user.avatar || null,
             },
-            hashtags: article.hashtags.map(tag => ({
-                id: tag.id,
-                name: tag.name,
-            })),
+            hashtags: article.hashtags.map(tag => ({ id: tag.id, name: tag.name })),
             likes,
             saved,
             likedByCurrentUser,
             savedByCurrentUser,
-            comments: rootComments,
-            commentsCount: commentsEntities.length,
+            comments: commentsDto,
+            commentsCount: await this.commentRepository.count({ where: { article: { id: articleId } } }),
         };
     }
-
+    
 
     async toggleLike(userId: number, articleId: number) {
         const existing = await this.articleLikeRepository.findOne({

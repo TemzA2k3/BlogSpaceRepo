@@ -14,13 +14,14 @@ export interface Comment {
 
 export interface CommentItemProps {
     comment: Comment;
+    onSubmitReply: (content: string, parentId?: number) => Promise<Comment | null>;
 }
 
 export interface CommentsSectionProps {
-    articleId: number;
     comments: Comment[];
+    onSubmitComment: (content: string) => Promise<Comment | null>;
     onLoadMoreComments?: () => void;
-    addCommentToArticle?: (comment: Comment) => void;
+    addCommentToArticle?: (comment: Comment, parentId?: number) => void;
 }
 
 export interface CommentCreateDto {

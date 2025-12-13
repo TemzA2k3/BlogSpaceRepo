@@ -2,40 +2,22 @@ import { type FC, useState } from "react";
 import { EmojiPicker } from "@/shared/components/EmojiPicker";
 import { CommentItem } from "@/components/CommentItem";
 
-import { createArticleComment } from "@/shared/services/articleComments";
-import type { Comment, CommentsSectionProps } from "@/shared/types/comment.types";
+import type { CommentsSectionProps } from "@/shared/types/comment.types";
 
 export const CommentsSection: FC<CommentsSectionProps> = ({
-    articleId,
     comments,
     onLoadMoreComments,
-    addCommentToArticle,
+    onSubmitComment,
 }) => {
     const [newComment, setNewComment] = useState("");
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
-    const [localComments, setLocalComments] = useState<Comment[]>(comments);
 
     const handleEmojiSelect = (emoji: string) => setNewComment(prev => prev + emoji);
 
     const handleSubmit = async () => {
         if (!newComment.trim()) return;
-
-        try {
-            const createdComment = await createArticleComment(articleId, { content: newComment });
-
-            if (createdComment) {
-                setLocalComments(prev => [...prev, createdComment]);
-                setNewComment("");
-
-                if (addCommentToArticle) {
-                    addCommentToArticle(createdComment);
-                }
-            } else {
-                console.error("Failed to create comment: response is null");
-            }
-        } catch (err: any) {
-            console.error("Failed to create comment:", err.message || err);
-        }
+        await onSubmitComment(newComment);
+        setNewComment("");
     };
 
     return (
@@ -43,12 +25,16 @@ export const CommentsSection: FC<CommentsSectionProps> = ({
             <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Comments</h2>
 
             <div className="space-y-6 mb-6">
-                {localComments.map(comment => (
-                    <CommentItem key={comment.id} comment={comment} />
+                {comments.map(comment => (
+                    <CommentItem
+                        key={comment.id}
+                        comment={comment}
+                        onSubmitReply={onSubmitComment}
+                    />
                 ))}
             </div>
 
-            {onLoadMoreComments && (
+            {(onLoadMoreComments || true) && (
                 <div className="mb-6 text-center">
                     <button
                         onClick={onLoadMoreComments}
