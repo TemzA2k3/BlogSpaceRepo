@@ -15,9 +15,6 @@ export const useArticleData = (articleId?: string) => {
 
     const { showAlert } = useAlert();
 
-    console.log(articleData);
-    
-
     useEffect(() => {
         if (!articleId) return;
 

@@ -59,7 +59,7 @@ export class ArticlesController {
     }
 
     @Get()
-    findAll() {
+    findAll() {        
         return this.articlesService.findAll();
     }
 

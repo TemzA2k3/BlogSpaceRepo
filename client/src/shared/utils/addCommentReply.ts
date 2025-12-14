@@ -9,14 +9,14 @@ export const addReplyToTree = (
         if (comment.id === parentId) {
             return {
                 ...comment,
-                replies: [...(comment.replies ?? []), reply],
+                replies: [reply, ...(comment.replies ?? [])],
             };
         }
 
         if (comment.replies?.length) {
             return {
-                ...comment,
                 replies: addReplyToTree(comment.replies, parentId, reply),
+                ...comment,
             };
         }
 
