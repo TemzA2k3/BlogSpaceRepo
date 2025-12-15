@@ -3,6 +3,7 @@ import {
     Controller,
     Get,
     Param,
+    ParseIntPipe,
     Post,
     Query,
     UseGuards
@@ -32,6 +33,17 @@ export class CommentsController {
         return this.commentsService.createArticleComment(user.userId, +articleId, content, parentId)
     }
 
+    @Post('post/:id')
+    @UseGuards(JwtAuthGuard)
+    createPostComment(
+        @UserReq() user: JwtPayload,
+        @Body() body: CreateUserDto,
+        @Param('id') postId: string,
+    ) {
+        const { content, parentId } = body;
+        return this.commentsService.createPostComment(user.userId, +postId, content, parentId);
+    }
+
     @Get('article/:id')
     getArticleComments(
         @Param('id') articleId: string,
@@ -57,4 +69,31 @@ export class CommentsController {
             Number(offset),
         );
     }
+
+    @Get('post/:id')
+    getPostComments(
+        @Param('id', ParseIntPipe) postId: number,
+        @Query('limit') limit?: number,
+        @Query('offset') offset?: number,
+    ) {
+        return this.commentsService.getCommentsForPost(
+            postId,
+            limit ?? 5,
+            offset ?? 0,
+        );
+    }
+
+    @Get('post/:id/replies')
+    getPostCommentReplies(
+        @Param('id', ParseIntPipe) parentId: number,
+        @Query('offset') offset = '0',
+        @Query('limit') limit = '3',
+    ) {
+        return this.commentsService.getPostCommentReplies(
+            parentId,
+            Number(limit),
+            Number(offset)
+        );
+    }
+
 }

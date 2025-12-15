@@ -55,6 +55,15 @@ export class PostsController {
         return this.postsService.findAll(user?.userId);
     }
 
+    @Get(':id')
+    @UseGuards(OptionalJwtAuthGuard)
+    async getPostById(
+        @Param('id') postId: string,
+        @UserReq() user?: JwtPayload,
+    ) {
+        return this.postsService.findOne(+postId, user?.userId);
+    }
+
     @Delete('/:id')
     @UseGuards(JwtAuthGuard)
     deletePost(

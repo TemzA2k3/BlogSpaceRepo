@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository, In, IsNull } from 'typeorm';
 import { File as MulterFile } from 'multer';
 
 import { Post } from '@/database/entities/post.entity';
@@ -9,6 +9,7 @@ import { UserRelation, RelationType } from '@/database/entities/user-relation.en
 import { Hashtag } from '@/database/entities/hashtag.entity';
 import { PostLike } from '@/database/entities/post-likes.entity';
 import { PostSave } from '@/database/entities/post-saves.entity';
+import { Comment } from '@/database/entities/comment.entity';
 
 import { CreatePostDto } from '@/modules/posts/dtos/create-post.dto';
 
@@ -32,12 +33,17 @@ export class PostsService {
 
         @InjectRepository(PostSave)
         private readonly postSaveRepository: Repository<PostSave>,
+
+        @InjectRepository(Comment)
+        private readonly commentRepository: Repository<Comment>,
     ) { }
 
+
     private async mapToUsersPosts(post: Post, currentUserId?: number): Promise<any> {
-        const [likes, saves] = await Promise.all([
+        const [likes, saves, parentCommentsCount] = await Promise.all([
             this.postLikeRepository.find({ where: { post: { id: post.id } }, relations: ['user'] }),
-            this.postSaveRepository.find({ where: { post: { id: post.id } }, relations: ['user'] })
+            this.postSaveRepository.find({ where: { post: { id: post.id } }, relations: ['user'] }),
+            this.commentRepository.count({ where: { post: { id: post.id }, parent: IsNull() } })
         ]);
 
         const likedByCurrentUser = currentUserId ? likes.some(like => like.user.id === currentUserId) : false;
@@ -48,7 +54,7 @@ export class PostsService {
             content: post.content,
             hashtags: post.hashtags?.map(h => ({ id: h.id, name: h.name })) || [],
             likes: likes.length,
-            comments: post.comments,
+            comments: parentCommentsCount,
             saved: saves.length,
             image: post.image ?? null,
             createdAt: post.createdAt,
@@ -61,6 +67,7 @@ export class PostsService {
             savedByCurrentUser,
         };
     }
+
 
     async createPost(userId: number, postData: CreatePostDto, image?: MulterFile) {
         const { content, hashtags = [] } = postData;
@@ -114,6 +121,18 @@ export class PostsService {
         });
 
         return Promise.all(posts.map(post => this.mapToUsersPosts(post, userId)));
+    }
+
+
+    async findOne(postId: number, currentUserId?: number) {
+        const post = await this.postRepository.findOne({
+            where: { id: postId },
+            relations: ['user', 'hashtags'],
+        });
+
+        if (!post) throw new NotFoundException('Post not found');
+
+        return this.mapToUsersPosts(post, currentUserId);
     }
 
     async deletePost(postId: number, userId: number) {

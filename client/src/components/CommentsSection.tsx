@@ -10,7 +10,7 @@ export const CommentsSection: FC<CommentsSectionProps> = ({
     onSubmitComment,
     hasMore,
     onLoadReplies
-}) => {
+}) => {    
     const [newComment, setNewComment] = useState("");
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
 

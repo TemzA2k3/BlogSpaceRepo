@@ -110,9 +110,7 @@ export const CommentItem: FC<CommentItemProps> = ({
                         />
                     ))}
 
-                    {!comment.indent &&
-                        comment.repliesCount &&
-                        comment.replies.length < comment.repliesCount && (
+                    {!comment.indent && comment.repliesCount && comment.replies.length < comment.repliesCount && (
                             <div className="ml-16 mt-1">
                                 <button
                                     onClick={() => onLoadReplies?.(comment.id)}
@@ -124,7 +122,6 @@ export const CommentItem: FC<CommentItemProps> = ({
                         )}
                 </div>
             )}
-
         </div>
     );
 };

@@ -9,6 +9,7 @@ import { EmptyLayout } from "@/layouts/EmptyLayout";
 
 import { HomePage } from "@/pages/HomePage";
 import { PostsPage } from "@/pages/PostsPage";
+import { SpecificPostPage } from "@/pages/SpecificPostPage";
 import { CreatePostPage } from "@/pages/CreatePostPage";
 import { ArticlesPage } from "@/pages/ArticlesPage";
 import { CreateArticlePage } from "@/pages/CteateArticlePage";
@@ -41,6 +42,7 @@ export const router = createBrowserRouter([
       { path: "/", ...withErrorElement(<HomePage />) },
 
       { path: "/posts", ...withErrorElement(<PostsPage />) },
+      { path: "/posts/:id", ...withErrorElement(<SpecificPostPage />) },
       {
         path: "/posts/create",
         ...withErrorElement(

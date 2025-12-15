@@ -22,6 +22,13 @@ export interface UsersPosts extends Post {
     username: string;
 }
 
+export interface PostCardProps extends UsersPosts {
+    onPostUpdate?: (updatedPost: UsersPosts | null) => void;
+    onPostDelete?: (postId: number) => void;
+}
+
+export interface SpecificUserPost extends UsersPosts {}
+
 export interface PostsState {
     posts: UsersPosts[];
     loading: boolean;

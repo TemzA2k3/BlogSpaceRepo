@@ -21,10 +21,9 @@ export interface CommentItemProps {
 
 export interface CommentsSectionProps {
     comments: Comment[];
-    onSubmitComment: (content: string) => Promise<Comment | null>;
+    onSubmitComment: (content: string, parentId?: number) => Promise<Comment | null>;
     onLoadMoreComments?: () => void;
     hasMore?: boolean;
-    addCommentToArticle?: (comment: Comment, parentId?: number) => void;
     onLoadReplies?: (сommentId: number) => void;
 }
 
