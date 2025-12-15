@@ -19,11 +19,49 @@ export const createArticleComment = async (articleId: number, dto: CommentCreate
             body: dto,
         });
 
-        console.log(data);
-        
-
-        return data; // возвращает созданный комментарий
+        return data;
     } catch (err: any) {
         throw new Error(err.message || "Something went wrong while creating the comment");
+    }
+};
+
+
+export const loadArticleComments = async (
+    articleId: number,
+    offset: number,
+    limit = 5
+): Promise<Comment[]> => {
+    try {
+        const data = await apiRequest<Comment[]>(
+            `/comments/article/${articleId}?offset=${offset}&limit=${limit}`,
+            "GET",
+            {
+                credentials: "include",
+            }
+        );
+
+        return data || [];
+    } catch (err: any) {
+        throw new Error(err.message || "Ошибка загрузки комментариев");
+    }
+};
+
+export const loadCommentReplies = async (
+    parentId: number,
+    offset: number,
+    limit = 3
+): Promise<Comment[]> => {
+    try {
+        const data = await apiRequest<Comment[]>(
+            `/comments/${parentId}/replies?offset=${offset}&limit=${limit}`,
+            "GET",
+            {
+                credentials: "include",
+            }
+        );
+
+        return data || [];
+    } catch (err: any) {
+        throw new Error(err.message || "Ошибка загрузки ответов");
     }
 };

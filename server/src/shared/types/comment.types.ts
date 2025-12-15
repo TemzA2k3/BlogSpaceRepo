@@ -8,4 +8,5 @@ export interface CommentDto {
     content: string;
     indent: boolean;
     replies?: CommentDto[];
+    repliesCount?: number
 }

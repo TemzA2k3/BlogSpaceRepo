@@ -5,9 +5,10 @@ import { formatRelativeDate } from "@/shared/utils/timeFormatter";
 
 import type { CommentItemProps } from "@/shared/types/comment.types";
 
-export const CommentItem: FC<CommentItemProps> = ({ 
+export const CommentItem: FC<CommentItemProps> = ({
     comment,
     onSubmitReply,
+    onLoadReplies
 }) => {
     const [isReplying, setIsReplying] = useState(false);
     const [replyText, setReplyText] = useState("");
@@ -19,10 +20,10 @@ export const CommentItem: FC<CommentItemProps> = ({
 
     const handleSubmit = async () => {
         if (!replyText.trim()) return;
-    
+
         const created = await onSubmitReply(replyText, comment.id);
         if (!created) return;
-    
+
         handleCancel();
     };
 
@@ -101,14 +102,29 @@ export const CommentItem: FC<CommentItemProps> = ({
             {comment.replies && comment.replies.length > 0 && (
                 <div className="mt-4 space-y-4">
                     {comment.replies.map(reply => (
-                        <CommentItem 
-                            key={reply.id} 
+                        <CommentItem
+                            key={reply.id}
                             comment={reply}
                             onSubmitReply={onSubmitReply}
+                            onLoadReplies={onLoadReplies}
                         />
                     ))}
+
+                    {!comment.indent &&
+                        comment.repliesCount &&
+                        comment.replies.length < comment.repliesCount && (
+                            <div className="ml-16 mt-1">
+                                <button
+                                    onClick={() => onLoadReplies?.(comment.id)}
+                                    className="text-xs text-blue-600 hover:underline"
+                                >
+                                    Посмотреть еще {comment.repliesCount - 3} ответа
+                                </button>
+                            </div>
+                        )}
                 </div>
             )}
+
         </div>
     );
 };

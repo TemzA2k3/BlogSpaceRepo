@@ -3,20 +3,23 @@ import type { Comment } from "../types/comment.types";
 export const addReplyToTree = (
     comments: Comment[],
     parentId: number,
-    reply: Comment
+    replies: Comment[]
 ): Comment[] => {
     return comments.map(comment => {
         if (comment.id === parentId) {
             return {
                 ...comment,
-                replies: [reply, ...(comment.replies ?? [])],
+                replies: [
+                    ...(comment.replies ?? []),
+                    ...replies.map(r => ({ ...r, indent: true })),
+                ],
             };
         }
 
         if (comment.replies?.length) {
             return {
-                replies: addReplyToTree(comment.replies, parentId, reply),
                 ...comment,
+                replies: addReplyToTree(comment.replies, parentId, replies),
             };
         }
 

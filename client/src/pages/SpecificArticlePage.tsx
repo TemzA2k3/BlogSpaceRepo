@@ -20,6 +20,9 @@ export const SpecificArticlePage = () => {
         handleLike,
         handleSave,
         submitArticleComment,
+        loadComments,
+        hasMoreComments,
+        loadReplies
     } = useArticleData(id);
     const navigate = useNavigate();
 
@@ -105,6 +108,9 @@ export const SpecificArticlePage = () => {
                 <CommentsSection
                     comments={articleData.comments}
                     onSubmitComment={submitArticleComment}
+                    onLoadMoreComments={loadComments}
+                    hasMore={hasMoreComments}
+                    onLoadReplies={loadReplies}
                 />
             </section>
         </div>

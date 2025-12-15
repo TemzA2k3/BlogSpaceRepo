@@ -8,6 +8,8 @@ export const CommentsSection: FC<CommentsSectionProps> = ({
     comments,
     onLoadMoreComments,
     onSubmitComment,
+    hasMore,
+    onLoadReplies
 }) => {
     const [newComment, setNewComment] = useState("");
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
@@ -30,11 +32,12 @@ export const CommentsSection: FC<CommentsSectionProps> = ({
                         key={comment.id}
                         comment={comment}
                         onSubmitReply={onSubmitComment}
+                        onLoadReplies={onLoadReplies}
                     />
                 ))}
             </div>
 
-            {(onLoadMoreComments || true) && (
+            {hasMore && (
                 <div className="mb-6 text-center">
                     <button
                         onClick={onLoadMoreComments}

@@ -179,6 +179,11 @@ export class ArticlesService {
             });
         }
     
+        // ✅ Считаем только корневые комментарии
+        const rootCommentsCount = await this.commentRepository.count({
+            where: { article: { id: articleId }, parent: IsNull() },
+        });
+    
         return {
             id: article.id,
             title: article.title,
@@ -198,7 +203,7 @@ export class ArticlesService {
             likedByCurrentUser,
             savedByCurrentUser,
             comments: commentsDto,
-            commentsCount: await this.commentRepository.count({ where: { article: { id: articleId } } }),
+            commentsCount: rootCommentsCount,
         };
     }
     

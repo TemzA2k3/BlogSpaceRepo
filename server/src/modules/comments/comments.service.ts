@@ -4,11 +4,13 @@ import {
     BadRequestException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 
 import { Comment } from '@/database/entities/comment.entity';
 import { User } from '@/database/entities/user.entity';
 import { Article } from '@/database/entities/article.entity';
+
+import type { CommentDto } from '@/shared/types/comment.types';
 
 @Injectable()
 export class CommentsService {
@@ -21,18 +23,18 @@ export class CommentsService {
 
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
-    ) {}
+    ) { }
 
-    private mapToDto(comment: Comment) {
+    private mapToDto(comment: Comment, indent = false): CommentDto {
         return {
             id: comment.id,
             authorId: comment.user.id,
             firstName: comment.user.firstName,
             lastName: comment.user.lastName,
-            avatar: comment.user.avatar,
+            avatar: comment.user.avatar || '',
             date: comment.createdAt.toISOString(),
             content: comment.content,
-            indent: !!comment.parent,
+            indent,
             replies: [],
         };
     }
@@ -97,4 +99,81 @@ export class CommentsService {
 
         return this.mapToDto(fullComment);
     }
+
+    async getArticleComments(
+        articleId: number,
+        limit = 5,
+        offset = 0,
+    ): Promise<CommentDto[]> {
+        const article = await this.articleRepository.findOne({
+            where: { id: articleId },
+            select: ['id'],
+        });
+    
+        if (!article) {
+            throw new NotFoundException('Article not found');
+        }
+    
+        const roots = await this.commentRepository.find({
+            where: {
+                article: { id: articleId },
+                parent: IsNull(),
+            },
+            relations: ['user'],
+            order: { createdAt: 'DESC' },
+            take: limit,
+            skip: offset,
+        });
+    
+        const result: CommentDto[] = [];
+    
+        for (const root of roots) {
+            const repliesCount = await this.commentRepository.count({
+                where: { parent: { id: root.id } },
+            });
+    
+            const replies = await this.commentRepository.find({
+                where: { parent: { id: root.id } },
+                relations: ['user'],
+                order: { createdAt: 'ASC' },
+                take: 3,
+            });
+    
+            result.push({
+                ...this.mapToDto(root, false),
+                replies: replies.map(reply => this.mapToDto(reply, true)),
+                repliesCount,
+            });
+        }
+    
+        return result;
+    }
+    
+
+    async getCommentReplies(
+        parentId: number,
+        limit: number,
+        offset: number,
+    ): Promise<CommentDto[]> {
+        const parent = await this.commentRepository.findOne({
+            where: { id: parentId },
+            select: ['id'],
+        });
+
+        if (!parent) {
+            throw new NotFoundException('Parent comment not found');
+        }
+
+        const replies = await this.commentRepository.find({
+            where: { parent: { id: parentId } },
+            relations: ['user'],
+            order: { createdAt: 'ASC' },
+            take: limit,
+            skip: offset,
+        });
+
+        return replies.map(reply => this.mapToDto(reply, true));
+    }
+
+
 }
