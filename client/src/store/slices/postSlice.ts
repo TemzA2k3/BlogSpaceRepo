@@ -10,15 +10,28 @@ const initialState: PostsState = {
     loading: false,
     error: null,
     success: false,
+    offset: 0,
+    limit: 15,
+    hasMore: true,
 };
 
 // Thunks
-export const getPosts = createAsyncThunk(
+export const getPosts = createAsyncThunk<
+    UsersPosts[],
+    void,
+    { state: { posts: PostsState } }
+>(
     "posts/getPosts",
-    async (_, { rejectWithValue }) => {
+    async (_, { getState, rejectWithValue }) => {
         try {
-            const data = await apiRequest<Post[]>("/posts", "GET");
-            return data as UsersPosts[] || [];
+            const { offset, limit } = getState().posts;            
+
+            const data = await apiRequest<UsersPosts[]>(
+                `/posts?limit=${limit}&offset=${offset}`,
+                "GET"
+            );
+
+            return data ?? [];
         } catch (err: any) {
             return rejectWithValue(err.message || "Failed to fetch posts");
         }
@@ -92,17 +105,31 @@ const postSlice = createSlice({
             state.error = null;
             state.success = false;
         },
+        resetPosts(state) {
+            state.posts = [];
+            state.offset = 0;
+            state.hasMore = true;
+            state.loading = false;
+            state.error = null;
+        },
     },
     extraReducers: (builder) => {
         builder
             // GET POSTS
             .addCase(getPosts.pending, (state) => {
+                if (state.loading) return;
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(getPosts.fulfilled, (state, action: PayloadAction<UsersPosts[]>) => {
+            .addCase(getPosts.fulfilled, (state, action) => {
                 state.loading = false;
-                state.posts = action.payload;
+
+                if (action.payload.length < state.limit) {
+                    state.hasMore = false;
+                }
+
+                state.posts.push(...action.payload);
+                state.offset += action.payload.length;
                 state.success = true;
             })
             .addCase(getPosts.rejected, (state, action) => {
@@ -116,8 +143,8 @@ const postSlice = createSlice({
                 state.error = null;
             })
             .addCase(createPost.fulfilled, (state, action: PayloadAction<UsersPosts>) => {
-                state.loading = false;
                 state.posts.unshift(action.payload);
+                state.offset += 1;
                 state.success = true;
             })
             .addCase(createPost.rejected, (state, action) => {
@@ -130,7 +157,8 @@ const postSlice = createSlice({
                 state.error = null;
             })
             .addCase(deletePost.fulfilled, (state, action: PayloadAction<number>) => {
-                state.posts = state.posts.filter((post) => post.id !== action.payload);
+                state.posts = state.posts.filter(post => post.id !== action.payload);
+                state.offset = Math.max(0, state.offset - 1);
                 state.success = true;
             })
             .addCase(deletePost.rejected, (state, action) => {
@@ -146,7 +174,7 @@ const postSlice = createSlice({
 
                 const index = state.posts.findIndex(p => p.id === action.payload!.id);
                 if (index !== -1) {
-                    state.posts[index] = action.payload!;
+                    state.posts[index] = action.payload;
                 }
             })
             .addCase(likePost.rejected, (state, action) => {
@@ -160,10 +188,10 @@ const postSlice = createSlice({
             })
             .addCase(toggleSavePost.fulfilled, (state, action: PayloadAction<UsersPosts | null>) => {
                 if (!action.payload) return;
-            
+
                 const index = state.posts.findIndex(p => p.id === action.payload!.id);
                 if (index !== -1) {
-                    state.posts[index] = action.payload!;
+                    state.posts[index] = action.payload;
                 }
             })
             .addCase(toggleSavePost.rejected, (state, action) => {
@@ -173,5 +201,5 @@ const postSlice = createSlice({
     },
 });
 
-export const { clearPostsStatus } = postSlice.actions;
+export const { clearPostsStatus, resetPosts } = postSlice.actions;
 export default postSlice.reducer;

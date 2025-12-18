@@ -9,21 +9,30 @@ const initialState: ArticlesState = {
     articles: [],
     isLoading: false,
     error: null,
+    offset: 0,
+    limit: 21,
+    hasMore: true,
 };
 
 
-export const fetchArticles = createAsyncThunk<ArticlePreview[]>(
+export const fetchArticles = createAsyncThunk<
+    ArticlePreview[],
+    void,
+    { state: { articles: ArticlesState } }
+>(
     "articles/fetchAll",
-    async (_, { rejectWithValue }) => {
+    async (_, { getState, rejectWithValue }) => {
         try {
+            const { offset, limit } = getState().articles;
 
-            const data = await apiRequest<ArticlePreview[]>("/articles", "GET", {
-                credentials: "include",
-            })
+            const data = await apiRequest<ArticlePreview[]>(
+                `/articles?limit=${limit}&offset=${offset}`,
+                "GET",
+            );
 
             return data || [];
-        } catch (err) {
-            return rejectWithValue("Ошибка при загрузке статей");
+        } catch (err: any) {
+            return rejectWithValue(err.message || "Ошибка при загрузке статей");
         }
     }
 );
@@ -58,6 +67,8 @@ const articlesSlice = createSlice({
     reducers: {
         clearArticles(state) {
             state.articles = [];
+            state.offset = 0;
+            state.hasMore = true;
         },
     },
     extraReducers: (builder) => {
@@ -66,19 +77,21 @@ const articlesSlice = createSlice({
                 state.isLoading = true;
                 state.error = null;
             })
-            .addCase(
-                fetchArticles.fulfilled,
-                (state, action: PayloadAction<ArticlePreview[]>) => {
-                    state.isLoading = false;
-                    state.articles = action.payload;
+            .addCase(fetchArticles.fulfilled, (state, action: PayloadAction<ArticlePreview[]>) => {
+                state.isLoading = false;
+
+                if (action.payload.length < state.limit) {
+                    state.hasMore = false;
                 }
-            )
+
+                state.articles.push(...action.payload);
+                state.offset += state.limit;
+            })
             .addCase(fetchArticles.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
             })
 
-            // --- ✅ Обработка создания статьи ---
             .addCase(createArticle.pending, (state) => {
                 state.isLoading = true
                 state.error = null
@@ -86,6 +99,7 @@ const articlesSlice = createSlice({
             .addCase(createArticle.fulfilled, (state, action: PayloadAction<ArticlePreview>) => {
                 state.isLoading = false
                 state.articles.unshift(action.payload)
+                state.offset += 1;
             })
             .addCase(createArticle.rejected, (state, action) => {
                 state.isLoading = false

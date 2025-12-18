@@ -1,51 +1,34 @@
-import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
-import { useAlert } from "@/app/providers/alert/AlertProvider";
-
-import { fetchArticles } from "@/store/slices/articleSlice";
 import { ArticlesGrid } from "@/components/ArticlesGrid";
 import { Loader } from "@/shared/components/Loader";
 import { BlankData } from "@/shared/components/BlankData";
+import { InfiniteObserver } from "@/shared/components/InfiniteObserver";
 
-import type { ArticlePreview } from "@/shared/types/article.types";
+import { useArticles } from "@/hooks/articles/useArticles";
+import { useAppSelector } from "@/hooks/redux/reduxHooks";
 
 export const ArticlesPage = () => {
     const { t } = useTranslation();
-    const { currentUser } = useAppSelector(state => state.auth);
-    const { articles, isLoading, error } = useAppSelector(state => state.articles);
-    const { showAlert } = useAlert();
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
+    const { currentUser } = useAppSelector(state => state.auth);
 
-    const [searchTerm, setSearchTerm] = useState("");
-
-    useEffect(() => {
-        dispatch(fetchArticles());
-    }, [dispatch]);
-
-    useEffect(() => {
-        if (error) showAlert(error, "error");
-    }, [error]);
+    const {
+        articles,
+        searchTerm,
+        setSearchTerm,
+        isLoading,
+        hasMore,
+        fetchNextArticles
+    } = useArticles();
 
     const handleNavigate = () => {
         if (currentUser) navigate("create");
         else {
-            showAlert(t("articles.notAuthForCreateaArticle"), "error");
             navigate("/signin");
         }
     };
-
-    const filteredArticles = articles.filter((article: ArticlePreview) => {
-        const term = searchTerm.toLowerCase();
-        return Object.values(article).some(value => {
-            if (typeof value === "string") return value.toLowerCase().includes(term);
-            if (Array.isArray(value)) return value.some(item => item.name?.toLowerCase().includes(term));
-            return false;
-        });
-    });
 
     return (
         <main className="max-w-6xl mx-auto py-10 px-6 text-gray-800 dark:text-gray-100">
@@ -67,16 +50,24 @@ export const ArticlesPage = () => {
             </div>
 
             {/* Articles */}
-            {isLoading ? (
+            {isLoading && articles.length === 0 ? (
                 <Loader />
-            ) : filteredArticles.length > 0 ? (
-                <ArticlesGrid articles={filteredArticles} />
-            ) : (
+            ) : articles.length === 0 ? (
                 <BlankData
                     icon="📚"
                     title={t("articles.articlesNotFound")}
                     message={t("articles.articlesNotFoundHint")}
                 />
+            ) : (
+                <>
+                    <ArticlesGrid articles={articles} />
+
+                    <InfiniteObserver
+                        enabled={!isLoading && hasMore}
+                        onIntersect={fetchNextArticles}
+                        rootMargin="200px"
+                    />
+                </>
             )}
         </main>
     );

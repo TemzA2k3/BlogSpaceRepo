@@ -1,6 +1,6 @@
 import type { HashTag } from "./hashTag.types";
-
 import type { Comment } from "./comment.types";
+import type { Paggination } from "./paggination.types";
 
 export interface ArticlePreview {
     id: number;
@@ -40,7 +40,7 @@ export interface SectionsEditorProps {
     removeTag: (index: number) => void
 }
 
-export interface ArticlesState {
+export interface ArticlesState extends Paggination {
     articles: ArticlePreview[];
     isLoading: boolean;
     error: string | null;

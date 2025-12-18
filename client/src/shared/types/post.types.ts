@@ -1,5 +1,6 @@
 import type { HashTag } from "./hashTag.types";
 import type { User } from "./user.types";
+import type { Paggination } from "./paggination.types"; 
 
 export interface Post {
     id: number;
@@ -29,7 +30,7 @@ export interface PostCardProps extends UsersPosts {
 
 export interface SpecificUserPost extends UsersPosts {}
 
-export interface PostsState {
+export interface PostsState extends Paggination {
     posts: UsersPosts[];
     loading: boolean;
     error: string | null;

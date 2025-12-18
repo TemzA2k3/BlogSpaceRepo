@@ -102,28 +102,41 @@ export class PostsService {
         return this.mapToUsersPosts(savedPost, userId);
     }
 
-    async findAll(userId?: number) {
+    async findAll(
+        userId?: number,
+        limit = 15,
+        offset = 0,
+    ) {
         let followedUserIds: number[] = [];
-
+    
         if (userId) {
             const followRelations = await this.userRelationRepository.find({
-                where: { sourceUser: { id: userId }, type: RelationType.FOLLOW },
+                where: {
+                    sourceUser: { id: userId },
+                    type: RelationType.FOLLOW,
+                },
                 relations: ['targetUser'],
             });
+    
             followedUserIds = followRelations.map(rel => rel.targetUser.id);
             followedUserIds.push(userId);
         }
-
+    
         const posts = await this.postRepository.find({
-            where: userId ? { user: { id: In(followedUserIds) } } : {},
+            where: userId
+                ? { user: { id: In(followedUserIds) } }
+                : {},
             relations: ['user', 'hashtags'],
             order: { createdAt: 'DESC' },
+            take: limit,
+            skip: offset,
         });
-
-        return Promise.all(posts.map(post => this.mapToUsersPosts(post, userId)));
+    
+        return Promise.all(
+            posts.map(post => this.mapToUsersPosts(post, userId))
+        );
     }
-
-
+    
     async findOne(postId: number, currentUserId?: number) {
         const post = await this.postRepository.findOne({
             where: { id: postId },

@@ -208,9 +208,9 @@ export class UsersService {
         await this.relationRepository.remove(relation);
     }
 
-    async getUsersBySearch(query: string) {
+    async getUsersBySearch(query: string, offset: number = 0, limit: number = 20) {
         if (!query) return [];
-
+    
         const users = await this.userRepository.find({
             where: [
                 { firstName: ILike(`%${query}%`) },
@@ -218,11 +218,14 @@ export class UsersService {
                 { userName: ILike(`%${query}%`) },
             ],
             select: ['id', 'firstName', 'lastName', 'userName', 'avatar'],
-            take: 50,
+            skip: offset,
+            take: limit,
+            order: { id: 'DESC' },
         });
-
+    
         return users;
     }
+    
 
     async getUserFollowing(userId: number) {
         return this.getUserSubs(userId, "targetUser")

@@ -8,7 +8,8 @@ import {
     UseGuards,
     Delete,
     Param,
-    Patch
+    Patch,
+    Query
 } from '@nestjs/common';
 import { File as MulterFile } from 'multer';
 
@@ -51,8 +52,16 @@ export class PostsController {
 
     @Get()
     @UseGuards(OptionalJwtAuthGuard)
-    findAll(@UserReq() user?: JwtPayload) {
-        return this.postsService.findAll(user?.userId);
+    findAll(
+        @UserReq() user?: JwtPayload,
+        @Query('limit') limit = 15,
+        @Query('offset') offset = 0,
+    ) {
+        return this.postsService.findAll(
+            user?.userId,
+            Number(limit),
+            Number(offset),
+        );
     }
 
     @Get(':id')

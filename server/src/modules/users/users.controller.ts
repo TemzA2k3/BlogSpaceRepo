@@ -74,8 +74,15 @@ export class UsersController {
     }
 
     @Get('/search/users')
-    getUsersBySearch(@Query('query') query: string) {        
-        return this.usersService.getUsersBySearch(query)
+    getUsersBySearch(
+        @Query('query') query: string,
+        @Query('offset') offset = '0',
+        @Query('limit') limit = '20'
+    ) {
+        const offsetNum = parseInt(offset, 10);
+        const limitNum = parseInt(limit, 10);
+    
+        return this.usersService.getUsersBySearch(query, offsetNum, limitNum);
     }
 
     @Get('/:id/following')

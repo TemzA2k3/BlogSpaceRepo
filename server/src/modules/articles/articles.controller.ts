@@ -7,7 +7,8 @@ import {
     Body,
     UploadedFile,
     Param,
-    Patch
+    Patch,
+    Query
 } from '@nestjs/common';
 import { File as MulterFile } from 'multer';
 
@@ -47,7 +48,7 @@ export class ArticlesController {
         @Body('sections', new ParseJsonArrayPipe(true)) sections: SectionDto[],
         @Body('hashtags', new ParseJsonArrayPipe(true)) hashtags?: string[],
         @UploadedFile() file?: MulterFile,
-    ) { 
+    ) {
         const articleData: CreateArticleDto = {
             title,
             description,
@@ -59,8 +60,11 @@ export class ArticlesController {
     }
 
     @Get()
-    findAll() {        
-        return this.articlesService.findAll();
+    findAll(
+        @Query('limit') limit: string,
+        @Query('offset') offset: string
+    ) {
+        return this.articlesService.findAll(Number(limit) || 21, Number(offset) || 0);
     }
 
     @Get(':id')
@@ -68,7 +72,7 @@ export class ArticlesController {
     getArticleData(
         @UserReq() user: JwtPayload,
         @Param('id') id: string,
-    ){  
+    ) {
         return this.articlesService.getArticleData(+id, user?.userId);
     }
 

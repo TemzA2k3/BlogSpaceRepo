@@ -85,11 +85,12 @@ export class ArticlesService {
         };
     }
 
-    async findAll() {
+    async findAll(limit = 21, offset = 0) {
         const articles = await this.articleRepository.find({
             relations: ['user', 'hashtags', 'likesRelation', 'savesRelation'],
             order: { createdAt: 'DESC' },
-            take: 12,
+            take: limit,
+            skip: offset,
         });
 
         return articles.map((article) => ({
@@ -99,10 +100,7 @@ export class ArticlesService {
             authorId: article.user.id,
             description: article.description,
             sections: article.sections,
-            tags: article.hashtags.map((tag) => ({
-                id: tag.id,
-                name: tag.name,
-            })),
+            tags: article.hashtags.map((tag) => ({ id: tag.id, name: tag.name })),
             imageUrl: `/uploads/articles/${article.coverImage}`,
             likes: article.likesRelation?.length ?? 0,
             saved: article.savesRelation?.length ?? 0,
@@ -120,20 +118,20 @@ export class ArticlesService {
             .leftJoinAndSelect('saves.user', 'saveUser')
             .where('article.id = :articleId', { articleId })
             .getOne();
-    
+
         if (!article) throw new NotFoundException('Article not found');
-    
+
         const likes = article.likesRelation?.length ?? 0;
         const saved = article.savesRelation?.length ?? 0;
-    
+
         const likedByCurrentUser = userId
             ? article.likesRelation?.some(like => like.user?.id === userId) ?? false
             : false;
-    
+
         const savedByCurrentUser = userId
             ? article.savesRelation?.some(save => save.user?.id === userId) ?? false
             : false;
-    
+
         // 1️⃣ Получаем последние 5 корневых комментариев
         const rootComments = await this.commentRepository.find({
             where: {
@@ -144,10 +142,10 @@ export class ArticlesService {
             order: { createdAt: 'DESC' },
             take: 5,
         });
-    
+
         // 2️⃣ Для каждого корневого комментария получаем максимум 3 ответа
         const commentsDto: CommentDto[] = [];
-    
+
         for (const root of rootComments) {
             const replies = await this.commentRepository.find({
                 where: { parent: { id: root.id } },
@@ -155,7 +153,7 @@ export class ArticlesService {
                 order: { createdAt: 'DESC' },
                 take: 3,
             });
-    
+
             commentsDto.push({
                 id: root.id,
                 firstName: root.user.firstName,
@@ -178,12 +176,12 @@ export class ArticlesService {
                 })),
             });
         }
-    
+
         // ✅ Считаем только корневые комментарии
         const rootCommentsCount = await this.commentRepository.count({
             where: { article: { id: articleId }, parent: IsNull() },
         });
-    
+
         return {
             id: article.id,
             title: article.title,
@@ -206,7 +204,7 @@ export class ArticlesService {
             commentsCount: rootCommentsCount,
         };
     }
-    
+
 
     async toggleLike(userId: number, articleId: number) {
         const existing = await this.articleLikeRepository.findOne({

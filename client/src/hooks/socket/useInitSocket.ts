@@ -21,7 +21,7 @@ export const useInitSocket = () => {
     };
 
     useEffect(() => {
-        if (!currentUser) return;
+        if (!currentUser && socketRef.current) return;
 
         const socket = io(API_BASE_URL, webSocketSettings);
         socketRef.current = socket;
@@ -65,7 +65,9 @@ export const useInitSocket = () => {
         });
 
         return () => {
-            socket.disconnect();
+            if (currentUser){
+                socket.disconnect();
+            }
         }
     }, [currentUser]);
 

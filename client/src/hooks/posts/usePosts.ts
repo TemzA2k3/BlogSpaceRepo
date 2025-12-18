@@ -1,24 +1,23 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
-import { getPosts } from "@/store/slices/postSlice";
+import { getPosts, resetPosts } from "@/store/slices/postSlice";
 
 export const usePosts = () => {
     const dispatch = useAppDispatch();
-    const { posts, loading, error } = useAppSelector(state => state.posts);
-    const { showAlert } = useAlert();
+    const { posts, loading, error, hasMore } = useAppSelector(state => state.posts);
+    const { showAlert } = useAlert();    
 
     useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                await dispatch(getPosts()).unwrap();
-            } catch (err: any) {
-                showAlert(err.message || "Ошибка при загрузке постов", "error");
-            }
-        };
-
-        fetchPosts();
+        dispatch(resetPosts());
+        dispatch(getPosts());
     }, [dispatch]);
+
+    const fetchNextPosts = () => {
+        if (loading || !hasMore) return;
+
+        dispatch(getPosts());
+    };
 
     useEffect(() => {
         if (error) {
@@ -26,5 +25,10 @@ export const usePosts = () => {
         }
     }, [error]);
 
-    return { userPosts: posts, loading, error };
+    return {
+        userPosts: posts,
+        loading,
+        hasMore,
+        fetchNextPosts
+    };
 };
