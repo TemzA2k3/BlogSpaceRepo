@@ -1,0 +1,1 @@
+export const SUBS_LIMIT = 20;

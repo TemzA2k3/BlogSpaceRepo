@@ -210,7 +210,7 @@ export class UsersService {
 
     async getUsersBySearch(query: string, offset: number = 0, limit: number = 20) {
         if (!query) return [];
-    
+
         const users = await this.userRepository.find({
             where: [
                 { firstName: ILike(`%${query}%`) },
@@ -222,31 +222,35 @@ export class UsersService {
             take: limit,
             order: { id: 'DESC' },
         });
-    
+
         return users;
     }
-    
 
-    async getUserFollowing(userId: number) {
-        return this.getUserSubs(userId, "targetUser")
+
+    async getUserFollowing(userId: number, offset: number, limit: number) {
+        return this.getUserSubs(userId, "targetUser", offset, limit)
     }
 
-    getUserFollowers(userId: number) {
-        return this.getUserSubs(userId, "sourceUser")
+    getUserFollowers(userId: number, offset: number, limit: number) {
+        return this.getUserSubs(userId, "sourceUser", offset, limit)
     }
 
     private async getUserSubs(
         userId: number,
-        relation: "sourceUser" | "targetUser"
+        relation: "sourceUser" | "targetUser",
+        offset: number,
+        limit: number,
     ) {
         const whereCondition =
             relation === "sourceUser"
-                ? { targetUser: { id: userId }, type: RelationType.FOLLOW } // подписчики
-                : { sourceUser: { id: userId }, type: RelationType.FOLLOW }; // подписки
+                ? { targetUser: { id: userId }, type: RelationType.FOLLOW }
+                : { sourceUser: { id: userId }, type: RelationType.FOLLOW };
 
         const relations = await this.relationRepository.find({
             where: whereCondition,
             relations: [relation],
+            skip: offset,
+            take: limit,
         });
 
         return relations.map(rel => {
@@ -260,6 +264,7 @@ export class UsersService {
             };
         });
     }
+
 
     async updatePassword(userId: number, newPassword: string) {
         const user = await this.userRepository.findOne({ where: { id: userId } });

@@ -86,12 +86,20 @@ export class UsersController {
     }
 
     @Get('/:id/following')
-    getUserFollowing(@Param('id') userId: string){
-        return this.usersService.getUserFollowing(+userId)
+    getUserFollowing(
+        @Param('id') userId: string,
+        @Query('offset') offset = '0',
+        @Query('limit') limit = '20',
+    ){
+        return this.usersService.getUserFollowing(+userId, Number(offset), Number(limit))
     }
 
     @Get('/:id/followers')
-    getUserFollowers(@Param('id') userId: string){
-        return this.usersService.getUserFollowers(+userId)
+    getUserFollowers(
+        @Param('id') userId: string,
+        @Query('offset') offset = '0',
+        @Query('limit') limit = '20',
+    ){
+        return this.usersService.getUserFollowers(+userId, Number(offset), Number(limit))
     }
 }
