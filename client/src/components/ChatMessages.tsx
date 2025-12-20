@@ -1,14 +1,14 @@
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { ChatMessage } from "@/components/ChatMessage";
 import { BlankData } from "@/shared/components/BlankData";
 
 import { formatDate, groupMessagesByDate } from "@/shared/utils/timeFormatter";
 
-import type { ChatMessage as ChatMessageType } from "@/shared/types/chat.types";
+import type { ChatMessage as ChatMessageType, ChatUser } from "@/shared/types/chat.types";
 
 interface ChatMessagesProps {
     messages: ChatMessageType[];
-    selectedUser: any;
+    selectedUser: ChatUser;
     markMessageAsRead?: (msg: ChatMessageType) => void;
 }
 
@@ -24,7 +24,23 @@ export const ChatMessages = ({
     const grouped = groupMessagesByDate(messages);
 
     useLayoutEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "auto", block: "end" });
+        messagesEndRef.current?.scrollIntoView({
+            behavior: "auto",
+            block: "end"
+        });
+    }, [selectedUser?.id]);
+
+    useEffect(() => {
+        if (messages.length === 0) return;
+    
+        const lastMessage = messages[messages.length - 1];
+    
+        if (lastMessage.sender !== 'me') return;
+    
+        messagesEndRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "end"
+        });
     }, [messages]);
 
     return (

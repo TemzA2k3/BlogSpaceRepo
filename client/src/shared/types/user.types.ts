@@ -50,3 +50,9 @@ export interface UserCardProps {
     userName: string;
     avatar: string | null;
 }
+
+export type FetchFn = (
+    userId: string,
+    offset: number,
+    limit: number
+) => Promise<UserCardProps[]>;

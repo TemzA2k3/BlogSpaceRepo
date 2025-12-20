@@ -117,41 +117,36 @@ export class ChatService {
     }
 
     async getChatMessages(chatId: number, userId: number) {
-        // 1. Проверяем, что чат существует и пользователь — участник чата
         const chat = await this.chatRepository.findOne({
             where: { id: chatId },
             relations: ['participants'],
         });
-
-        if (!chat) {
-            throw new NotFoundException('Чат не найден');
-        }
-
+    
+        if (!chat) throw new NotFoundException('Чат не найден');
+    
         const isParticipant = chat.participants.some(u => u.id === userId);
         if (!isParticipant) {
             throw new ForbiddenException('Вы не участник этого чата');
         }
-
-        // 2. Загружаем сообщения чата
+    
         const messages = await this.messageRepository.find({
             where: { chat: { id: chatId } },
-            relations: ['sender', 'recipient'],
-            order: { createdAt: 'ASC' },
+            relations: ['sender'],
+            order: { createdAt: 'DESC' },
+            take: 30,
         });
-
-        return messages.map(msg => ({
-            id: msg.id,
-            text: msg.text,
-            sender: msg.sender.id === userId ? 'me' : 'other',
-            // time: new Date(msg.createdAt).toLocaleTimeString('en-GB', {
-            //     hour: '2-digit',
-            //     minute: '2-digit',
-            //     hour12: false
-            // }),
-            time: msg.createdAt,
-            isRead: msg.isRead
-        }));
+    
+        return messages
+            .reverse()
+            .map(msg => ({
+                id: msg.id,
+                text: msg.text,
+                sender: msg.sender.id === userId ? 'me' : 'other',
+                time: msg.createdAt,
+                isRead: msg.isRead,
+            }));
     }
+    
 
     async markMessagesAsRead(chatId: number, userId: number) {
         const unreadMessages = await this.messageRepository.find({

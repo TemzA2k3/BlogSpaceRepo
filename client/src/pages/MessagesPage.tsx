@@ -70,7 +70,7 @@ export const MessagesPage = () => {
                 setSearchQuery={() => { }}
             />
 
-            <div className="flex-1 flex flex-col relative" style={{ height: 'calc(100vh - 64px)' }}>
+            <div className="flex-1 flex flex-col relative h-[calc(100vh-64px)]">
                 {!selectedUser || !filteredUsers.length ? (
                     <div className="absolute inset-0 flex items-center justify-center">
                         <BlankData
