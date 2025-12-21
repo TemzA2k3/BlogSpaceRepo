@@ -1,10 +1,9 @@
 import { useEffect, useState, useRef } from "react";
-import { io, Socket } from "socket.io-client";
+import { Socket } from "socket.io-client";
 
 import { useAppSelector } from "@/hooks/redux/reduxHooks";
-import { API_BASE_URL } from "@/shared/constants/urls";
-import { webSocketSettings } from "@/shared/constants/websockets";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
+import { getSocket, disconnectSocket } from "./socket";
 
 export const useInitSocket = () => {
     const { currentUser } = useAppSelector(state => state.auth);
@@ -13,68 +12,79 @@ export const useInitSocket = () => {
     const [connected, setConnected] = useState(false);
     const [usersStatus, setUsersStatus] = useState<Record<number, boolean>>({});
 
-    const socketRef = useRef<Socket | null>(null);
     const alertShownRef = useRef(false);
 
-    const setUserStatus = (userId: number, online: boolean) => {
-        setUsersStatus(prev => ({ ...prev, [userId]: online }));
-    };
-
     useEffect(() => {
-        if (!currentUser && socketRef.current) return;
+        if (!currentUser) return;
 
-        const socket = io(API_BASE_URL, webSocketSettings);
-        socketRef.current = socket;
+        const socket: Socket = getSocket();
 
-        socket.on("connect", () => {
+        const onConnect = () => {
             setConnected(true);
             alertShownRef.current = false;
-        });
+        };
 
-        socket.on("disconnect", (reason) => {
+        const onDisconnect = (reason: string) => {
             setConnected(false);
 
             if (!alertShownRef.current) {
                 showAlert(`Соединение потеряно: ${reason}`, "error");
                 alertShownRef.current = true;
             }
-        });
+        };
 
-        socket.on("connect_error", (err) => {
+        const onConnectError = (err: Error) => {
             if (!alertShownRef.current) {
                 showAlert(`Ошибка подключения: ${err.message}`, "error");
                 alertShownRef.current = true;
             }
-        });
+        };
 
-        socket.on("error", (err) => {
+        const onSocketError = (err: any) => {
             if (!alertShownRef.current) {
                 showAlert(err?.message || "Ошибка сокета", "error");
                 alertShownRef.current = true;
             }
-        });
+        };
 
-        socket.on("initialOnlineUsers", (ids: number[]) => {
+        const onInitialUsers = (ids: number[]) => {
             const map: Record<number, boolean> = {};
-            ids.forEach(id => map[id] = true);
+            ids.forEach(id => (map[id] = true));
             setUsersStatus(map);
-        });
+        };
 
-        socket.on("userStatusChanged", ({ userId, online }) => {
-            setUserStatus(userId, online);
-        });
+        const onUserStatusChanged = ({ userId, online }: { userId: number; online: boolean }) => {
+            setUsersStatus(prev => ({ ...prev, [userId]: online }));
+        };
+
+        socket.on("connect", onConnect);
+        socket.on("disconnect", onDisconnect);
+        socket.on("connect_error", onConnectError);
+        socket.on("error", onSocketError);
+        socket.on("initialOnlineUsers", onInitialUsers);
+        socket.on("userStatusChanged", onUserStatusChanged);
 
         return () => {
-            if (currentUser){
-                socket.disconnect();
-            }
+            socket.off("connect", onConnect);
+            socket.off("disconnect", onDisconnect);
+            socket.off("connect_error", onConnectError);
+            socket.off("error", onSocketError);
+            socket.off("initialOnlineUsers", onInitialUsers);
+            socket.off("userStatusChanged", onUserStatusChanged);
+        };
+    }, [currentUser, showAlert]);
+
+    useEffect(() => {
+        if (!currentUser) {
+            setConnected(false);
+            setUsersStatus({});
+            disconnectSocket();
         }
     }, [currentUser]);
 
     return {
-        socket: socketRef.current,
+        socket: currentUser ? getSocket() : null,
         connected,
         usersStatus,
-        setUserStatus
     };
 };

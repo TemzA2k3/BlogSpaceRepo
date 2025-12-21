@@ -1,6 +1,8 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
+
 import { ChatMessage } from "@/components/ChatMessage";
 import { BlankData } from "@/shared/components/BlankData";
+import { InfiniteObserver } from "@/shared/components/InfiniteObserver";
 
 import { formatDate, groupMessagesByDate } from "@/shared/utils/timeFormatter";
 
@@ -10,38 +12,79 @@ interface ChatMessagesProps {
     messages: ChatMessageType[];
     selectedUser: ChatUser;
     markMessageAsRead?: (msg: ChatMessageType) => void;
+    fetchMoreMessages: () => void;
+    hasMore: boolean;
 }
 
 export const ChatMessages = ({
     messages,
     selectedUser,
-    markMessageAsRead
+    markMessageAsRead,
+    fetchMoreMessages,
+    hasMore
 }: ChatMessagesProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const prevMessagesLengthRef = useRef(messages.length);
+    const prevScrollHeightRef = useRef(0);
+    const lastMessageIdRef = useRef<string | number | null>(null);
     const isEmpty = messages.length === 0;
 
     const grouped = groupMessagesByDate(messages);
 
     useLayoutEffect(() => {
-        messagesEndRef.current?.scrollIntoView({
-            behavior: "auto",
-            block: "end"
-        });
-    }, [selectedUser?.id]);
+        if (containerRef.current) {
+            prevScrollHeightRef.current = containerRef.current.scrollHeight;
+        }
+    });
+
+    useLayoutEffect(() => {        
+        if (messages.length === 0) return;
+    
+        const currentLength = messages.length;
+        const prevLength = prevMessagesLengthRef.current;
+        
+        if (prevLength === 0) {
+            messagesEndRef.current?.scrollIntoView({
+                behavior: "auto",
+                block: "end",
+            });
+        }
+
+        else if (currentLength > prevLength && containerRef.current) {
+            const newScrollHeight = containerRef.current.scrollHeight;
+            const scrollDiff = newScrollHeight - prevScrollHeightRef.current;
+            containerRef.current.scrollTop += scrollDiff;
+        }
+        
+        prevMessagesLengthRef.current = currentLength;
+    }, [messages.length]);
 
     useEffect(() => {
         if (messages.length === 0) return;
     
         const lastMessage = messages[messages.length - 1];
-    
-        if (lastMessage.sender !== 'me') return;
-    
-        messagesEndRef.current?.scrollIntoView({
-            behavior: "smooth",
-            block: "end"
-        });
+        
+        if (lastMessage.id === lastMessageIdRef.current) return;
+        
+        lastMessageIdRef.current = lastMessage.id;
+        
+        if (lastMessage.sender === 'me') {
+            messagesEndRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "end"
+            });
+        }
     }, [messages]);
+
+    useEffect(() => {
+        prevMessagesLengthRef.current = 0;
+        lastMessageIdRef.current = null;
+        messagesEndRef.current?.scrollIntoView({
+            behavior: "auto",
+            block: "end",
+        });
+    }, [selectedUser?.id]);
 
     return (
         <div ref={containerRef} className="flex-1 overflow-y-auto px-6 relative">
@@ -57,16 +100,20 @@ export const ChatMessages = ({
                 </div>
             ) : (
                 <div className="space-y-6 mx-auto">
+                    <InfiniteObserver
+                        root={containerRef.current}
+                        rootMargin="200px 0px 0px 0px"
+                        onIntersect={fetchMoreMessages}
+                        enabled={hasMore}
+                    />
                     {Object.entries(grouped).map(([dateKey, msgs]) => (
                         <div key={dateKey}>
-                            {/* Плашка даты */}
                             <div className="flex justify-center my-4">
                                 <div className="bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-full text-sm">
                                     {formatDate(dateKey)}
                                 </div>
                             </div>
 
-                            {/* Сообщения конкретного дня */}
                             <div className="space-y-4">
                                 {msgs.map(msg => (
                                     <ChatMessage
@@ -80,7 +127,6 @@ export const ChatMessages = ({
                         </div>
                     ))}
 
-                    {/* Конечный реф для скролла */}
                     <div ref={messagesEndRef} />
                 </div>
             )}

@@ -28,7 +28,13 @@ export const MessagesPage = () => {
         handleSelectUser
     } = useChats(socket, currentUser?.id ?? null);
 
-    const { messages, setMessages } = useChatMessages(selectedUser);
+    const { 
+        messages,
+        setMessages,
+        fetchMoreMessages,
+        hasMore,
+        // loading,
+    } = useChatMessages(selectedUser);
 
     const { sendMessage } = useChatSocket({
         socket,
@@ -94,6 +100,8 @@ export const MessagesPage = () => {
                             messages={currentMessages}
                             selectedUser={selectedUser}
                             markMessageAsRead={markMessageAsRead}
+                            fetchMoreMessages={fetchMoreMessages}
+                            hasMore={hasMore}
                         />
 
                         <ChatInput
