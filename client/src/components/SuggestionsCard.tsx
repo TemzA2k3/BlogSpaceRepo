@@ -1,15 +1,10 @@
 import { type FC } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-interface SuggestedUser {
-    id: number;
-    name: string;
-    avatar?: string;
-}
+import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 
-interface SuggestionsCardProps {
-    users: SuggestedUser[];
-}
+import type { SuggestionsCardProps } from "@/shared/types/post.types"
 
 export const SuggestionsCard: FC<SuggestionsCardProps> = ({ users }) => {
     const { t } = useTranslation();
@@ -20,16 +15,16 @@ export const SuggestionsCard: FC<SuggestionsCardProps> = ({ users }) => {
             <ul className="space-y-2 sm:space-y-3">
                 {users.map(user => (
                     <li key={user.id} className="flex justify-between items-center">
-                        <div className="flex items-center gap-2 sm:gap-3">
+                        <Link to={`/users/${user.id}`} className="flex items-center gap-2 sm:gap-3">
                             <img
-                                src={user.avatar || "https://placehold.co/40x40"}
-                                alt={user.name}
+                                src={getAvatarUrl(user.firstName, user.lastName, user.avatar)}
+                                alt={user.username}
                                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
                             />
                             <span className="text-sm sm:text-base text-gray-900 dark:text-gray-100 font-medium">
-                                @{user.name}
+                                {user.username}
                             </span>
-                        </div>
+                        </Link>
                         <button className="text-blue-600 dark:text-blue-400 text-sm sm:text-base hover:underline">
                             {t('posts.follow')}
                         </button>

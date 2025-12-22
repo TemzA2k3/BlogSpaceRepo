@@ -10,13 +10,11 @@ import { useAvatarUpdater } from "@/hooks/profile/useAvatarUpdater";
 import { useFollow } from "@/hooks/profile/useFollow";
 import { useCreateChat } from "@/hooks/profile/useCreateChat";
 
-import { PostCard } from "@/components/PostCard";
+import { StatCard } from "@/components/StatCard";
 import { Loader } from "@/shared/components/Loader";
 
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
-
-import type { UsersPosts } from "@/shared/types/post.types";
-
+import { mapProfileStatsToCards } from "@/shared/utils/profileStatsMapper";
 
 export const ProfilePage = () => {
     const { t } = useTranslation();
@@ -30,31 +28,13 @@ export const ProfilePage = () => {
     const { handleFollow, loading: followLoading } = useFollow(userData, setUserData, currentUser?.id);
     const { handleMessageClick } = useCreateChat();
 
+    const statsData = mapProfileStatsToCards(userData?.stats);
+
     useEffect(() => {
         if (error) {
             showAlert(error, "error");
         }
     }, [error]);
-
-    const handlePostUpdate = (updatedPost: UsersPosts | null) => {
-        if (!updatedPost) return;
-
-        setUserData(prev => {
-            if (!prev) return prev;
-            return {
-                ...prev,
-                posts: prev.posts.map(p => p.id === updatedPost.id ? updatedPost : p)
-            };
-        });
-    };
-
-
-    const handlePostDelete = (postId: number) => {
-        setUserData(prev => ({
-            ...prev!,
-            posts: prev!.posts.filter(p => p.id !== postId)
-        }));
-    };
 
     if (loading || !userData) return <Loader />;
 
@@ -182,22 +162,19 @@ export const ProfilePage = () => {
             </section>
 
             <section>
-                <h3 className="text-xl font-semibold mb-4">Posts</h3>
-                <div className="space-y-6">
-                    {userData.posts.map((post) => (
-                        <PostCard
-                            key={post.id}
-                            {...post}
-                            userId={userData.id}
-                            firstName={userData.firstName}
-                            lastName={userData.lastName}
-                            username={userData.userName}
-                            avatar={getAvatarUrl(userData.firstName, userData.lastName, userData.avatar)}
-                            onPostUpdate={handlePostUpdate}
-                            onPostDelete={handlePostDelete}
-                        />
-                    ))}
+                <div className="mb-6">
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                        Статистика активности
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400">
+                        Активность за последний месяц
+                    </p>
+                </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {statsData.map((stat, index) => (
+                        <StatCard key={index} {...stat} />
+                    ))}
                 </div>
             </section>
         </main>

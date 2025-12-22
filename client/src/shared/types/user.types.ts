@@ -1,5 +1,3 @@
-import { type Post } from "./post.types";
-
 export interface User {
     id: number;
     firstName: string;
@@ -19,7 +17,30 @@ export interface ProfileUserData extends User {
     followersCount: number;
     followingCount: number;
     isFollowing?: boolean;
-    posts: Post[];
+    stats: ProfileStats
+}
+
+interface StatItem {
+    value: number;
+    change: number;
+}
+
+export interface ProfileStats {
+    postsThisMonth: StatItem;
+    newChats: StatItem;
+    newFollowers: StatItem;
+    newFollowing: StatItem;
+    articlesPublished: StatItem;
+    likesReceived: StatItem;
+    commentsReceived: StatItem;
+}
+
+export interface StatCardProps {
+    icon: string;
+    title: string;
+    value: number | string;
+    change?: number;
+    color: string;
 }
 
 export interface RegisterUserData {

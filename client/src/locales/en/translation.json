@@ -11,6 +11,7 @@
   },
   "profile": {
     "getProfile": "Profile",
+    "settings": "Settings",
     "logout": "Logout",
     "subscribe": "You have subscribed successfully!",
     "unsubscribe": "You have unfollowed the user successfully!",
@@ -96,7 +97,10 @@
     "successfullyDeletedPost": "Post has been deleted successfully!",
     "errorWhileDeletingPost": "Error while deleting a post",
     "zeroPosts": "There are no posts yet",
-    "zeroPostsLabel": "Create your first post and start sharing your thoughts with the community!"
+    "zeroPostsLabel": "Create your first post and start sharing your thoughts with the community!",
+    "blankHashTags": "There's nothing here yet. Add a hashtag to a post and it might become popular.",
+    "blankRecommendUsers": "There's nothing here yet. Subscription recommendations will appear here."
+
   },
   "articles": {
     "createArticle": "Create Article",

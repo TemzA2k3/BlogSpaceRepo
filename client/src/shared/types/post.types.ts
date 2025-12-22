@@ -23,6 +23,28 @@ export interface UsersPosts extends Post {
     username: string;
 }
 
+export interface TrendingTopic {
+    tag: string;
+    count: number;
+}
+
+export interface SuggestedUser {
+    id: number;
+    username: string;
+    avatar?: string | null;
+    firstName: string;
+    lastName: string;
+}
+
+export interface SuggestionsCardProps {
+    users: SuggestedUser[];
+}
+
+export interface RecommendationsResponse {
+    trendingTopics: TrendingTopic[];
+    suggestedUsers: SuggestedUser[];
+}
+
 export interface PostCardProps extends UsersPosts {
     onPostUpdate?: (updatedPost: UsersPosts | null) => void;
     onPostDelete?: (postId: number) => void;

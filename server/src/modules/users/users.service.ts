@@ -3,40 +3,45 @@ import {
     Injectable,
     NotFoundException,
 } from "@nestjs/common";
-import { Repository, FindOptionsWhere, ILike } from "typeorm";
+import { 
+    Repository, 
+    FindOptionsWhere, 
+    ILike,
+    MoreThanOrEqual, 
+    Between  
+} from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as path from "path";
 import * as fs from "fs";
 
 import { User } from "@/database/entities/user.entity";
 import { Post } from "@/database/entities/post.entity";
+import { Comment } from "@/database/entities/comment.entity";
 import { PostLike } from "@/database/entities/post-likes.entity";
 import { PostSave } from "@/database/entities/post-saves.entity";
+import { Chat } from "@/database/entities/chat.entity"; 
+import { Article } from "@/database/entities/article.entity";
 
 import {
     RelationType,
     UserRelation,
 } from "@/database/entities/user-relation.entity";
 
+import { ProfileStatsHelper } from "./helpers/profile-stats.helper";
+
 
 @Injectable()
 export class UsersService {
     constructor(
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
-
-        @InjectRepository(UserRelation)
-        private readonly relationRepository: Repository<UserRelation>,
-
-        @InjectRepository(Post)
-        private readonly postRepository: Repository<Post>,
-
-        @InjectRepository(PostLike)
-        private readonly postLikeRepository: Repository<PostLike>,
-
-        @InjectRepository(PostSave)
-        private readonly postSaveRepository: Repository<PostSave>,
-    ) { }
+        @InjectRepository(User) private userRepository: Repository<User>,
+        @InjectRepository(UserRelation) private relationRepository: Repository<UserRelation>,
+        @InjectRepository(Post) private postRepository: Repository<Post>,
+        @InjectRepository(Chat) private chatRepository: Repository<Chat>,
+        @InjectRepository(Article) private articleRepository: Repository<Article>,
+        @InjectRepository(PostLike) private postLikeRepository: Repository<PostLike>,
+        @InjectRepository(Comment) private commentRepository: Repository<Comment>,
+        private readonly statsHelper: ProfileStatsHelper,
+    ) {}
 
     findByEmail(email: string) {
         return this.userRepository.findOne({ where: { email } });
@@ -61,87 +66,181 @@ export class UsersService {
     }
 
     async getUserProfileData(targetUserId: number, currentUserId?: number) {
-        const user = await this.userRepository.findOne({ where: { id: targetUserId } });
-        if (!user) throw new NotFoundException('User not found');
-
-        const { password, ...safeUser } = user;
-
-        const isFollowing = currentUserId
-            ? !!(await this.relationRepository.findOne({
-                where: {
-                    sourceUser: { id: currentUserId },
-                    targetUser: { id: targetUserId },
-                    type: RelationType.FOLLOW,
-                },
-            }))
-            : false;
-
-        const [followersCount, followingCount] = await Promise.all([
-            this.relationRepository.count({ where: { targetUser: { id: targetUserId }, type: RelationType.FOLLOW } }),
-            this.relationRepository.count({ where: { sourceUser: { id: targetUserId }, type: RelationType.FOLLOW } }),
+        const { lastMonth, twoMonthsAgo } = this.statsHelper.getMonthRanges();
+      
+        const userPromise = this.userRepository.findOne({
+          where: { id: targetUserId },
+        });
+      
+        const isFollowingPromise = currentUserId
+          ? this.relationRepository.exist({
+              where: {
+                sourceUser: { id: currentUserId },
+                targetUser: { id: targetUserId },
+                type: RelationType.FOLLOW,
+              },
+            })
+          : Promise.resolve(false);
+      
+        const [
+          user,
+          isFollowing,
+          followersCount,
+          followingCount,
+      
+          postsThisMonth,
+          postsLastMonth,
+      
+          newFollowersThisMonth,
+          newFollowersLastMonth,
+      
+          newFollowingThisMonth,
+          newFollowingLastMonth,
+      
+          articlesThisMonth,
+          articlesLastMonth,
+        ] = await Promise.all([
+          userPromise,
+          isFollowingPromise,
+      
+          this.relationRepository.count({
+            where: { targetUser: { id: targetUserId }, type: RelationType.FOLLOW },
+          }),
+          this.relationRepository.count({
+            where: { sourceUser: { id: targetUserId }, type: RelationType.FOLLOW },
+          }),
+      
+          this.postRepository.count({
+            where: {
+              user: { id: targetUserId },
+              createdAt: MoreThanOrEqual(lastMonth),
+            },
+          }),
+          this.postRepository.count({
+            where: {
+              user: { id: targetUserId },
+              createdAt: Between(twoMonthsAgo, lastMonth),
+            },
+          }),
+      
+          this.relationRepository.count({
+            where: {
+              targetUser: { id: targetUserId },
+              type: RelationType.FOLLOW,
+              createdAt: MoreThanOrEqual(lastMonth),
+            },
+          }),
+          this.relationRepository.count({
+            where: {
+              targetUser: { id: targetUserId },
+              type: RelationType.FOLLOW,
+              createdAt: Between(twoMonthsAgo, lastMonth),
+            },
+          }),
+      
+          this.relationRepository.count({
+            where: {
+              sourceUser: { id: targetUserId },
+              type: RelationType.FOLLOW,
+              createdAt: MoreThanOrEqual(lastMonth),
+            },
+          }),
+          this.relationRepository.count({
+            where: {
+              sourceUser: { id: targetUserId },
+              type: RelationType.FOLLOW,
+              createdAt: Between(twoMonthsAgo, lastMonth),
+            },
+          }),
+      
+          this.articleRepository.count({
+            where: {
+              user: { id: targetUserId },
+              createdAt: MoreThanOrEqual(lastMonth),
+            },
+          }),
+          this.articleRepository.count({
+            where: {
+              user: { id: targetUserId },
+              createdAt: Between(twoMonthsAgo, lastMonth),
+            },
+          }),
         ]);
-
-        const posts = await this.postRepository
-            .createQueryBuilder('post')
-            .leftJoinAndSelect('post.hashtags', 'hashtag')
-            .where('post.userId = :userId', { userId: targetUserId })
-            .orderBy('post.createdAt', 'DESC')
-            .getMany();
-
-        const postIds = posts.map(p => p.id);
-        let likesMap: Record<number, { count: number; likedByCurrentUser: boolean }> = {};
-        let savesMap: Record<number, { count: number; savedByCurrentUser: boolean }> = {};
-
-        if (postIds.length) {
-            const likes = await this.postLikeRepository
-                .createQueryBuilder('like')
-                .select('like.postId', 'postId')
-                .addSelect('COUNT(like.id)', 'likesCount')
-                .addSelect(`SUM(CASE WHEN like.userId = :currentUserId THEN 1 ELSE 0 END)`, 'likedByCurrentUser')
-                .where('like.postId IN (:...postIds)', { postIds })
-                .setParameter('currentUserId', currentUserId || 0)
-                .groupBy('like.postId')
-                .getRawMany();
-
-            likes.forEach(like => {
-                likesMap[like.postId] = { count: Number(like.likesCount), likedByCurrentUser: Number(like.likedByCurrentUser) > 0 };
-            });
-
-            const saves = await this.postSaveRepository
-                .createQueryBuilder('save')
-                .select('save.postId', 'postId')
-                .addSelect('COUNT(save.id)', 'savedCount')
-                .addSelect(`SUM(CASE WHEN save.userId = :currentUserId THEN 1 ELSE 0 END)`, 'savedByCurrentUser')
-                .where('save.postId IN (:...postIds)', { postIds })
-                .setParameter('currentUserId', currentUserId || 0)
-                .groupBy('save.postId')
-                .getRawMany();
-
-            saves.forEach(save => {
-                savesMap[save.postId] = { count: Number(save.savedCount), savedByCurrentUser: Number(save.savedByCurrentUser) > 0 };
-            });
-        }
-
-        const postsWithData = posts.map(post => ({
-            id: post.id,
-            content: post.content,
-            comments: post.comments,
-            saved: savesMap[post.id]?.count || 0,
-            savedByCurrentUser: savesMap[post.id]?.savedByCurrentUser || false,
-            image: post.image ?? null,
-            createdAt: post.createdAt,
-            hashtags: post.hashtags?.map(h => ({ id: h.id, name: h.name })) || [],
-            userId: targetUserId,
-            avatar: user.avatar,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            username: user.userName,
-            likes: likesMap[post.id]?.count || 0,
-            likedByCurrentUser: likesMap[post.id]?.likedByCurrentUser || false,
-        }));
-
-        return { ...safeUser, isFollowing, followersCount, followingCount, posts: postsWithData };
-    }
+      
+        if (!user) throw new NotFoundException("User not found");
+      
+        const { password, ...safeUser } = user;
+      
+        /** лайки и комментарии — отдельными QB (дорого, но корректно) */
+        const [likesThisMonth, likesLastMonth, commentsThisMonth, commentsLastMonth] =
+          await Promise.all([
+            this.postLikeRepository
+              .createQueryBuilder("like")
+              .innerJoin("like.post", "post")
+              .where("post.user = :userId", { userId: targetUserId })
+              .andWhere("like.createdAt >= :lastMonth", { lastMonth })
+              .getCount(),
+      
+            this.postLikeRepository
+              .createQueryBuilder("like")
+              .innerJoin("like.post", "post")
+              .where("post.user = :userId", { userId: targetUserId })
+              .andWhere("like.createdAt >= :twoMonthsAgo", { twoMonthsAgo })
+              .andWhere("like.createdAt < :lastMonth", { lastMonth })
+              .getCount(),
+      
+            this.commentRepository
+              .createQueryBuilder("comment")
+              .innerJoin("comment.post", "post")
+              .where("post.user = :userId", { userId: targetUserId })
+              .andWhere("comment.createdAt >= :lastMonth", { lastMonth })
+              .getCount(),
+      
+            this.commentRepository
+              .createQueryBuilder("comment")
+              .innerJoin("comment.post", "post")
+              .where("post.user = :userId", { userId: targetUserId })
+              .andWhere("comment.createdAt >= :twoMonthsAgo", { twoMonthsAgo })
+              .andWhere("comment.createdAt < :lastMonth", { lastMonth })
+              .getCount(),
+          ]);
+      
+        const stats = {
+          postsThisMonth: {
+            value: postsThisMonth,
+            change: this.statsHelper.calculateChange(postsThisMonth, postsLastMonth),
+          },
+          newFollowers: {
+            value: newFollowersThisMonth,
+            change: this.statsHelper.calculateChange(newFollowersThisMonth, newFollowersLastMonth),
+          },
+          newFollowing: {
+            value: newFollowingThisMonth,
+            change: this.statsHelper.calculateChange(newFollowingThisMonth, newFollowingLastMonth),
+          },
+          articlesPublished: {
+            value: articlesThisMonth,
+            change: this.statsHelper.calculateChange(articlesThisMonth, articlesLastMonth),
+          },
+          likesReceived: {
+            value: likesThisMonth,
+            change: this.statsHelper.calculateChange(likesThisMonth, likesLastMonth),
+          },
+          commentsReceived: {
+            value: commentsThisMonth,
+            change: this.statsHelper.calculateChange(commentsThisMonth, commentsLastMonth),
+          },
+        };
+      
+        return {
+          ...safeUser,
+          isFollowing,
+          followersCount,
+          followingCount,
+          stats,
+        };
+      }
+      
 
     create(data: Partial<User>) {
         const user = this.userRepository.create(data);

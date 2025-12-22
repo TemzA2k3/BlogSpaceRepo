@@ -34,9 +34,9 @@ export const LoggedUserPreview: FC<ILoggedUserPreview> = ({ handleLogout, user }
                 className="p-0 transition-transform duration-200 hover:scale-105"
             >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center overflow-hidden shadow-md">
-                    <img 
-                        src={getAvatarUrl(user.firstName, user.lastName, user.avatar)} 
-                        alt={user.userName} 
+                    <img
+                        src={getAvatarUrl(user.firstName, user.lastName, user.avatar)}
+                        alt={user.userName}
                         className="w-full h-full object-cover" />
                 </div>
             </button>
@@ -45,10 +45,10 @@ export const LoggedUserPreview: FC<ILoggedUserPreview> = ({ handleLogout, user }
                 <div className="absolute right-0 top-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-10 min-w-[160px] sm:min-w-[200px] overflow-hidden animate-in slide-in-from-top-2 duration-200">
                     <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 border-b border-gray-200 dark:border-gray-700">
                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
-                            <img 
-                            src={getAvatarUrl(user.firstName, user.lastName, user.avatar)} 
-                            alt={user.userName} 
-                            className="w-full h-full object-cover" />
+                            <img
+                                src={getAvatarUrl(user.firstName, user.lastName, user.avatar)}
+                                alt={user.userName}
+                                className="w-full h-full object-cover" />
                         </div>
                         <div className="flex flex-col text-xs sm:text-sm">
                             <span className="font-semibold text-gray-800 dark:text-gray-100">{user.firstName} {user.lastName}</span>
@@ -56,13 +56,23 @@ export const LoggedUserPreview: FC<ILoggedUserPreview> = ({ handleLogout, user }
                         </div>
                     </div>
 
-                    <Link 
+                    <Link
                         to={`users/${user.id}`}
                         onClick={() => setShowUserDropdown(false)}
-                        >
+                    >
                         <button className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm flex items-center gap-2 sm:gap-3 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
                             <i className="fas fa-user text-xs sm:text-sm text-gray-600 dark:text-gray-300"></i>
                             {t('profile.getProfile')}
+                        </button>
+                    </Link>
+
+                    <Link
+                        to={`users/${user.id}/settings`}
+                        onClick={() => setShowUserDropdown(false)}
+                    >
+                        <button className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm flex items-center gap-2 sm:gap-3 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                            <i className="fas fa-cog text-xs sm:text-sm text-gray-600 dark:text-gray-300"></i>
+                            {t('profile.settings')}
                         </button>
                     </Link>
 

@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtSharedModule } from '@/common/jwt/jwt.module'
 
 import { PostsService } from './posts.service';
+import { PostsRecommendationsService } from './posts.recommendation.service';
 import { PostsController } from './posts.controller';
 
 import { Post } from '@/database/entities/post.entity';
@@ -24,7 +25,7 @@ import { Comment } from '@/database/entities/comment.entity';
         ]),
         JwtSharedModule,
     ],
-  providers: [PostsService],
+  providers: [PostsService, PostsRecommendationsService],
   controllers: [PostsController]
 })
 export class PostsModule {}

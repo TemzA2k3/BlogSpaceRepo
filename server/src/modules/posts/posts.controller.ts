@@ -24,12 +24,16 @@ import { ParseJsonArrayPipe } from "@/common/pipes/parse-json-array.pipe"
 import { PostsService } from './posts.service';
 
 import { CreatePostDto } from "./dtos/create-post.dto"
+import { PostsRecommendationsService } from './posts.recommendation.service';
 
 
 
 @Controller('posts')
 export class PostsController {
-    constructor(private postsService: PostsService) { }
+    constructor(
+        private postsService: PostsService,
+        private postRecommendationsService: PostsRecommendationsService
+    ) { }
 
     @Post()
     @UseGuards(JwtAuthGuard)
@@ -62,6 +66,15 @@ export class PostsController {
             Number(limit),
             Number(offset),
         );
+    }
+
+    @Get('recommendations')
+    @UseGuards(OptionalJwtAuthGuard)
+    async getRecommendations(
+        @UserReq() user?: JwtPayload,
+    ) {
+        const currentUserId = user?.userId;
+        return this.postRecommendationsService.getRecommendations(currentUserId);
     }
 
     @Get(':id')

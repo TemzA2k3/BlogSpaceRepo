@@ -22,7 +22,7 @@ export const TrendingTopicsCard: FC<TrendingTopicsCardProps> = ({ topics }) => {
                         key={topic.tag}
                         className="flex justify-between items-center text-sm sm:text-base text-gray-700 dark:text-gray-300"
                     >
-                        <span className="text-blue-600 dark:text-blue-400 font-medium">{topic.tag}</span>
+                        <span className="text-blue-600 dark:text-blue-400 font-medium">#{topic.tag}</span>
                         <span className="text-gray-500 dark:text-gray-400">{topic.count} {t('posts.posts')}</span>
                     </li>
                 ))}
