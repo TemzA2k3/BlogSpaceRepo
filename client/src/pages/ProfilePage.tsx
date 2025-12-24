@@ -12,6 +12,7 @@ import { useCreateChat } from "@/hooks/profile/useCreateChat";
 
 import { StatCard } from "@/components/StatCard";
 import { Loader } from "@/shared/components/Loader";
+import { BlankData } from "@/shared/components/BlankData";
 
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 import { mapProfileStatsToCards } from "@/shared/utils/profileStatsMapper";
@@ -29,6 +30,8 @@ export const ProfilePage = () => {
     const { handleMessageClick } = useCreateChat();
 
     const statsData = mapProfileStatsToCards(userData?.stats);
+
+    const isPrivateProfile = !isMyProfile && userData?.isPublicProfile === false;
 
     useEffect(() => {
         if (error) {
@@ -82,46 +85,51 @@ export const ProfilePage = () => {
                             {userData.userName}
                         </p>
 
-                        <div className="mt-3 flex flex-wrap justify-center sm:justify-start gap-4 text-sm text-gray-600 dark:text-gray-400">
-                            <span>📍 {userData.location || "—"}</span>
-                            {userData.website && (
-                                <a
-                                    href={`https://${userData.website}`}
-                                    target="_blank"
-                                    className="text-blue-600 dark:text-blue-400 hover:underline"
-                                >
-                                    🌐 {userData.website}
-                                </a>
-                            )}
-                        </div>
+                        {/* Show location/website/bio only for public profiles */}
+                        {!isPrivateProfile && (
+                            <>
+                                <div className="mt-3 flex flex-wrap justify-center sm:justify-start gap-4 text-sm text-gray-600 dark:text-gray-400">
+                                    {userData.location && (
+                                        <span>📍 {userData.location}</span>
+                                    )}
+                                    {userData.website && (
+                                        <a
+                                            href={userData.website}
+                                            target="_blank"
+                                            className="text-blue-600 dark:text-blue-400 hover:underline"
+                                        >
+                                            🌐 {userData.website}
+                                        </a>
+                                    )}
+                                </div>
 
-                        {userData.bio && (
-                            <p className="mt-4 text-gray-700 dark:text-gray-300">
-                                {userData.bio}
-                            </p>
+                                {userData.bio && (
+                                    <p className="mt-4 text-gray-700 dark:text-gray-300">
+                                        {userData.bio}
+                                    </p>
+                                )}
+
+                                <div className="mt-5 flex justify-center sm:justify-start gap-6 text-sm">
+                                    <span
+                                        className="cursor-pointer px-2 py-1 rounded-lg 
+                                            hover:bg-gray-200 dark:hover:bg-gray-700 
+                                            transition-colors"
+                                        onClick={() => navigate(`/users/${userData.id}/followers`)}
+                                    >
+                                        <strong>{userData.followersCount}</strong> {t("profile.followers")}
+                                    </span>
+
+                                    <span
+                                        className="cursor-pointer px-2 py-1 rounded-lg 
+                                            hover:bg-gray-200 dark:hover:bg-gray-700 
+                                            transition-colors"
+                                        onClick={() => navigate(`/users/${userData.id}/following`)}
+                                    >
+                                        <strong>{userData.followingCount}</strong> {t("profile.following")}
+                                    </span>
+                                </div>
+                            </>
                         )}
-
-                        <div className="mt-5 flex justify-center sm:justify-start gap-6 text-sm">
-                            <span
-                                className="cursor-pointer px-2 py-1 rounded-lg 
-               hover:bg-gray-200 dark:hover:bg-gray-700 
-               transition-colors"
-                                onClick={() => navigate(`/users/${userData.id}/followers`)}
-                            >
-                                <strong>{userData.followersCount}</strong> {t("profile.followers")}
-                            </span>
-
-                            <span
-                                className="cursor-pointer px-2 py-1 rounded-lg 
-               hover:bg-gray-200 dark:hover:bg-gray-700 
-               transition-colors"
-                                onClick={() => navigate(`/users/${userData.id}/following`)}
-                            >
-                                <strong>{userData.followingCount}</strong> {t("profile.following")}
-                            </span>
-                        </div>
-
-
 
                         {isMyProfile ? (
                             <div className="mt-6 flex flex-wrap justify-center sm:justify-start gap-3">
@@ -163,22 +171,31 @@ export const ProfilePage = () => {
                 </div>
             </section>
 
-            <section>
-                <div className="mb-6">
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                        Статистика активности
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400">
-                        Активность за последний месяц
-                    </p>
-                </div>
+            {/* Show private profile notice OR stats section */}
+            {isPrivateProfile ? (
+                <BlankData
+                    icon="🔒"
+                    title={t("profile.privateProfile", "This account is private")}
+                    message={t("profile.privateProfileMessage", "Follow this account to see their posts and activity")}
+                />
+            ) : (
+                <section>
+                    <div className="mb-6">
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                            Статистика активности
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400">
+                            Активность за последний месяц
+                        </p>
+                    </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {statsData.map((stat, index) => (
-                        <StatCard key={index} {...stat} />
-                    ))}
-                </div>
-            </section>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {statsData.map((stat, index) => (
+                            <StatCard key={index} {...stat} />
+                        ))}
+                    </div>
+                </section>
+            )}
         </main>
     );
 };

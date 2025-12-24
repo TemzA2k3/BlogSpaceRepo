@@ -13,7 +13,7 @@ export const Toggle: FC<ToggleProps> = ({ enabled, onChange }) => (
         }`}
     >
         <span
-            className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${
+            className={`absolute top-1 right-[1.7rem] w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${
                 enabled ? "translate-x-6" : "translate-x-1"
             }`}
         />
