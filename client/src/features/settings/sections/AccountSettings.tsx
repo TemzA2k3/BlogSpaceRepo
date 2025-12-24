@@ -4,9 +4,16 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/hooks/redux/reduxHooks";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 
-import { deleteAccount } from "@/store/slices/authSlice";
+import { deleteAccount, changePassword } from "@/store/slices/authSlice";
 
-import { SectionHeader, SettingGroup, SettingRow, SelectButton, DeleteAccountModal } from "../components";
+import { 
+    SectionHeader, 
+    SettingGroup, 
+    SettingRow, 
+    SelectButton, 
+    DeleteAccountModal,
+    ChangePasswordModal 
+} from "../components";
 
 export const AccountSettings: FC = () => {
     const dispatch = useAppDispatch();
@@ -14,7 +21,9 @@ export const AccountSettings: FC = () => {
     const { showAlert } = useAlert();
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [changingPassword, setChangingPassword] = useState(false);
 
     const handleDeleteAccount = async () => {
         setDeleting(true);
@@ -36,13 +45,35 @@ export const AccountSettings: FC = () => {
         }
     };
 
+    const handleChangePassword = async (currentPassword: string, newPassword: string) => {
+        setChangingPassword(true);
+
+        try {
+            const result = await dispatch(changePassword({ currentPassword, newPassword }));
+
+            if (changePassword.fulfilled.match(result)) {
+                showAlert("Password changed successfully", "success");
+                setShowPasswordModal(false);
+            } else {
+                showAlert(result.payload as string || "Failed to change password", "error");
+            }
+        } catch (err: any) {
+            showAlert(err.message || "Failed to change password", "error");
+        } finally {
+            setChangingPassword(false);
+        }
+    };
+
     return (
         <>
             <SectionHeader title="Account" subtitle="Manage your account settings and security" />
 
             <SettingGroup title="Security">
                 <SettingRow label="Change Password" description="Update your password regularly">
-                    <SelectButton value="Change" />
+                    <SelectButton 
+                        value="Change" 
+                        onClick={() => setShowPasswordModal(true)}
+                    />
                 </SettingRow>
             </SettingGroup>
 
@@ -62,6 +93,14 @@ export const AccountSettings: FC = () => {
                     loading={deleting}
                     onConfirm={handleDeleteAccount}
                     onClose={() => setShowDeleteModal(false)}
+                />
+            )}
+
+            {showPasswordModal && (
+                <ChangePasswordModal
+                    loading={changingPassword}
+                    onSubmit={handleChangePassword}
+                    onClose={() => setShowPasswordModal(false)}
                 />
             )}
         </>

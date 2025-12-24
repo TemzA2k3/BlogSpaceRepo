@@ -26,6 +26,7 @@ import { OptionalJwtAuthGuard } from '@/common/guards/optional-jwt-auth.guard';
 import { ImageUploadInterceptor } from '@/common/interceptors/image-upload.interceptor';
 
 import { UpdateSettingsDto } from './dtos/update-user.dto'
+import { ChangePasswordDto } from './dtos/change-password.dto';
 
 @Controller('users')
 export class UsersController {
@@ -138,6 +139,21 @@ export class UsersController {
         }
 
         return this.usersService.updateUserSettings(+id, dto);
+    }
+
+    @Patch(':id/password')
+    @UseGuards(JwtAuthGuard)
+    async changePassword(
+        @Param('id') id: string,
+        @Body() dto: ChangePasswordDto,
+        @UserReq() user: JwtPayload
+    ) {
+        if (+id !== user.userId) {
+            throw new ForbiddenException("You can only change your own password");
+        }
+
+        await this.usersService.changePassword(+id, dto);
+        return { message: "Password changed successfully" };
     }
 
     @Delete(':id')

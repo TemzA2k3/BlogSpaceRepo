@@ -22,6 +22,8 @@ import { PostSave } from "@/database/entities/post-saves.entity";
 import { Chat } from "@/database/entities/chat.entity"; 
 import { Article } from "@/database/entities/article.entity";
 
+import { PasswordService } from "@/common/services/password.service";
+
 import {
     RelationType,
     UserRelation,
@@ -29,6 +31,7 @@ import {
 
 import { ProfileStatsHelper } from "./helpers/profile-stats.helper";
 import { UpdateSettingsDto } from "./dtos/update-user.dto";
+import { ChangePasswordDto } from "./dtos/change-password.dto";
 
 
 @Injectable()
@@ -42,6 +45,7 @@ export class UsersService {
         @InjectRepository(PostLike) private postLikeRepository: Repository<PostLike>,
         @InjectRepository(Comment) private commentRepository: Repository<Comment>,
         private readonly statsHelper: ProfileStatsHelper,
+        private readonly passwordService: PasswordService,
     ) {}
 
     findByEmail(email: string) {
@@ -452,6 +456,32 @@ export class UsersService {
 
         const { password, ...safeUser } = user;
         return safeUser;
+    }
+
+    async changePassword(userId: number, dto: ChangePasswordDto) {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+    
+        if (!user) {
+            throw new NotFoundException("User not found");
+        }
+    
+        // Verify current password
+        const isPasswordValid = await this.passwordService.compare(dto.currentPassword, user.password);
+    
+        if (!isPasswordValid) {
+            throw new BadRequestException("Current password is incorrect");
+        }
+    
+        // Check if new password is different
+        const isSamePassword = await this.passwordService.compare(dto.newPassword, user.password);
+    
+        if (isSamePassword) {
+            throw new BadRequestException("New password must be different from current password");
+        }
+    
+        // Hash and save new password
+        user.password = await this.passwordService.hash(dto.newPassword);
+        await this.userRepository.save(user);
     }
 
     async deleteAccount(userId: number) {

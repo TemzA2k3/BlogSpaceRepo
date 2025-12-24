@@ -12,6 +12,7 @@ import { Comment } from '@/database/entities/comment.entity';
 
 import { JwtSharedModule } from '@/common/jwt/jwt.module';
 import { UsersService } from './users.service';
+import { PasswordService } from '@/common/services/password.service'
 import { UsersController } from './users.controller';
 
 import { ProfileStatsHelper } from './helpers/profile-stats.helper';
@@ -27,7 +28,7 @@ import { ProfileStatsHelper } from './helpers/profile-stats.helper';
     ]),
     JwtSharedModule
 ],
-  providers: [UsersService, ProfileStatsHelper],
+  providers: [UsersService, ProfileStatsHelper, PasswordService],
   controllers: [UsersController],
   exports: [UsersService],
 })

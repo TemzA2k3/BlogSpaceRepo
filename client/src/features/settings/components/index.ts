@@ -5,3 +5,4 @@ export { SettingGroup } from "./SettingGroup";
 export { SelectButton } from "./SelectButton";
 export { LanguageSelectModal } from "@/shared/components/LanguageSelectModal"
 export { DeleteAccountModal } from "@/shared/components/DeleteAccountModal";
+export { ChangePasswordModal } from "@/shared/components/ChangePasswordModal"

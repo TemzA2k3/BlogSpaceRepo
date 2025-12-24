@@ -156,6 +156,32 @@ export const deleteAccount = createAsyncThunk(
     }
 );
 
+export const changePassword = createAsyncThunk(
+    "auth/changePassword",
+    async (
+        { currentPassword, newPassword }: { currentPassword: string; newPassword: string },
+        { getState, rejectWithValue }
+    ) => {
+        try {
+            const { auth } = getState() as { auth: AuthState };
+            const userId = auth.currentUser?.id;
+
+            if (!userId) {
+                return rejectWithValue("User not authenticated");
+            }
+
+            await apiRequest(`/users/${userId}/password`, "PATCH", {
+                body: { currentPassword, newPassword },
+                credentials: "include",
+            });
+
+            return true;
+        } catch (err: any) {
+            return rejectWithValue(err.message || "Failed to change password");
+        }
+    }
+);
+
 const authSlice = createSlice({
     name: "auth",
     initialState,
@@ -277,6 +303,20 @@ const authSlice = createSlice({
                 state.initialized = false;
             })
             .addCase(deleteAccount.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+
+            // CHANGE PASSWORD
+            .addCase(changePassword.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(changePassword.fulfilled, (state) => {
+                state.loading = false;
+                state.success = true;
+            })
+            .addCase(changePassword.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             });
