@@ -21,6 +21,12 @@ export enum UserRole {
     ADMIN = 'admin',
 }
 
+export enum WhoCanMessage {
+    EVERYONE = 'everyone',
+    FOLLOWERS = 'followers',
+    NOBODY = 'nobody',
+}
+
 @Entity('users')
 export class User {
     @PrimaryGeneratedColumn()
@@ -61,11 +67,24 @@ export class User {
     bio?: string;
 
     @Column({ type: 'varchar', nullable: true })
-    // geo data type
     location?: string;
 
     @Column({ type: 'varchar', nullable: true })
     website?: string;
+
+    // Settings fields
+    @Column({ default: true })
+    isPublicProfile: boolean;
+
+    @Column({
+        type: 'enum',
+        enum: WhoCanMessage,
+        default: WhoCanMessage.EVERYONE,
+    })
+    whoCanMessage: WhoCanMessage;
+
+    @Column({ type: 'varchar', default: 'en' })
+    displayLanguage: string;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;

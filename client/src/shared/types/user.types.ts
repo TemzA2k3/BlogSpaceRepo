@@ -11,6 +11,44 @@ export interface User {
     location?: string;
     website?: string;
     createdAt?: string;
+
+    // Settings fields
+    isPublicProfile?: boolean;
+    whoCanMessage?: "everyone" | "followers" | "nobody";
+    displayLanguage?: string;
+}
+
+export interface AuthState {
+    currentUser: User | null;
+    loading: boolean;
+    success: boolean;
+    error: string | null;
+    initialized: boolean;
+
+    // Settings state
+    settingsLoading: boolean;
+    settingsUpdating: boolean;
+    settingsError: string | null;
+}
+
+export interface RegisterUserData {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+}
+
+export interface UpdateSettingsPayload {
+    firstName?: string;
+    lastName?: string;
+    userName?: string;
+    bio?: string;
+    location?: string;
+    website?: string;
+    avatar?: string;
+    isPublicProfile?: boolean;
+    whoCanMessage?: "everyone" | "followers" | "nobody";
+    displayLanguage?: string;
 }
 
 export interface ProfileUserData extends User {

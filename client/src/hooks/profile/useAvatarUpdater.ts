@@ -2,7 +2,7 @@ import { type Dispatch, type SetStateAction, useState } from "react";
 import { useAppDispatch } from "@/hooks/redux/reduxHooks";
 import { setCurrentUser } from "@/store/slices/authSlice";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
-import { changeUserAvatar } from "@/shared/services/changeUserAvatar";
+import { changeUserAvatar, deleteUserAvatar } from "@/shared/services/changeUserAvatar";
 import { useTranslation } from "react-i18next";
 import { type ProfileUserData } from "@/shared/types/user.types";
 
@@ -34,5 +34,24 @@ export function useAvatarUpdater(
         }
     };
 
-    return { handleAvatarChange, loading };
+    const handleAvatarDelete = async () => {
+        setLoading(true);
+
+        try {
+            const updatedUser = await deleteUserAvatar();
+            dispatch(setCurrentUser(updatedUser));
+
+            if (setUserData) {
+                setUserData(prev => prev ? { ...prev, avatar: null } : prev);
+            }
+
+            showAlert(t("profile.deletedAvatar"), "success");
+        } catch (err: any) {
+            showAlert(err.message || t("profile.errorDeletingAvatar"), "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return { handleAvatarChange, handleAvatarDelete, loading };
 }

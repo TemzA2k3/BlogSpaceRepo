@@ -1,0 +1,217 @@
+import { useState, useRef, type FC } from "react";
+
+import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
+import { useAvatarUpdater } from "@/hooks/profile/useAvatarUpdater";
+
+import { SectionHeader, SettingGroup, SettingRow, SelectButton } from "../components";
+
+import { EditFieldModal } from "@/shared/components/EditFieldModal"
+
+import type { User, UpdateSettingsPayload } from "@/shared/types/user.types";
+
+interface ProfileSettingsProps {
+    settings: User;
+    updating: boolean;
+    onUpdate: (payload: UpdateSettingsPayload) => Promise<{ success: boolean }>;
+}
+
+type EditableField = "firstName" | "lastName" | "userName" | "bio" | "location" | "website" | null;
+
+export const ProfileSettings: FC<ProfileSettingsProps> = ({ settings, updating, onUpdate }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const { handleAvatarChange, handleAvatarDelete, loading: avatarLoading } = useAvatarUpdater();
+
+    const [editingField, setEditingField] = useState<EditableField>(null);
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            handleAvatarChange(file);
+        }
+        e.target.value = "";
+    };
+
+    const handleSaveField = async (field: EditableField, value: string) => {
+        if (!field) return;
+
+        const result = await onUpdate({ [field]: value });
+        if (result) {
+            setEditingField(null);
+        }
+    };
+    
+    const getFieldConfig = (field: EditableField) => {
+        switch (field) {
+            case "firstName":
+                return { 
+                    title: "First Name", 
+                    value: settings.firstName, 
+                    maxLength: 50, 
+                    multiline: false,
+                    type: "text" as const,
+                };
+            case "lastName":
+                return { 
+                    title: "Last Name", 
+                    value: settings.lastName, 
+                    maxLength: 50, 
+                    multiline: false,
+                    type: "text" as const,
+                };
+            case "userName":
+                return { 
+                    title: "Username", 
+                    value: settings.userName?.replace(/^@/, "") || "", 
+                    maxLength: 30, 
+                    multiline: false,
+                    prefix: "@",
+                    type: "username" as const,
+                };
+            case "bio":
+                return { 
+                    title: "Bio", 
+                    value: settings.bio || "", 
+                    maxLength: 500, 
+                    multiline: true,
+                    type: "text" as const,
+                };
+            case "location":
+                return { 
+                    title: "Location", 
+                    value: settings.location || "", 
+                    maxLength: 100, 
+                    multiline: false,
+                    type: "text" as const,
+                };
+            case "website":
+                return { 
+                    title: "Website", 
+                    value: settings.website || "", 
+                    maxLength: 200, 
+                    multiline: false,
+                    type: "url" as const,
+                };
+            default:
+                return null;
+        }
+    };
+
+    const fieldConfig = editingField ? getFieldConfig(editingField) : null;
+
+    return (
+        <>
+            <SectionHeader title="My Profile" subtitle="Manage your personal information" />
+
+            {/* Avatar Section */}
+            <div className="px-6 py-6 border-b border-gray-100 dark:border-gray-800">
+                <div className="flex items-center gap-4">
+                    <div className="relative">
+                        <img
+                            src={getAvatarUrl(
+                                settings.firstName,
+                                settings.lastName,
+                                settings.avatar
+                            )}
+                            alt="Avatar"
+                            className={`w-20 h-20 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600 ${
+                                avatarLoading ? "opacity-50" : ""
+                            }`}
+                        />
+                        {avatarLoading && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <i className="fa-solid fa-spinner fa-spin text-blue-600 text-xl" />
+                            </div>
+                        )}
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileSelect}
+                            className="hidden"
+                        />
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-1">
+                        <button
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={avatarLoading}
+                            className="px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 disabled:opacity-50 rounded-lg transition-colors"
+                        >
+                            Change Photo
+                        </button>
+                        {settings.avatar && (
+                            <button
+                                onClick={handleAvatarDelete}
+                                disabled={avatarLoading}
+                                className="px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 rounded-lg transition-colors"
+                            >
+                                Remove
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            <SettingGroup title="Personal Info">
+                <SettingRow label="First Name">
+                    <SelectButton
+                        value={settings.firstName || "Not set"}
+                        onClick={() => setEditingField("firstName")}
+                    />
+                </SettingRow>
+                <SettingRow label="Last Name">
+                    <SelectButton
+                        value={settings.lastName || "Not set"}
+                        onClick={() => setEditingField("lastName")}
+                    />
+                </SettingRow>
+                <SettingRow label="Username">
+                    <SelectButton
+                        value={settings.userName || "Not set"}
+                        onClick={() => setEditingField("userName")}
+                    />
+                </SettingRow>
+                <SettingRow label="Bio" description="Tell others about yourself">
+                    <SelectButton
+                        value={settings.bio ? "Edit" : "Add"}
+                        onClick={() => setEditingField("bio")}
+                    />
+                </SettingRow>
+            </SettingGroup>
+
+            <SettingGroup title="Contact">
+                <SettingRow label="Email">
+                    <span className="text-gray-500 dark:text-gray-400 text-sm">
+                        {settings.email}
+                    </span>
+                </SettingRow>
+                <SettingRow label="Location">
+                    <SelectButton
+                        value={settings.location || "Not set"}
+                        onClick={() => setEditingField("location")}
+                    />
+                </SettingRow>
+                <SettingRow label="Website">
+                    <SelectButton
+                        value={settings.website || "Not set"}
+                        onClick={() => setEditingField("website")}
+                    />
+                </SettingRow>
+            </SettingGroup>
+
+            {/* Edit Modal */}
+            {editingField && fieldConfig && (
+                <EditFieldModal
+                    title={fieldConfig.title}
+                    initialValue={fieldConfig.value}
+                    maxLength={fieldConfig.maxLength}
+                    multiline={fieldConfig.multiline}
+                    prefix={fieldConfig.prefix}
+                    type={fieldConfig.type}
+                    loading={updating}
+                    onSave={(value) => handleSaveField(editingField, value)}
+                    onClose={() => setEditingField(null)}
+                />
+            )}
+        </>
+    );
+};

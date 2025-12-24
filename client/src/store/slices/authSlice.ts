@@ -6,18 +6,19 @@ import type {
     User,
     RegisterUserData,
     LoginUserData,
-    AuthState
-} from "@/shared/types/user.types"
-
-
+    AuthState,
+    UpdateSettingsPayload,
+} from "@/shared/types/user.types";
 
 const initialState: AuthState = {
     currentUser: null,
-        // JSON.parse(localStorage.getItem("currentUser") || "null"),
     loading: false,
     success: false,
     error: null,
     initialized: false,
+    settingsLoading: false,
+    settingsUpdating: false,
+    settingsError: null,
 };
 
 export const login = createAsyncThunk(
@@ -31,7 +32,7 @@ export const login = createAsyncThunk(
                 body: { email, password, remember },
                 credentials: "include",
             }) as User;
-            
+
             return data;
         } catch (err: any) {
             return rejectWithValue(err.message || "Login error");
@@ -82,10 +83,78 @@ export const getMe = createAsyncThunk(
 
             return data;
         } catch (err: any) {
-            return rejectWithValue(err.message || "Something went wrong...")
+            return rejectWithValue(err.message || "Something went wrong...");
         }
     }
-)
+);
+
+// Settings thunks
+export const fetchSettings = createAsyncThunk(
+    "auth/fetchSettings",
+    async (_, { getState, rejectWithValue }) => {
+        try {
+            const { auth } = getState() as { auth: AuthState };
+            const userId = auth.currentUser?.id;
+
+            if (!userId) {
+                return rejectWithValue("User not authenticated");
+            }
+
+            const data = await apiRequest<User>(`/users/${userId}/settings`, "GET", {
+                credentials: "include",
+            }) as User;
+
+            return data;
+        } catch (err: any) {
+            return rejectWithValue(err.message || "Failed to fetch settings");
+        }
+    }
+);
+
+export const updateSettings = createAsyncThunk(
+    "auth/updateSettings",
+    async (payload: UpdateSettingsPayload, { getState, rejectWithValue }) => {
+        try {
+            const { auth } = getState() as { auth: AuthState };
+            const userId = auth.currentUser?.id;
+
+            if (!userId) {
+                return rejectWithValue("User not authenticated");
+            }
+
+            const data = await apiRequest<User>(`/users/${userId}/settings`, "PATCH", {
+                body: payload,
+                credentials: "include",
+            }) as User;
+
+            return data;
+        } catch (err: any) {
+            return rejectWithValue(err.message || "Failed to update settings");
+        }
+    }
+);
+
+export const deleteAccount = createAsyncThunk(
+    "auth/deleteAccount",
+    async (_, { getState, rejectWithValue }) => {
+        try {
+            const { auth } = getState() as { auth: AuthState };
+            const userId = auth.currentUser?.id;
+
+            if (!userId) {
+                return rejectWithValue("User not authenticated");
+            }
+
+            await apiRequest(`/users/${userId}`, "DELETE", {
+                credentials: "include",
+            });
+
+            return true;
+        } catch (err: any) {
+            return rejectWithValue(err.message || "Failed to delete account");
+        }
+    }
+);
 
 const authSlice = createSlice({
     name: "auth",
@@ -93,11 +162,13 @@ const authSlice = createSlice({
     reducers: {
         setCurrentUser: (state, action: PayloadAction<User>) => {
             state.currentUser = action.payload;
-            // localStorage.setItem("currentUser", JSON.stringify(action.payload));
-          },
+        },
         clearAuthStatus(state) {
             state.error = null;
             state.success = false;
+        },
+        clearSettingsError(state) {
+            state.settingsError = null;
         },
     },
     extraReducers: (builder) => {
@@ -111,13 +182,12 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.currentUser = action.payload;
                 state.success = true;
-
-                // localStorage.setItem("currentUser", JSON.stringify(action.payload));
             })
             .addCase(login.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             })
+
             // REGISTER
             .addCase(register.pending, (state) => {
                 state.loading = true;
@@ -141,8 +211,6 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.currentUser = null;
                 state.success = action.payload as boolean;
-
-                // localStorage.removeItem("currentUser");
             })
             .addCase(logout.rejected, (state, action) => {
                 state.loading = false;
@@ -150,7 +218,7 @@ const authSlice = createSlice({
             })
 
             // GET ME
-            .addCase(getMe.pending, (state) => { 
+            .addCase(getMe.pending, (state) => {
                 state.loading = true;
                 state.success = false;
                 state.error = null;
@@ -168,10 +236,52 @@ const authSlice = createSlice({
                 state.error = action.payload as string;
                 state.success = false;
                 state.initialized = true;
-            });
+            })
 
-},
+            // FETCH SETTINGS
+            .addCase(fetchSettings.pending, (state) => {
+                state.settingsLoading = true;
+                state.settingsError = null;
+            })
+            .addCase(fetchSettings.fulfilled, (state, action: PayloadAction<User>) => {
+                state.settingsLoading = false;
+                state.currentUser = action.payload;
+            })
+            .addCase(fetchSettings.rejected, (state, action) => {
+                state.settingsLoading = false;
+                state.settingsError = action.payload as string;
+            })
+
+            // UPDATE SETTINGS
+            .addCase(updateSettings.pending, (state) => {
+                state.settingsUpdating = true;
+                state.settingsError = null;
+            })
+            .addCase(updateSettings.fulfilled, (state, action: PayloadAction<User>) => {
+                state.settingsUpdating = false;
+                state.currentUser = action.payload;
+            })
+            .addCase(updateSettings.rejected, (state, action) => {
+                state.settingsUpdating = false;
+                state.settingsError = action.payload as string;
+            })
+
+            // DELETE ACCOUNT
+            .addCase(deleteAccount.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteAccount.fulfilled, (state) => {
+                state.loading = false;
+                state.currentUser = null;
+                state.initialized = false;
+            })
+            .addCase(deleteAccount.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            });
+    },
 });
 
-export const { clearAuthStatus, setCurrentUser } = authSlice.actions;
+export const { clearAuthStatus, setCurrentUser, clearSettingsError } = authSlice.actions;
 export default authSlice.reducer;

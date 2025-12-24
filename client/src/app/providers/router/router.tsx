@@ -20,6 +20,7 @@ import { SignUpPage } from "@/pages/SignUpPage";
 import { ForgotPasswordPage } from "@/pages/ForgotPasswordPage"
 import { ResetPasswordPage } from "@/pages/ResetPasswordPage";
 import { ProfilePage } from "@/pages/ProfilePage";
+import { SettingsPage } from "@/pages/SettingsPage";
 import { UserFollowingPage } from "@/pages/UserFollowingPage";
 import { UserFollowersPage } from "@/pages/UserFollowersPage";
 import { SpecificArticlePage } from "@/pages/SpecificArticlePage";
@@ -77,6 +78,11 @@ export const router = createBrowserRouter([
       { path: "/reset-password", ...withErrorElement(<ResetPasswordPage />) },
 
       { path: "/users/:id", ...withErrorElement(<ProfilePage />) },
+      { path: "/users/:id/settings", ...withErrorElement(
+        <ProtectedRoute>
+            <SettingsPage />
+        </ProtectedRoute>
+    ) },
       { path: "/users/:id/following", ...withErrorElement(<UserFollowingPage />) },
       { path: "/users/:id/followers", ...withErrorElement(<UserFollowersPage />) },
     ],

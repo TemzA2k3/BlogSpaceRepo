@@ -28,6 +28,7 @@ import {
 } from "@/database/entities/user-relation.entity";
 
 import { ProfileStatsHelper } from "./helpers/profile-stats.helper";
+import { UpdateSettingsDto } from "./dtos/update-user.dto";
 
 
 @Injectable()
@@ -171,7 +172,6 @@ export class UsersService {
       
         const { password, ...safeUser } = user;
       
-        /** лайки и комментарии — отдельными QB (дорого, но корректно) */
         const [likesThisMonth, likesLastMonth, commentsThisMonth, commentsLastMonth] =
           await Promise.all([
             this.postLikeRepository
@@ -239,7 +239,7 @@ export class UsersService {
           followingCount,
           stats,
         };
-      }
+    }
       
 
     create(data: Partial<User>) {
@@ -261,6 +261,26 @@ export class UsersService {
         }
 
         user.avatar = `/uploads/avatars/${filename}`;
+        await this.userRepository.save(user);
+
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+    }
+
+    async deleteAvatar(userId: number) {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user) throw new NotFoundException("User not found");
+
+        if (user.avatar && user.avatar.startsWith("/uploads/avatars/")) {
+            const avatarPath = path.join(process.cwd(), user.avatar);
+            try {
+                if (fs.existsSync(avatarPath)) fs.unlinkSync(avatarPath);
+            } catch (err) {
+                console.warn(`⚠️ Не удалось удалить аватар: ${err.message}`);
+            }
+        }
+
+        user.avatar = null;
         await this.userRepository.save(user);
 
         const { password, ...userWithoutPassword } = user;
@@ -376,4 +396,80 @@ export class UsersService {
         return safeUser;
     }
 
+    async getUserSettings(userId: number) {
+        const user = await this.userRepository.findOne({ 
+            where: { id: userId },
+            select: [
+                'id',
+                'firstName',
+                'lastName',
+                'userName',
+                'email',
+                'role',
+                'avatar',
+                'isBlocked',
+                'bio',
+                'location',
+                'website',
+                'isPublicProfile',
+                'whoCanMessage',
+                'displayLanguage',
+                'createdAt',
+            ],
+        });
+
+        if (!user) {
+            throw new NotFoundException("User not found");
+        }
+
+        return user;
+    }
+
+    async updateUserSettings(userId: number, dto: UpdateSettingsDto) {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+
+        if (!user) {
+            throw new NotFoundException("User not found");
+        }
+
+        if (dto.userName && dto.userName !== user.userName) {
+            const existingUser = await this.userRepository.findOne({
+                where: { userName: dto.userName },
+            });
+
+            if (existingUser) {
+                throw new BadRequestException("Username is already taken");
+            }
+        }
+
+        Object.keys(dto).forEach((key) => {
+            if (dto[key] !== undefined) {
+                user[key] = dto[key];
+            }
+        });
+
+        await this.userRepository.save(user);
+
+        const { password, ...safeUser } = user;
+        return safeUser;
+    }
+
+    async deleteAccount(userId: number) {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+
+        if (!user) {
+            throw new NotFoundException("User not found");
+        }
+
+        if (user.avatar && user.avatar.startsWith("/uploads/avatars/")) {
+            const avatarPath = path.join(process.cwd(), user.avatar);
+            try {
+                if (fs.existsSync(avatarPath)) fs.unlinkSync(avatarPath);
+            } catch (err) {
+                console.warn(`⚠️ Не удалось удалить аватар: ${err.message}`);
+            }
+        }
+
+        await this.userRepository.remove(user);
+    }
 }

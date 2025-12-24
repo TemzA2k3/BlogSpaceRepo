@@ -125,7 +125,9 @@ export const ProfilePage = () => {
 
                         {isMyProfile ? (
                             <div className="mt-6 flex flex-wrap justify-center sm:justify-start gap-3">
-                                <button className="mt-6 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition">
+                                <button
+                                    onClick={() => navigate(`/users/${userData.id}/settings#profile`)}
+                                    className="mt-6 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition">
                                     Edit Profile
                                 </button>
                             </div>
