@@ -2,8 +2,33 @@ import type { FC } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+
+
 export const Footer: FC = () => {
     const { t } = useTranslation();
+
+    const FOOTER_LINKS = [
+        {
+            id: 1,
+            text: t("footer.home"),
+            link: "/"
+        },
+        {
+            id: 2,
+            text: t("footer.explore"),
+            link: "/explore"
+        },
+        {
+            id: 3,
+            text: t("footer.about"),
+            link: "/about"
+        },
+        {
+            id: 4,
+            text: t("footer.contact"),
+            link: "/contact"
+        }
+    ]
 
     return (
         <footer className="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-6 sm:px-10 py-10 border-t border-[#E5E8EB] dark:border-gray-700 transition-colors duration-300">
@@ -23,13 +48,13 @@ export const Footer: FC = () => {
 
                 {/* Center: Navigation links */}
                 <nav className="flex flex-wrap justify-center md:justify-start gap-4 sm:gap-6 items-start">
-                    {[t("footer.home"), t("footer.explore"), t("footer.about"), t("footer.contact")].map((item) => (
+                    {FOOTER_LINKS.map((item) => (
                         <Link
-                            key={item}
-                            to="/"
+                            key={item.id}
+                            to={item.link}
                             className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 hover:scale-105 text-sm sm:text-base font-medium"
                         >
-                            {item}
+                            {item.text}
                         </Link>
                     ))}
                 </nav>

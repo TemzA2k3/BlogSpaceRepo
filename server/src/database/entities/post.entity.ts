@@ -13,7 +13,8 @@ import { User } from './user.entity';
 import { Hashtag } from './hashtag.entity';
 import { PostLike } from './post-likes.entity';
 import { PostSave } from './post-saves.entity';
-import { Comment } from './comment.entity'; 
+import { Comment } from './comment.entity';
+import { Report } from './report.entity';
 
 @Entity('posts')
 export class Post {
@@ -43,6 +44,9 @@ export class Post {
 
     @OneToMany(() => PostSave, save => save.post)
     savesRelation: PostSave[];
+
+    @OneToMany(() => Report, report => report.post)
+    reports: Report[];
 
     @ManyToMany(() => Hashtag, (hashtag) => hashtag.posts, { cascade: true })
     @JoinTable()

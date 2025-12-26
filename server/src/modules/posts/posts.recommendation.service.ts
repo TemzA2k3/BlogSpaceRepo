@@ -64,7 +64,6 @@ export class PostsRecommendationsService {
                 lastName: u.lastName
             }));
         } else {
-            // Топ-3 пользователя с наибольшим числом подписчиков
             const users = await this.userRepository
                 .createQueryBuilder("user")
                 .leftJoin("user.relationsTo", "followers", "followers.type = :type", { type: RelationType.FOLLOW })

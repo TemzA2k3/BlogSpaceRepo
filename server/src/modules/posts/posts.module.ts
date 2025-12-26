@@ -14,6 +14,7 @@ import { UserRelation } from '@/database/entities/user-relation.entity';
 import { PostLike } from '@/database/entities/post-likes.entity'; 
 import { PostSave } from '@/database/entities/post-saves.entity';
 import { Comment } from '@/database/entities/comment.entity';
+import { Report } from '@/database/entities/report.entity';
 
 @Module({
     imports: [
@@ -21,7 +22,7 @@ import { Comment } from '@/database/entities/comment.entity';
             Post, Hashtag, 
             User, UserRelation, 
             PostLike, PostSave,
-            Comment
+            Comment, Report
         ]),
         JwtSharedModule,
     ],

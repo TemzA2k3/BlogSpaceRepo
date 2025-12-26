@@ -8,6 +8,7 @@ import { HeaderLayout } from "@/layouts/HeaderLayout";
 import { EmptyLayout } from "@/layouts/EmptyLayout";
 
 import { HomePage } from "@/pages/HomePage";
+import { ContactPage } from "@/pages/ContactPage";
 import { PostsPage } from "@/pages/PostsPage";
 import { SpecificPostPage } from "@/pages/SpecificPostPage";
 import { CreatePostPage } from "@/pages/CreatePostPage";
@@ -67,6 +68,8 @@ export const router = createBrowserRouter([
       { path: "/explore", ...withErrorElement(<ExplorePage />) },
 
       { path: "/about", ...withErrorElement(<AboutPage />) },
+
+      { path: "/contact", ...withErrorElement(<ContactPage />) },
 
       { path: "/signin", ...withErrorElement(<SignInPage />) },
       { path: "/signup", ...withErrorElement(<SignUpPage />) },

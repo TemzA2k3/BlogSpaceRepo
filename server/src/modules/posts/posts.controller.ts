@@ -9,7 +9,8 @@ import {
     Delete,
     Param,
     Patch,
-    Query
+    Query,
+    HttpCode
 } from '@nestjs/common';
 import { File as MulterFile } from 'multer';
 
@@ -24,9 +25,8 @@ import { ParseJsonArrayPipe } from "@/common/pipes/parse-json-array.pipe"
 import { PostsService } from './posts.service';
 
 import { CreatePostDto } from "./dtos/create-post.dto"
+import { CreateReportDto } from './dtos/create-report.dto';
 import { PostsRecommendationsService } from './posts.recommendation.service';
-
-
 
 @Controller('posts')
 export class PostsController {
@@ -66,6 +66,18 @@ export class PostsController {
             Number(limit),
             Number(offset),
         );
+    }
+
+    @Post('report')
+    @HttpCode(204)
+    @UseGuards(OptionalJwtAuthGuard)
+    async reportPost(
+        @Body() dto: CreateReportDto,
+        @UserReq() user?: JwtPayload
+    ) {
+        console.log('2222222');
+        
+        await this.postsService.createReport(dto, user?.userId);
     }
 
     @Get('recommendations')

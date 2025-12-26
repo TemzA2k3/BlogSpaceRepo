@@ -10,8 +10,10 @@ import { Hashtag } from '@/database/entities/hashtag.entity';
 import { PostLike } from '@/database/entities/post-likes.entity';
 import { PostSave } from '@/database/entities/post-saves.entity';
 import { Comment } from '@/database/entities/comment.entity';
+import { Report } from '@/database/entities/report.entity';
 
 import { CreatePostDto } from '@/modules/posts/dtos/create-post.dto';
+import { CreateReportDto } from './dtos/create-report.dto';
 
 @Injectable()
 export class PostsService {
@@ -36,6 +38,9 @@ export class PostsService {
 
         @InjectRepository(Comment)
         private readonly commentRepository: Repository<Comment>,
+
+        @InjectRepository(Report)
+        private readonly reportRepository: Repository<Report>,
     ) { }
 
 
@@ -122,19 +127,44 @@ export class PostsService {
             followedUserIds.push(userId);
         }
     
-        const posts = await this.postRepository.find({
-            where: userId
-                ? { user: { id: In(followedUserIds) } }
-                : {},
-            relations: ['user', 'hashtags'],
-            order: { createdAt: 'DESC' },
-            take: limit,
-            skip: offset,
-        });
+        const queryBuilder = this.postRepository
+            .createQueryBuilder('post')
+            .leftJoinAndSelect('post.user', 'user')
+            .leftJoinAndSelect('post.hashtags', 'hashtags')
+            .addSelect(
+                `(SELECT COUNT(*) FROM reports WHERE reports."postId" = post.id)`,
+                'reports_count'
+            )
+            .orderBy('reports_count', 'ASC')
+            .addOrderBy('post.createdAt', 'DESC')
+            .take(limit)
+            .skip(offset);
+    
+        if (userId && followedUserIds.length > 0) {
+            queryBuilder.where('post.userId IN (:...followedUserIds)', { followedUserIds });
+        }
+    
+        const posts = await queryBuilder.getMany();
     
         return Promise.all(
             posts.map(post => this.mapToUsersPosts(post, userId))
         );
+    }
+
+    async createReport(dto: CreateReportDto, userId?: number) {
+        const { postId, reason, description } = dto;
+    
+        const post = await this.postRepository.findOne({ where: { id: postId } });
+        if (!post) throw new NotFoundException('Post not found');
+    
+        const report = this.reportRepository.create({
+            post,
+            reason,
+            description,
+            user: userId ? { id: userId } : undefined,
+        });
+    
+        await this.reportRepository.save(report);
     }
     
     async findOne(postId: number, currentUserId?: number) {

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useAppSelector } from '@/hooks/redux/reduxHooks';
 import { useSocketContext } from '@/app/providers/socket/index';
+import { useAlert } from '@/app/providers/alert/AlertProvider';
 
 import { UsersList } from '@/components/UsersList';
 import { ChatHeader } from '@/components/ChatHeader';
@@ -19,13 +20,16 @@ import { useTypingStatus } from '@/hooks/chat/useTypingStatus';
 export const MessagesPage = () => {
     const { currentUser } = useAppSelector(state => state.auth);
     const { socket, usersStatus } = useSocketContext();
+    const { showAlert } = useAlert();
 
     const {
         usersList,
         selectedUser,
         loading,
+        deleting,
         setUsersList,
-        handleSelectUser
+        handleSelectUser,
+        handleDeleteChat,
     } = useChats(socket, currentUser?.id ?? null);
 
     const { 
@@ -62,6 +66,15 @@ export const MessagesPage = () => {
         [selectedUser, messages]
     );
 
+    const onDeleteChat = async () => {
+        try {
+            await handleDeleteChat();
+            showAlert("Чат удален", "success");
+        } catch (err: any) {
+            showAlert(err.message || "Не удалось удалить чат", "error");
+        }
+    };
+
 
     if (loading) return <Loader />;
 
@@ -94,6 +107,8 @@ export const MessagesPage = () => {
                             avatar={selectedUser.avatar}
                             online={usersStatus[selectedUser.id] ?? false}
                             typing={selectedUser.typing}
+                            onDeleteChat={onDeleteChat}
+                            deleting={deleting}
                         />
 
                         <ChatMessages

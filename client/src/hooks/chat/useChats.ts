@@ -2,13 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
 
-import { getAllChats } from '@/shared/services/fetchUserChats';
+import { getAllChats, deleteChat } from '@/shared/services/chatService';
 import type { ChatUser } from '@/shared/types/chat.types';
 
 export const useChats = (socket: Socket | null, currentUserId: number | null) => {
     const [usersList, setUsersList] = useState<ChatUser[]>([]);
     const [selectedUser, setSelectedUser] = useState<ChatUser | null>(null);
     const [loading, setLoading] = useState(true);
+    const [deleting, setDeleting] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
 
     const fetchChats = useCallback(async () => {
@@ -48,6 +49,31 @@ export const useChats = (socket: Socket | null, currentUserId: number | null) =>
         socket?.emit("joinChat", user.chatId);
         setLoading(false);
     };
+
+    const handleDeleteChat = useCallback(async () => {
+        if (!selectedUser?.chatId) return;
+
+        setDeleting(true);
+
+        try {
+            await deleteChat(selectedUser.chatId);
+
+            if (socket) {
+                socket.emit("leaveChat", selectedUser.chatId);
+            }
+
+            setUsersList(prev => prev.filter(u => u.chatId !== selectedUser.chatId));
+
+            setSelectedUser(null);
+            setSearchParams({});
+
+        } catch (error) {
+            throw error;
+        } finally {
+            setDeleting(false);
+        }
+    }, [selectedUser, socket, setSearchParams]);
+
 
     useEffect(() => {
         if (!usersList.length) return;
@@ -122,7 +148,9 @@ export const useChats = (socket: Socket | null, currentUserId: number | null) =>
         usersList,
         selectedUser,
         loading,
+        deleting,
         setUsersList,
         handleSelectUser,
+        handleDeleteChat,
     };
 };

@@ -116,6 +116,24 @@ export class ChatService {
         return result.filter(Boolean);
     }
 
+    async deleteChat(chatId: number, userId: number) {
+        const chat = await this.chatRepository.findOne({
+            where: { id: chatId },
+            relations: ['participants'],
+        });
+    
+        if (!chat) {
+            throw new NotFoundException('Chat not found');
+        }
+    
+        const isParticipant = chat.participants.some(p => p.id === userId);
+        if (!isParticipant) {
+            throw new ForbiddenException('You are not a participant of this chat');
+        }
+    
+        await this.chatRepository.remove(chat);
+    }
+
     async getChatMessages(
         chatId: number,
         userId: number,

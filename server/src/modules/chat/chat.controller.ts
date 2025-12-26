@@ -6,7 +6,9 @@ import {
     BadRequestException,
     Get,
     Param,
-    Query
+    Query,
+    Delete,
+    HttpCode
 } from '@nestjs/common';
 
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
@@ -37,6 +39,16 @@ export class ChatController {
     @UseGuards(JwtAuthGuard)
     getAllUserChats(@UserReq() user: JwtPayload) {
         return this.chatService.getAllUserChats(user.userId);
+    }
+
+    @Delete(':id')
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(204)
+    async deleteChat(
+        @Param('id') id: string,
+        @UserReq() user: JwtPayload
+    ) {
+        await this.chatService.deleteChat(+id, user.userId);
     }
 
     @Get('/:chat_id/messages')

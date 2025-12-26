@@ -13,3 +13,9 @@ export const getAllChats = async () => {
         throw new Error(err.message || "Something went wrong...")
     }
 }
+
+export const deleteChat = async (chatId: number): Promise<void> => {
+    await apiRequest(`/chat/${chatId}`, "DELETE", {
+        credentials: "include",
+    });
+};
