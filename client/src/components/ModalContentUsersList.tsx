@@ -1,5 +1,6 @@
-// client/src/components/ModalContentUsersList.tsx
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 import { Loader } from "@/shared/components/Loader";
 import { BlankData } from "@/shared/components/BlankData";
@@ -9,16 +10,15 @@ import { createChat } from "@/shared/services/createChat";
 import type { UserCardProps } from "@/shared/types/user.types";
 import type { ChatUser, ModalContentUsersListProps } from "@/shared/types/chat.types";
 
-
-
 export const ModalContentUsersList: React.FC<ModalContentUsersListProps> = ({
     fetchData,
     title,
     blankIcon = "👥",
-    blankTitle = "Пользователи не найдены",
-    blankMessage = "Список пуст.",
+    blankTitle,
+    blankMessage,
     onChatCreated,
 }) => {
+    const { t } = useTranslation();
     const { showAlert } = useAlert();
 
     const [data, setData] = useState<UserCardProps[]>([]);
@@ -30,9 +30,9 @@ export const ModalContentUsersList: React.FC<ModalContentUsersListProps> = ({
         setLoading(true);
         fetchData()
             .then(res => setData(res))
-            .catch(e => setError(e.message || "Ошибка загрузки"))
+            .catch(e => setError(e.message || t("chat.loadingError")))
             .finally(() => setLoading(false));
-    }, [fetchData]);
+    }, [fetchData, t]);
 
     const handleCreateChat = async (user: UserCardProps) => {
         try {
@@ -44,7 +44,7 @@ export const ModalContentUsersList: React.FC<ModalContentUsersListProps> = ({
                 onChatCreated(newChatUser);
             }
         } catch (err: any) {
-            setError(err.message || "Ошибка при создании чата");
+            setError(err.message || t("chat.createChatError"));
         } finally {
             setCreatingChatId(null);
         }
@@ -53,7 +53,7 @@ export const ModalContentUsersList: React.FC<ModalContentUsersListProps> = ({
     useEffect(() => {
         if (!error) return;
         showAlert(error, "error");
-    }, [error]);
+    }, [error, showAlert]);
 
     if (loading) return <Loader />;
     if (error) return <div className="text-red-500">{error}</div>;
@@ -76,13 +76,17 @@ export const ModalContentUsersList: React.FC<ModalContentUsersListProps> = ({
                                 disabled={creatingChatId === user.id}
                                 className="ml-4 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm"
                             >
-                                {creatingChatId === user.id ? "Создание..." : "Написать"}
+                                {creatingChatId === user.id ? t("chat.creating") : t("chat.write")}
                             </button>
                         </div>
                     ))}
                 </div>
             ) : (
-                <BlankData icon={blankIcon} title={blankTitle} message={blankMessage} />
+                <BlankData 
+                    icon={blankIcon} 
+                    title={blankTitle || t("chat.usersNotFound")} 
+                    message={blankMessage || t("chat.listEmpty")} 
+                />
             )}
         </div>
     );

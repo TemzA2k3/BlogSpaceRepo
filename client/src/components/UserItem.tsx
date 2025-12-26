@@ -1,15 +1,9 @@
 import { getAvatarUrl } from '@/shared/utils/getImagesUrls';
 import { formatTime } from "@/shared/utils/timeFormatter"
 
-import type { ChatUser } from '@/shared/types/chat.types';
+import type { UserItemProps } from '@/shared/types/user.types';
 
-interface UserItemProps {
-    user: ChatUser;
-    isSelected: boolean;
-    onClick: () => void;
-}
-
-export const UserItem: React.FC<UserItemProps> = ({ user, isSelected, onClick }) => {        
+export const UserItem: React.FC<UserItemProps> = ({ user, isSelected, onClick }) => {
     return (
         <button
             onClick={onClick}

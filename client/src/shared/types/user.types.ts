@@ -1,3 +1,5 @@
+import type { ChatUser } from "./chat.types";
+
 export interface User {
     id: number;
     firstName: string;
@@ -49,6 +51,22 @@ export interface UpdateSettingsPayload {
     isPublicProfile?: boolean;
     whoCanMessage?: "everyone" | "followers" | "nobody";
     displayLanguage?: string;
+}
+
+export interface ILoggedUserPreview {
+    handleLogout: () => void;
+    user: User;
+}
+
+export interface UserCardWithMessageProps extends UserCardProps {
+    showMessageButton?: boolean;
+    onMessageClick?: (id: string | number) => void;
+}
+
+export interface UserItemProps {
+    user: ChatUser;
+    isSelected: boolean;
+    onClick: () => void;
 }
 
 export interface ProfileUserData extends User {

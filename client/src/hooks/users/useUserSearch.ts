@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 import { useDebounce } from "@/hooks/debounce/useDebounce";
@@ -9,6 +10,7 @@ import { searchUsers } from "@/shared/services/searchUsers";
 import type { UserCardProps } from "@/shared/types/user.types";
 
 export const useUserSearch = () => {
+    const { t } = useTranslation();
     const { showAlert } = useAlert();
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -39,7 +41,7 @@ export const useUserSearch = () => {
             setHasMore(data.length === 20);
             setOffset(currentOffset + data.length);
         } catch (e: any) {
-            setError(e.message || "Ошибка при поиске пользователей");
+            setError(e.message || t("explore.searchError"));
         } finally {
             setLoading(false);
         }

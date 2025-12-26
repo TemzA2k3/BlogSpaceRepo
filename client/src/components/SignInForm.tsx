@@ -53,7 +53,6 @@ export const SignInForm: React.FC = () => {
       onSubmit={formik.handleSubmit}
       className="space-y-5 max-w-md mx-auto w-full px-4 sm:px-6 lg:px-0"
     >
-      {/* Email */}
       <div>
         <label
           htmlFor="email"
@@ -76,7 +75,6 @@ export const SignInForm: React.FC = () => {
         )}
       </div>
 
-      {/* Password */}
       <div>
         <label
           htmlFor="password"
@@ -99,7 +97,6 @@ export const SignInForm: React.FC = () => {
         )}
       </div>
 
-      {/* Remember Me & Forgot Password */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
           <input
@@ -120,7 +117,6 @@ export const SignInForm: React.FC = () => {
         </Link>
       </div>
 
-      {/* Submit */}
       <Button
         type="submit"
         disabled={loading}

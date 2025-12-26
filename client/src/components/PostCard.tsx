@@ -44,10 +44,10 @@ export const PostCard: FC<PostCardProps> = ({ onPostUpdate, onPostDelete, ...pos
         try {
             await reportPost(post.id, reason as ReportReason, description || undefined);
 
-            showAlert("Жалоба отправлена. Спасибо за обращение!", "success");
+            showAlert(t("posts.reportSuccess"), "success");
             setShowReportModal(false);
         } catch (err: any) {
-            showAlert(err.message || "Не удалось отправить жалобу", "error");
+            showAlert(err.message || t("posts.reportError"), "error");
         } finally {
             setReporting(false);
         }
@@ -57,7 +57,6 @@ export const PostCard: FC<PostCardProps> = ({ onPostUpdate, onPostDelete, ...pos
         <>
             <div
                 className="relative self-stretch px-5 py-4 bg-slate-50 dark:bg-darkbg border border-gray-200 dark:border-gray-700 rounded-2xl flex justify-start items-start gap-4 shadow-sm hover:shadow-md transition-all duration-200">
-                {/* Dropdown */}
                 <div className="absolute top-3 right-3" ref={dropdownRef}>
                     <button onClick={() => setShowDropdown(!showDropdown)}
                         className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
@@ -66,16 +65,16 @@ export const PostCard: FC<PostCardProps> = ({ onPostUpdate, onPostDelete, ...pos
                     {showDropdown && (
                         <div className="absolute right-0 top-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-10 min-w-[140px] overflow-hidden animate-in slide-in-from-top-2 duration-200">
                             <ul className="flex flex-col">
-                                <li 
+                                <li
                                     onClick={handleReportClick}
                                     className="w-full text-left px-3 py-2 text-sm font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2"
                                 >
-                                    <i className="fas fa-flag text-xs sm:text-sm"></i> Пожаловаться
+                                    <i className="fas fa-flag text-xs sm:text-sm"></i> {t("posts.report")}
                                 </li>
                                 {currentUser?.id === post.userId && (
                                     <li onClick={handleDeletePost}
                                         className="w-full text-left px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-700 cursor-pointer flex items-center gap-2">
-                                        <i className="fas fa-trash-alt text-xs sm:text-sm"></i> Удалить
+                                        <i className="fas fa-trash-alt text-xs sm:text-sm"></i> {t("posts.delete")}
                                     </li>
                                 )}
                             </ul>
@@ -83,10 +82,8 @@ export const PostCard: FC<PostCardProps> = ({ onPostUpdate, onPostDelete, ...pos
                     )}
                 </div>
 
-                {/* Avatar */}
                 <img className="w-16 h-16 rounded-full object-cover" src={post.avatar} alt={`${post.firstName} ${post.lastName}`} />
 
-                {/* Content */}
                 <div className="flex-1 flex flex-col justify-between">
                     <div className="flex flex-col gap-1">
                         <div className="flex flex-col">
@@ -108,10 +105,7 @@ export const PostCard: FC<PostCardProps> = ({ onPostUpdate, onPostDelete, ...pos
                         </div>
                     </div>
 
-                    {/* Bottom panel */}
                     <div className="flex justify-start items-center gap-6 mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
-                        {/* Like */}
-                        {/* Likes */}
                         <div
                             onClick={handleToggleLike}
                             className={`flex items-center gap-2 text-sm cursor-pointer transition-colors 
@@ -122,9 +116,8 @@ export const PostCard: FC<PostCardProps> = ({ onPostUpdate, onPostDelete, ...pos
                             <span>{post.likes}</span>
                         </div>
 
-                        {/* Comments */}
-                        <div 
-                            onClick={() => navigate(`/posts/${post.id}`)} 
+                        <div
+                            onClick={() => navigate(`/posts/${post.id}`)}
                             className="flex items-center gap-2 text-slate-600 
                                         dark:text-gray-400 text-sm 
                                         hover:text-blue-500 dark:hover:text-blue-400 
@@ -134,7 +127,6 @@ export const PostCard: FC<PostCardProps> = ({ onPostUpdate, onPostDelete, ...pos
                             <span>{post.comments}</span>
                         </div>
 
-                        {/* Save */}
                         <div
                             onClick={handleToggleSave}
                             className={`flex items-center gap-2 text-sm cursor-pointer transition-colors 
@@ -149,7 +141,6 @@ export const PostCard: FC<PostCardProps> = ({ onPostUpdate, onPostDelete, ...pos
                 </div>
             </div>
 
-            {/* Report Modal */}
             {showReportModal && (
                 <ReportPostModal
                     loading={reporting}

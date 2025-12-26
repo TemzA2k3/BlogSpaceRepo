@@ -1,11 +1,15 @@
 import { useEffect, useState, useRef } from "react";
 import { Socket } from "socket.io-client";
+import { useTranslation } from "react-i18next";
+
+import { useAlert } from "@/app/providers/alert/AlertProvider";
 
 import { useAppSelector } from "@/hooks/redux/reduxHooks";
-import { useAlert } from "@/app/providers/alert/AlertProvider";
+
 import { getSocket, disconnectSocket } from "./socket";
 
 export const useInitSocket = () => {
+    const { t } = useTranslation();
     const { currentUser } = useAppSelector(state => state.auth);
     const { showAlert } = useAlert();
 
@@ -28,21 +32,21 @@ export const useInitSocket = () => {
             setConnected(false);
 
             if (!alertShownRef.current) {
-                showAlert(`Соединение потеряно: ${reason}`, "error");
+                showAlert(t("socket.connectionLost", { reason }), "error");
                 alertShownRef.current = true;
             }
         };
 
         const onConnectError = (err: Error) => {
             if (!alertShownRef.current) {
-                showAlert(`Ошибка подключения: ${err.message}`, "error");
+                showAlert(t("socket.connectionError", { message: err.message }), "error");
                 alertShownRef.current = true;
             }
         };
 
         const onSocketError = (err: any) => {
             if (!alertShownRef.current) {
-                showAlert(err?.message || "Ошибка сокета", "error");
+                showAlert(err?.message || t("socket.socketError"), "error");
                 alertShownRef.current = true;
             }
         };
@@ -72,7 +76,7 @@ export const useInitSocket = () => {
             socket.off("initialOnlineUsers", onInitialUsers);
             socket.off("userStatusChanged", onUserStatusChanged);
         };
-    }, [currentUser, showAlert]);
+    }, [currentUser, showAlert, t]);
 
     useEffect(() => {
         if (!currentUser) {

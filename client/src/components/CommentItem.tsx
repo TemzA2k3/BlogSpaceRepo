@@ -1,4 +1,5 @@
 import { type FC, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 import { formatRelativeDate } from "@/shared/utils/timeFormatter";
@@ -10,6 +11,7 @@ export const CommentItem: FC<CommentItemProps> = ({
     onSubmitReply,
     onLoadReplies
 }) => {
+    const { t } = useTranslation();
     const [isReplying, setIsReplying] = useState(false);
     const [replyText, setReplyText] = useState("");
 
@@ -29,7 +31,6 @@ export const CommentItem: FC<CommentItemProps> = ({
 
     return (
         <div className="group">
-            {/* Основной комментарий */}
             <div className={`flex gap-4 ${comment.indent ? "ml-16" : ""}`}>
                 <img
                     src={getAvatarUrl(
@@ -51,13 +52,12 @@ export const CommentItem: FC<CommentItemProps> = ({
                             {formatRelativeDate(comment.date)}
                         </span>
 
-                        {/* Ответить */}
                         {!comment.indent && (
                             <button
                                 onClick={() => setIsReplying(true)}
                                 className="text-xs text-blue-600 hover:underline opacity-0 group-hover:opacity-100 transition-opacity"
                             >
-                                Ответить
+                                {t("comments.reply")}
                             </button>
                         )}
 
@@ -67,7 +67,6 @@ export const CommentItem: FC<CommentItemProps> = ({
                         {comment.content}
                     </p>
 
-                    {/* Форма ответа */}
                     {isReplying && (
                         <div className="mt-3">
                             <textarea
@@ -75,7 +74,7 @@ export const CommentItem: FC<CommentItemProps> = ({
                                 onChange={e => setReplyText(e.target.value)}
                                 rows={2}
                                 className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm resize-none bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="Написать ответ..."
+                                placeholder={t("comments.replyPlaceholder")}
                             />
 
                             <div className="flex gap-2 mt-2">
@@ -83,13 +82,13 @@ export const CommentItem: FC<CommentItemProps> = ({
                                     onClick={handleSubmit}
                                     className="px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                                 >
-                                    Отправить
+                                    {t("comments.send")}
                                 </button>
                                 <button
                                     onClick={handleCancel}
                                     className="px-3 py-1 text-sm bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
                                 >
-                                    Отмена
+                                    {t("comments.cancel")}
                                 </button>
 
                             </div>
@@ -98,7 +97,6 @@ export const CommentItem: FC<CommentItemProps> = ({
                 </div>
             </div>
 
-            {/* Рекурсивный рендер ответов */}
             {comment.replies && comment.replies.length > 0 && (
                 <div className="mt-4 space-y-4">
                     {comment.replies.map(reply => (
@@ -111,15 +109,15 @@ export const CommentItem: FC<CommentItemProps> = ({
                     ))}
 
                     {!comment.indent && comment.repliesCount && comment.replies.length < comment.repliesCount && (
-                            <div className="ml-16 mt-1">
-                                <button
-                                    onClick={() => onLoadReplies?.(comment.id)}
-                                    className="text-xs text-blue-600 hover:underline"
-                                >
-                                    Посмотреть еще {comment.repliesCount - 3} ответа
-                                </button>
-                            </div>
-                        )}
+                        <div className="ml-16 mt-1">
+                            <button
+                                onClick={() => onLoadReplies?.(comment.id)}
+                                className="text-xs text-blue-600 hover:underline"
+                            >
+                                {t("comments.viewMoreReplies", { count: comment.repliesCount - 3 })}
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 
 import { fetchArticleData } from "@/shared/services/fetchArticleData";
@@ -11,6 +13,7 @@ import { addReplyToTree } from "@/shared/utils/addCommentReply";
 import type { ArticleData } from "@/shared/types/article.types";
 
 export const useArticleData = (articleId?: string) => {
+    const { t } = useTranslation();
     const [articleData, setArticleData] = useState<ArticleData | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -34,12 +37,12 @@ export const useArticleData = (articleId?: string) => {
                     setHasMoreComments(data.comments.length < data.commentsCount);
                 }
             } catch (err: any) {
-                showAlert(err.message || "Ошибка загрузки статьи");
+                showAlert(err.message || t("articles.loadError"));
             } finally {
                 setLoading(false);
             }
         })();
-    }, [articleId]);
+    }, [articleId, t]);
 
 
     const submitArticleComment = useCallback(
@@ -78,11 +81,11 @@ export const useArticleData = (articleId?: string) => {
 
                 return comment;
             } catch (err: any) {
-                showAlert(err.message || "Ошибка добавления комментария");
+                showAlert(err.message || t("articles.commentError"));
                 return null;
             }
         },
-        [articleData]
+        [articleData, t]
     );
 
     const loadComments = useCallback(async () => {
@@ -158,10 +161,10 @@ export const useArticleData = (articleId?: string) => {
                         : prev
                 );
             } catch (err: any) {
-                showAlert(err.message || "Ошибка загрузки ответов");
+                showAlert(err.message || t("articles.repliesError"));
             }
         },
-        [articleData]
+        [articleData, t]
     );
     
 

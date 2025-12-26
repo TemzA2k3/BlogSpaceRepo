@@ -1,22 +1,22 @@
-import { useState, useEffect, useRef, type FC } from "react";
+import {
+    useState,
+    useEffect,
+    useRef,
+    type FC
+} from "react";
+import { useTranslation } from "react-i18next";
 
-interface ChangePasswordModalProps {
-    loading: boolean;
-    onSubmit: (currentPassword: string, newPassword: string) => void;
-    onClose: () => void;
-}
-
-interface FormErrors {
-    currentPassword?: string;
-    newPassword?: string;
-    confirmPassword?: string;
-}
+import type {
+    FormErrors,
+    ChangePasswordModalProps
+} from "../types/modal.types";
 
 export const ChangePasswordModal: FC<ChangePasswordModalProps> = ({
     loading,
     onSubmit,
     onClose,
 }) => {
+    const { t } = useTranslation();
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -29,7 +29,6 @@ export const ChangePasswordModal: FC<ChangePasswordModalProps> = ({
 
     const currentPasswordRef = useRef<HTMLInputElement>(null);
 
-    // Lock body scroll when modal is open
     useEffect(() => {
         const originalOverflow = document.body.style.overflow;
         document.body.style.overflow = "hidden";
@@ -57,21 +56,21 @@ export const ChangePasswordModal: FC<ChangePasswordModalProps> = ({
         const newErrors: FormErrors = {};
 
         if (!currentPassword) {
-            newErrors.currentPassword = "Current password is required";
+            newErrors.currentPassword = t("settings.currentPasswordRequired");
         }
 
         if (!newPassword) {
-            newErrors.newPassword = "New password is required";
+            newErrors.newPassword = t("settings.newPasswordRequired");
         } else if (newPassword.length < 6) {
-            newErrors.newPassword = "Password must be at least 6 characters";
+            newErrors.newPassword = t("settings.passwordMinLength");
         } else if (newPassword === currentPassword) {
-            newErrors.newPassword = "New password must be different from current";
+            newErrors.newPassword = t("settings.passwordMustDiffer");
         }
 
         if (!confirmPassword) {
-            newErrors.confirmPassword = "Please confirm your new password";
+            newErrors.confirmPassword = t("settings.confirmPasswordRequired");
         } else if (confirmPassword !== newPassword) {
-            newErrors.confirmPassword = "Passwords do not match";
+            newErrors.confirmPassword = t("settings.passwordsNotMatch");
         }
 
         setErrors(newErrors);
@@ -104,14 +103,13 @@ export const ChangePasswordModal: FC<ChangePasswordModalProps> = ({
             onClick={handleBackdropClick}
         >
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
-                {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                             <i className="fa-solid fa-key text-blue-600 dark:text-blue-400" />
                         </div>
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                            Change Password
+                            {t("settings.changePassword")}
                         </h3>
                     </div>
                     <button
@@ -123,13 +121,11 @@ export const ChangePasswordModal: FC<ChangePasswordModalProps> = ({
                     </button>
                 </div>
 
-                {/* Form */}
                 <form onSubmit={handleSubmit}>
                     <div className="px-6 py-4 space-y-4">
-                        {/* Current Password */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                Current Password
+                                {t("settings.currentPassword")}
                             </label>
                             <div className="relative">
                                 <input
@@ -143,12 +139,11 @@ export const ChangePasswordModal: FC<ChangePasswordModalProps> = ({
                                         }
                                     }}
                                     disabled={loading}
-                                    className={`w-full px-4 py-3 pr-12 rounded-xl border bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:border-transparent outline-none transition-all ${
-                                        errors.currentPassword
-                                            ? "border-red-300 dark:border-red-600 focus:ring-red-500"
-                                            : "border-gray-300 dark:border-gray-600 focus:ring-blue-500"
-                                    }`}
-                                    placeholder="Enter current password"
+                                    className={`w-full px-4 py-3 pr-12 rounded-xl border bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:border-transparent outline-none transition-all ${errors.currentPassword
+                                        ? "border-red-300 dark:border-red-600 focus:ring-red-500"
+                                        : "border-gray-300 dark:border-gray-600 focus:ring-blue-500"
+                                        }`}
+                                    placeholder={t("settings.currentPasswordPlaceholder")}
                                 />
                                 <button
                                     type="button"
@@ -163,10 +158,9 @@ export const ChangePasswordModal: FC<ChangePasswordModalProps> = ({
                             )}
                         </div>
 
-                        {/* New Password */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                New Password
+                                {t("settings.newPasswordLabel")}
                             </label>
                             <div className="relative">
                                 <input
@@ -179,12 +173,11 @@ export const ChangePasswordModal: FC<ChangePasswordModalProps> = ({
                                         }
                                     }}
                                     disabled={loading}
-                                    className={`w-full px-4 py-3 pr-12 rounded-xl border bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:border-transparent outline-none transition-all ${
-                                        errors.newPassword
-                                            ? "border-red-300 dark:border-red-600 focus:ring-red-500"
-                                            : "border-gray-300 dark:border-gray-600 focus:ring-blue-500"
-                                    }`}
-                                    placeholder="Enter new password"
+                                    className={`w-full px-4 py-3 pr-12 rounded-xl border bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:border-transparent outline-none transition-all ${errors.newPassword
+                                        ? "border-red-300 dark:border-red-600 focus:ring-red-500"
+                                        : "border-gray-300 dark:border-gray-600 focus:ring-blue-500"
+                                        }`}
+                                    placeholder={t("settings.newPasswordPlaceholder")}
                                 />
                                 <button
                                     type="button"
@@ -199,15 +192,14 @@ export const ChangePasswordModal: FC<ChangePasswordModalProps> = ({
                             )}
                             {!errors.newPassword && newPassword && newPassword.length < 6 && (
                                 <p className="mt-1.5 text-sm text-yellow-500">
-                                    Password must be at least 6 characters
+                                    {t("settings.passwordMinLength")}
                                 </p>
                             )}
                         </div>
 
-                        {/* Confirm Password */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                Confirm New Password
+                                {t("settings.confirmNewPassword")}
                             </label>
                             <div className="relative">
                                 <input
@@ -220,14 +212,13 @@ export const ChangePasswordModal: FC<ChangePasswordModalProps> = ({
                                         }
                                     }}
                                     disabled={loading}
-                                    className={`w-full px-4 py-3 pr-12 rounded-xl border bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:border-transparent outline-none transition-all ${
-                                        errors.confirmPassword
-                                            ? "border-red-300 dark:border-red-600 focus:ring-red-500"
-                                            : confirmPassword && confirmPassword === newPassword
+                                    className={`w-full px-4 py-3 pr-12 rounded-xl border bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:border-transparent outline-none transition-all ${errors.confirmPassword
+                                        ? "border-red-300 dark:border-red-600 focus:ring-red-500"
+                                        : confirmPassword && confirmPassword === newPassword
                                             ? "border-green-300 dark:border-green-600 focus:ring-green-500"
                                             : "border-gray-300 dark:border-gray-600 focus:ring-blue-500"
-                                    }`}
-                                    placeholder="Confirm new password"
+                                        }`}
+                                    placeholder={t("settings.confirmPasswordPlaceholder")}
                                 />
                                 <button
                                     type="button"
@@ -243,13 +234,12 @@ export const ChangePasswordModal: FC<ChangePasswordModalProps> = ({
                             {!errors.confirmPassword && confirmPassword && confirmPassword === newPassword && (
                                 <p className="mt-1.5 text-sm text-green-500">
                                     <i className="fa-solid fa-check mr-1" />
-                                    Passwords match
+                                    {t("settings.passwordsMatch")}
                                 </p>
                             )}
                         </div>
                     </div>
 
-                    {/* Footer */}
                     <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
                         <button
                             type="button"
@@ -257,7 +247,7 @@ export const ChangePasswordModal: FC<ChangePasswordModalProps> = ({
                             disabled={loading}
                             className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 rounded-lg transition-colors"
                         >
-                            Cancel
+                            {t("settings.cancel")}
                         </button>
                         <button
                             type="submit"
@@ -265,7 +255,7 @@ export const ChangePasswordModal: FC<ChangePasswordModalProps> = ({
                             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center gap-2"
                         >
                             {loading && <i className="fa-solid fa-spinner fa-spin" />}
-                            {loading ? "Changing..." : "Change Password"}
+                            {loading ? t("settings.changing") : t("settings.changePassword")}
                         </button>
                     </div>
                 </form>

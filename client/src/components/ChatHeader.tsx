@@ -1,31 +1,24 @@
 import { useState, useRef, useEffect, type FC } from "react";
+import { useTranslation } from "react-i18next";
 
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 
-interface ChatHeaderProps {
-    firstName: string;
-    lastName: string;
-    avatar: string | null;
-    online: boolean;
-    typing?: boolean;
-    onDeleteChat?: () => void;
-    deleting?: boolean;
-}
+import type { ChatHeaderProps } from "@/shared/types/chat.types"
 
-export const ChatHeader: FC<ChatHeaderProps> = ({ 
-    firstName, 
-    lastName, 
-    avatar, 
-    online, 
+export const ChatHeader: FC<ChatHeaderProps> = ({
+    firstName,
+    lastName,
+    avatar,
+    online,
     typing,
     onDeleteChat,
     deleting = false,
 }) => {
+    const { t } = useTranslation();
     const [showDropdown, setShowDropdown] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // Close dropdown on click outside
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -71,14 +64,13 @@ export const ChatHeader: FC<ChatHeaderProps> = ({
                     <div>
                         <h2 className="font-semibold">{firstName + ' ' + lastName}</h2>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {typing ? "Печатает..." : online ? "В сети" : "Не в сети"}
+                            {typing ? t("chat.typing") : online ? t("chat.online") : t("chat.offline")}
                         </p>
                     </div>
                 </div>
 
-                {/* Dropdown menu */}
                 <div className="relative" ref={dropdownRef}>
-                    <button 
+                    <button
                         onClick={() => setShowDropdown(!showDropdown)}
                         className="h-9 w-9 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-colors"
                     >
@@ -92,21 +84,19 @@ export const ChatHeader: FC<ChatHeaderProps> = ({
                                 className="w-full px-4 py-3 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-3 transition-colors"
                             >
                                 <i className="fa-solid fa-trash-can w-4" />
-                                <span>Удалить чат</span>
+                                <span>{t("chat.deleteChat")}</span>
                             </button>
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* Delete confirmation modal */}
             {showDeleteConfirm && (
-                <div 
+                <div
                     className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
                     onClick={(e) => e.target === e.currentTarget && setShowDeleteConfirm(false)}
                 >
                     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-sm overflow-hidden">
-                        {/* Header */}
                         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
@@ -114,29 +104,27 @@ export const ChatHeader: FC<ChatHeaderProps> = ({
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                        Удалить чат?
+                                        {t("chat.deleteChatTitle")}
                                     </h3>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Content */}
                         <div className="px-6 py-4">
                             <p className="text-gray-600 dark:text-gray-300">
-                                Вы уверены, что хотите удалить переписку с{" "}
-                                <span className="font-medium">{firstName} {lastName}</span>?
-                                Это действие нельзя отменить.
+                                {t("chat.deleteChatConfirm")}{" "}
+                                <span className="font-medium">{firstName} {lastName}</span>?{" "}
+                                {t("chat.deleteChatWarning")}
                             </p>
                         </div>
 
-                        {/* Footer */}
                         <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
                             <button
                                 onClick={() => setShowDeleteConfirm(false)}
                                 disabled={deleting}
                                 className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 rounded-lg transition-colors"
                             >
-                                Отмена
+                                {t("chat.cancel")}
                             </button>
                             <button
                                 onClick={handleConfirmDelete}
@@ -144,7 +132,7 @@ export const ChatHeader: FC<ChatHeaderProps> = ({
                                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-lg transition-colors flex items-center gap-2"
                             >
                                 {deleting && <i className="fa-solid fa-spinner fa-spin" />}
-                                {deleting ? "Удаление..." : "Удалить"}
+                                {deleting ? t("chat.deleting") : t("chat.delete")}
                             </button>
                         </div>
                     </div>

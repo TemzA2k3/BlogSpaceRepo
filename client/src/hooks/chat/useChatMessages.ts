@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 
 import { getChatMessages } from "@/shared/services/getChatMessages";
@@ -7,6 +9,7 @@ import type { ChatMessage, ChatUser } from "@/shared/types/chat.types";
 const MESSAGES_LIMIT = 30;
 
 export const useChatMessages = (selectedUser: ChatUser | null) => {
+    const { t } = useTranslation();
     const { showAlert } = useAlert();
 
     const [messages, setMessages] = useState<Record<number, ChatMessage[]>>({});
@@ -24,13 +27,13 @@ export const useChatMessages = (selectedUser: ChatUser | null) => {
             setOffsets(prev => ({ ...prev, [chatId]: data.length }));
             setHasMore(prev => ({ ...prev, [chatId]: data.length === MESSAGES_LIMIT }));
         } catch (e: any) {
-            showAlert(e.message || "Ошибка загрузки сообщений", "error");
+            showAlert(e.message || t("chat.messagesLoadError"), "error");
         } finally {
             setLoading(prev => ({ ...prev, [chatId]: false }));
         }
-    }, []);
+    }, [t]);
 
-    const fetchMoreMessages = useCallback(async () => {        
+    const fetchMoreMessages = useCallback(async () => {
         if (!selectedUser) return;
 
         const chatId = selectedUser.chatId;
@@ -51,11 +54,11 @@ export const useChatMessages = (selectedUser: ChatUser | null) => {
             setOffsets(prev => ({ ...prev, [chatId]: offset + data.length }));
             setHasMore(prev => ({ ...prev, [chatId]: data.length === MESSAGES_LIMIT }));
         } catch (e: any) {
-            showAlert(e.message || "Ошибка загрузки сообщений", "error");
+            showAlert(e.message || t("chat.messagesLoadError"), "error");
         } finally {
             setLoading(prev => ({ ...prev, [chatId]: false }));
         }
-    }, [selectedUser, offsets, loading, hasMore]);
+    }, [selectedUser, offsets, loading, hasMore, t]);
 
     useEffect(() => {
         if (!selectedUser) return;

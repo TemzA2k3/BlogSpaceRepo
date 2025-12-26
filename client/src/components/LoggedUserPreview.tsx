@@ -4,12 +4,7 @@ import { Link } from "react-router-dom";
 
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 
-import { type User } from "@/shared/types/user.types";
-
-interface ILoggedUserPreview {
-    handleLogout: () => void;
-    user: User;
-}
+import { type ILoggedUserPreview } from "@/shared/types/user.types";
 
 export const LoggedUserPreview: FC<ILoggedUserPreview> = ({ handleLogout, user }) => {
     const { t } = useTranslation();

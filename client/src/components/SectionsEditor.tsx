@@ -1,4 +1,5 @@
 import { type FC } from "react"
+import { useTranslation } from "react-i18next";
 
 import { EmojiPicker } from "@/shared/components/EmojiPicker"
 import { HashTag } from "@/components/HashTag"
@@ -18,6 +19,8 @@ export const SectionsEditor: FC<SectionsEditorProps> = ({
     tags,
     removeTag,
 }) => {
+    const { t } = useTranslation();
+
     return (
         <div className="px-6 py-6 flex flex-col gap-6">
             {sections.map(section => (
@@ -34,7 +37,7 @@ export const SectionsEditor: FC<SectionsEditorProps> = ({
                         type="text"
                         value={section.title}
                         onChange={e => updateSection(section.id, "title", e.target.value)}
-                        placeholder="Заголовок секции"
+                        placeholder={t("articles.sectionTitle")}
                         className="w-full text-xl font-semibold dark:text-gray-100 bg-transparent border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg focus:outline-none focus:ring-0"
                     />
 
@@ -43,7 +46,7 @@ export const SectionsEditor: FC<SectionsEditorProps> = ({
                         onChange={e => updateSection(section.id, "content", e.target.value)}
                         onFocus={e => (lastFocusedTextarea.current = e.target)}
                         data-section-id={section.id}
-                        placeholder="Текст секции..."
+                        placeholder={t("articles.sectionContent")}
                         className="w-full bg-transparent dark:text-gray-200 border border-gray-300 dark:border-gray-600 px-3 py-3 rounded-lg resize-none min-h-[120px] focus:outline-none focus:ring-0"
                     />
 
@@ -52,19 +55,18 @@ export const SectionsEditor: FC<SectionsEditorProps> = ({
                             onClick={() => removeSection(section.id)}
                             className="w-fit self-end px-3 py-1 rounded-lg font-medium transition text-red-500 dark:text-red-400 border border-red-400/40 dark:border-red-500/40 hover:bg-red-500/10 dark:hover:bg-red-500/20"
                         >
-                            Удалить секцию
+                            {t("articles.deleteSection")}
                         </button>
                     )}
                 </div>
             ))}
 
-            {/* Добавление секции и кнопки Emoji/Tag */}
             <div className="flex items-center justify-between">
                 <button
                     onClick={addSection}
                     className="px-5 py-2 rounded-xl font-medium transition text-white bg-blue-600 hover:bg-blue-700"
                 >
-                    + Добавить секцию
+                    + {t("articles.addSection")}
                 </button>
 
                 <div className="flex gap-3 text-gray-500 dark:text-gray-300">
@@ -83,12 +85,11 @@ export const SectionsEditor: FC<SectionsEditorProps> = ({
                     <i
                         className="fa fa-tag text-lg cursor-pointer hover:text-green-400 transition"
                         onClick={handleTagClick}
-                        title="Выделите текст для создания тега"
+                        title={t("articles.tagHint")}
                     ></i>
                 </div>
             </div>
 
-            {/* Теги */}
             {tags.length > 0 && (
                 <div className="px-0 pb-6 flex flex-wrap gap-2">
                     {tags.map((tag, idx) => (

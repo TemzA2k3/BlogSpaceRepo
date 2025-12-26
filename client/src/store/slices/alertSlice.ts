@@ -1,11 +1,7 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 
-
-type AlertState = {
-  message: string | null;
-  type: "success" | "error";
-};
+import type { AlertState } from "@/shared/types/alert.types"
 
 const initialState: AlertState = {
   message: null,

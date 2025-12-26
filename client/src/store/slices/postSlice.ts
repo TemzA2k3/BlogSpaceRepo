@@ -15,7 +15,6 @@ const initialState: PostsState = {
     hasMore: true,
 };
 
-// Thunks
 export const getPosts = createAsyncThunk<
     UsersPosts[],
     void,
@@ -95,8 +94,6 @@ export const deletePost = createAsyncThunk<number, number>(
     }
 );
 
-
-// Slice
 const postSlice = createSlice({
     name: "posts",
     initialState,
@@ -181,7 +178,6 @@ const postSlice = createSlice({
                 state.error = (action.payload as string) ?? "Ошибка при лайке поста";
             })
 
-
             // SAVE POST
             .addCase(toggleSavePost.pending, (state) => {
                 state.error = null;
@@ -195,7 +191,7 @@ const postSlice = createSlice({
                 }
             })
             .addCase(toggleSavePost.rejected, (state, action) => {
-                state.error = (action.payload as string) ?? "Ошибка при сохранении поста";
+                state.error = (action.payload as string) ?? "Error while saving post";
             });
 
     },

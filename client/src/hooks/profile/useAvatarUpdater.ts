@@ -1,9 +1,13 @@
 import { type Dispatch, type SetStateAction, useState } from "react";
+import { useTranslation } from "react-i18next";
+
 import { useAppDispatch } from "@/hooks/redux/reduxHooks";
+
 import { setCurrentUser } from "@/store/slices/authSlice";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
+
 import { changeUserAvatar, deleteUserAvatar } from "@/shared/services/changeUserAvatar";
-import { useTranslation } from "react-i18next";
+
 import { type ProfileUserData } from "@/shared/types/user.types";
 
 export function useAvatarUpdater(

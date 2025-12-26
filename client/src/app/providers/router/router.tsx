@@ -32,81 +32,85 @@ import { ErrorFallback } from "@/components/ErrorFallback";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 
 const withErrorElement = (element: React.ReactNode) => ({
-  element,
-  errorElement: <ErrorFallback />
+    element,
+    errorElement: <ErrorFallback />
 });
 
 export const router = createBrowserRouter([
-  {
-    path: "/",
-    ...withErrorElement(<MainLayout />),
-    children: [
-      { path: "/", ...withErrorElement(<HomePage />) },
+    {
+        path: "/",
+        ...withErrorElement(<MainLayout />),
+        children: [
+            { path: "/", ...withErrorElement(<HomePage />) },
 
-      { path: "/posts", ...withErrorElement(<PostsPage />) },
-      { path: "/posts/:id", ...withErrorElement(<SpecificPostPage />) },
-      {
-        path: "/posts/create",
-        ...withErrorElement(
-          <ProtectedRoute>
-            <CreatePostPage />
-          </ProtectedRoute>
-        ),
-      },
+            { path: "/posts", ...withErrorElement(<PostsPage />) },
+            { path: "/posts/:id", ...withErrorElement(<SpecificPostPage />) },
+            {
+                path: "/posts/create",
+                ...withErrorElement(
+                    <ProtectedRoute>
+                        <CreatePostPage />
+                    </ProtectedRoute>
+                ),
+            },
 
-      { path: "/articles", ...withErrorElement(<ArticlesPage />) },
-      {
-        path: "/articles/create",
-        ...withErrorElement(
-          <ProtectedRoute>
-            <CreateArticlePage />
-          </ProtectedRoute>
-        ),
-      },
-      { path: "/articles/:id", ...withErrorElement(<SpecificArticlePage />) },
+            { path: "/articles", ...withErrorElement(<ArticlesPage />) },
+            {
+                path: "/articles/create",
+                ...withErrorElement(
+                    <ProtectedRoute>
+                        <CreateArticlePage />
+                    </ProtectedRoute>
+                ),
+            },
+            { path: "/articles/:id", ...withErrorElement(<SpecificArticlePage />) },
 
-      { path: "/explore", ...withErrorElement(<ExplorePage />) },
+            { path: "/explore", ...withErrorElement(<ExplorePage />) },
 
-      { path: "/about", ...withErrorElement(<AboutPage />) },
+            { path: "/about", ...withErrorElement(<AboutPage />) },
 
-      { path: "/contact", ...withErrorElement(<ContactPage />) },
+            { path: "/contact", ...withErrorElement(<ContactPage />) },
 
-      { path: "/signin", ...withErrorElement(<SignInPage />) },
-      { path: "/signup", ...withErrorElement(<SignUpPage />) },
-      { path: "/forgot-password", ...withErrorElement(
-                                                    <PublicOnlyRoute>
-                                                        <ForgotPasswordPage />
-                                                    </PublicOnlyRoute>
-                                                )},
-      { path: "/reset-password", ...withErrorElement(<ResetPasswordPage />) },
+            { path: "/signin", ...withErrorElement(<SignInPage />) },
+            { path: "/signup", ...withErrorElement(<SignUpPage />) },
+            {
+                path: "/forgot-password", ...withErrorElement(
+                    <PublicOnlyRoute>
+                        <ForgotPasswordPage />
+                    </PublicOnlyRoute>
+                )
+            },
+            { path: "/reset-password", ...withErrorElement(<ResetPasswordPage />) },
 
-      { path: "/users/:id", ...withErrorElement(<ProfilePage />) },
-      { path: "/users/:id/settings", ...withErrorElement(
-        <ProtectedRoute>
-            <SettingsPage />
-        </ProtectedRoute>
-    ) },
-      { path: "/users/:id/following", ...withErrorElement(<UserFollowingPage />) },
-      { path: "/users/:id/followers", ...withErrorElement(<UserFollowersPage />) },
-    ],
-  },
-  {
-    ...withErrorElement(<HeaderLayout />),
-    children: [
-      {
-        path: "/messages",
-        ...withErrorElement(
-          <ProtectedRoute>
-            <MessagesPage />
-          </ProtectedRoute>
-        ),
-      },
-    ],
-  },
-  {
-    ...withErrorElement(<EmptyLayout />),
-    children: [
-      { path: "*", ...withErrorElement(<NotFoundPage />) },
-    ],
-  },
+            { path: "/users/:id", ...withErrorElement(<ProfilePage />) },
+            {
+                path: "/users/:id/settings", ...withErrorElement(
+                    <ProtectedRoute>
+                        <SettingsPage />
+                    </ProtectedRoute>
+                )
+            },
+            { path: "/users/:id/following", ...withErrorElement(<UserFollowingPage />) },
+            { path: "/users/:id/followers", ...withErrorElement(<UserFollowersPage />) },
+        ],
+    },
+    {
+        ...withErrorElement(<HeaderLayout />),
+        children: [
+            {
+                path: "/messages",
+                ...withErrorElement(
+                    <ProtectedRoute>
+                        <MessagesPage />
+                    </ProtectedRoute>
+                ),
+            },
+        ],
+    },
+    {
+        ...withErrorElement(<EmptyLayout />),
+        children: [
+            { path: "*", ...withErrorElement(<NotFoundPage />) },
+        ],
+    },
 ]);

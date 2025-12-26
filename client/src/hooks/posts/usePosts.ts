@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+
 import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 import { getPosts, resetPosts } from "@/store/slices/postSlice";
@@ -7,6 +9,7 @@ import type { RecommendationsResponse } from "@/shared/types/post.types";
 import { getPostsRecommendations } from "@/shared/services/getPostsRecommendations";
 
 export const usePosts = () => {
+    const { t } = useTranslation();
     const dispatch = useAppDispatch();
     const { posts, loading, error, hasMore } = useAppSelector(state => state.posts);
     const { showAlert } = useAlert();
@@ -17,7 +20,7 @@ export const usePosts = () => {
     });
 
     console.log(recommendations);
-    
+
 
     useEffect(() => {
         dispatch(resetPosts());
@@ -37,10 +40,10 @@ export const usePosts = () => {
                 }
             })
             .catch((err: any) =>
-                showAlert(err.message || "Ошибка при получении рекомендаций", "error")
+                showAlert(err.message || t("posts.recommendationsError"), "error")
             );
-    }, []);
-    
+    }, [t]);
+
 
     useEffect(() => {
         if (error) {

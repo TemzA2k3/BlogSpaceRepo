@@ -1,9 +1,6 @@
 import { type FC } from "react"
 
-interface ArticleSectionProps {
-    title?: string;
-    content?: string;
-}
+import type { ArticleSectionProps } from "@/shared/types/article.types"
 
 export const ArticleSection: FC<ArticleSectionProps> = ({ title, content }) => {
     return (

@@ -2,6 +2,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
+import { useAlert } from "@/app/providers/alert/AlertProvider";
+
+import { sendContactMessage, type ContactSubject } from "@/shared/services/contactService";
+
 const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
@@ -34,8 +38,8 @@ const ContactCard = ({ icon, title, value, link }: ContactCardProps) => (
         </div>
         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{title}</h3>
         {link ? (
-            <a 
-                href={link} 
+            <a
+                href={link}
                 className="text-gray-900 dark:text-white font-semibold hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             >
                 {value}
@@ -86,6 +90,7 @@ const FAQItem = ({ question, answer }: FAQItemProps) => {
 
 export const ContactPage = () => {
     const { t } = useTranslation();
+    const { showAlert } = useAlert();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -93,12 +98,11 @@ export const ContactPage = () => {
         message: "",
     });
     const [sending, setSending] = useState(false);
-    const [sent, setSent] = useState(false);
 
     const contactInfo = [
         { icon: "fa-envelope", title: "Email", value: "support@blogspace.com", link: "mailto:support@blogspace.com" },
-        { icon: "fa-phone", title: "Телефон", value: "+7 (999) 123-45-67", link: "tel:+79991234567" },
-        { icon: "fa-location-dot", title: "Адрес", value: "Москва, Россия" },
+        { icon: "fa-phone", title: "Телефон", value: "+370 999 12 345", link: "tel:+37099912345" },
+        { icon: "fa-location-dot", title: "Адрес", value: "Вильнюс, Литва" },
         { icon: "fa-clock", title: "Время работы", value: "Пн-Пт: 9:00 - 18:00" },
     ];
 
@@ -133,15 +137,21 @@ export const ContactPage = () => {
         e.preventDefault();
         setSending(true);
 
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        try {
+            await sendContactMessage({
+                name: formData.name,
+                email: formData.email,
+                subject: formData.subject as ContactSubject,
+                message: formData.message,
+            });
 
-        setSending(false);
-        setSent(true);
-        setFormData({ name: "", email: "", subject: "", message: "" });
-
-        // Reset success message after 5 seconds
-        setTimeout(() => setSent(false), 5000);
+            showAlert("Сообщение отправлено! Мы ответим вам в ближайшее время.", "success");
+            setFormData({ name: "", email: "", subject: "", message: "" });
+        } catch (err: any) {
+            showAlert(err.message || "Не удалось отправить сообщение", "error");
+        } finally {
+            setSending(false);
+        }
     };
 
     const isFormValid = formData.name && formData.email && formData.subject && formData.message;
@@ -174,7 +184,7 @@ export const ContactPage = () => {
                         variants={fadeInUp}
                         className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed"
                     >
-                        Есть вопросы или предложения? Мы всегда рады помочь! 
+                        Есть вопросы или предложения? Мы всегда рады помочь!
                         Выберите удобный способ связи или заполните форму ниже.
                     </motion.p>
                 </motion.div>
@@ -211,17 +221,6 @@ export const ContactPage = () => {
                     >
                         Напишите нам
                     </motion.h2>
-
-                    {sent && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="mb-6 p-4 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-xl flex items-center gap-3"
-                        >
-                            <i className="fa-solid fa-check-circle" />
-                            <span>Сообщение отправлено! Мы ответим вам в ближайшее время.</span>
-                        </motion.div>
-                    )}
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <motion.div variants={fadeInUp} className="grid sm:grid-cols-2 gap-5">
@@ -331,22 +330,60 @@ export const ContactPage = () => {
                         </h3>
                         <div className="grid grid-cols-2 gap-4">
                             {[
-                                { icon: "fa-telegram", name: "Telegram", color: "hover:bg-blue-500", link: "#" },
-                                { icon: "fa-vk", name: "VK", color: "hover:bg-blue-600", link: "#" },
-                                { icon: "fa-twitter", name: "Twitter", color: "hover:bg-sky-500", link: "#" },
-                                { icon: "fa-youtube", name: "YouTube", color: "hover:bg-red-600", link: "#" },
+                                {
+                                    icon: "fa-telegram",
+                                    name: "Telegram",
+                                    link: "#",
+                                    hover: "hover:bg-blue-500 dark:hover:bg-blue-600",
+                                },
+                                {
+                                    icon: "fa-vk",
+                                    name: "VK",
+                                    link: "#",
+                                    hover: "hover:bg-blue-600 dark:hover:bg-blue-700",
+                                },
+                                {
+                                    icon: "fa-twitter",
+                                    name: "Twitter",
+                                    link: "#",
+                                    hover: "hover:bg-sky-500 dark:hover:bg-sky-600",
+                                },
+                                {
+                                    icon: "fa-youtube",
+                                    name: "YouTube",
+                                    link: "#",
+                                    hover: "hover:bg-red-600 dark:hover:bg-red-700",
+                                },
                             ].map((social, index) => (
                                 <a
                                     key={index}
                                     href={social.link}
-                                    className={`flex items-center gap-3 p-4 rounded-xl bg-gray-100 dark:bg-gray-700 ${social.color} hover:text-white transition-all duration-300 group`}
+                                    className={`
+        group flex items-center gap-3 p-4 rounded-xl
+        bg-gray-100 text-gray-800
+        dark:bg-gray-800 dark:text-gray-100
+        ${social.hover}
+        hover:text-white
+        transition-all duration-300
+        dark:shadow-md dark:hover:shadow-lg
+      `}
                                 >
                                     <i className={`fa-brands ${social.icon} text-xl`} />
-                                    <span className="font-medium">{social.name}</span>
-                                    <i className="fa-solid fa-arrow-right ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                                    <span className="font-medium">
+                                        {social.name}
+                                    </span>
+
+                                    <i className="
+        fa-solid fa-arrow-right ml-auto
+        opacity-0 group-hover:opacity-100
+        translate-x-[-4px] group-hover:translate-x-0
+        transition-all duration-300
+      " />
                                 </a>
                             ))}
                         </div>
+
                     </motion.div>
 
                     {/* Response Time */}
@@ -361,11 +398,24 @@ export const ContactPage = () => {
                             <div>
                                 <h3 className="text-xl font-bold mb-2">Быстрый ответ</h3>
                                 <p className="text-neutral-300 text-sm leading-relaxed">
-                                    Среднее время ответа на обращения — 2 часа в рабочее время. 
+                                    Среднее время ответа на обращения — 2 часа в рабочее время.
                                     Для срочных вопросов используйте Telegram.
                                 </p>
                             </div>
                         </div>
+                    </motion.div>
+
+                    <motion.div
+                        variants={fadeInUp}
+                        className="bg-gray-200 dark:bg-gray-700 rounded-3xl h-48 overflow-hidden"
+                    >
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d509.97385060836115!2d25.253333607922144!3d54.67553936314658!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dd95a83cf60ce5%3A0x9bd6f182d9a6aca5!2sSchool%20of%20Digital%20Technologies%20-%20EHU%20Informatics%20Program!5e0!3m2!1sru!2slt!4v1766783813876!5m2!1sru!2slt"
+                            className="w-full h-full border-0"
+                            loading="lazy"
+                            allowFullScreen
+                            referrerPolicy="no-referrer-when-downgrade"
+                        />
                     </motion.div>
                 </motion.div>
             </section>

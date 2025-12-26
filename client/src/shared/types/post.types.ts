@@ -1,4 +1,4 @@
-import type { HashTag } from "./hashTag.types";
+import type { HashTag } from "./hashtag.types";
 import type { User } from "./user.types";
 import type { Paggination } from "./paggination.types"; 
 

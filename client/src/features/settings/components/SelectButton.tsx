@@ -1,9 +1,6 @@
 import { type FC } from "react";
 
-interface SelectButtonProps {
-    value: string;
-    onClick?: () => void;
-}
+import type { SelectButtonProps } from "@/shared/types/settings.types"
 
 export const SelectButton: FC<SelectButtonProps> = ({ value, onClick }) => (
     <button

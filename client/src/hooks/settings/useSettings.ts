@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from "react";
 
 import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
-import { useAlert } from "@/app/providers/alert/AlertProvider"; 
+import { useAlert } from "@/app/providers/alert/AlertProvider";
 
 import {
     fetchSettings,

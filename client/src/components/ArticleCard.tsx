@@ -1,10 +1,12 @@
 import { type FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-import { type ArticlePreview } from "@/shared/types/article.types";
 import { getImageUrl } from "@/shared/utils/getImagesUrls";
 
 import { HashTagsDisplay } from "./HashTagsDisplay";
+
+import { type ArticlePreview } from "@/shared/types/article.types";
 
 export const ArticleCard: FC<ArticlePreview> = ({
     id,
@@ -17,13 +19,13 @@ export const ArticleCard: FC<ArticlePreview> = ({
     imageUrl
 }) => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     return (
         <article
             onClick={() => navigate(`/articles/${id}`)}
             className="rounded-2xl bg-white dark:bg-darkbg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
-            
-            {/* Картинка сверху */}
+
             <div className="h-48 w-full overflow-hidden rounded-t-2xl">
                 <img
                     src={getImageUrl(imageUrl)}
@@ -35,9 +37,8 @@ export const ArticleCard: FC<ArticlePreview> = ({
             <div className="flex flex-col flex-grow p-6">
                 <h3 className="text-xl font-semibold mb-2">{title}</h3>
 
-                {/* Ник автора с подсветкой */}
                 <p className="text-sm mb-3">
-                    Автор:{" "}
+                    {t("articles.author")}:{" "}
                     <Link
                         to={`/users/${authorId}`}
                         onClick={(e) => e.stopPropagation()}
@@ -51,11 +52,10 @@ export const ArticleCard: FC<ArticlePreview> = ({
                     {description
                         ? description
                         : sections.length > 0
-                            ? sections[0].content || "Нет содержания"
-                            : "Нет содержания"}
+                            ? sections[0].content || t("articles.noContent")
+                            : t("articles.noContent")}
                 </p>
 
-                {/* Хештеги через компонент */}
                 <HashTagsDisplay tags={tags} />
             </div>
         </article>

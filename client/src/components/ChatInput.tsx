@@ -1,9 +1,12 @@
+import { useTranslation } from "react-i18next";
+
 import { useChatInput } from "@/hooks/chat/useChatInput";
 import { useTyping } from "@/hooks/chat/useTyping";
 
 import type { ChatInputProps } from "@/shared/types/chat.types";
 
 export const ChatInput = ({ onSend, socket, currentUserId, selectedUserId }: ChatInputProps) => {
+    const { t } = useTranslation();
     const { text, setText, handleSend, handleKeyDown } = useChatInput({
         socket,
         currentUserId,
@@ -18,7 +21,7 @@ export const ChatInput = ({ onSend, socket, currentUserId, selectedUserId }: Cha
             <div className="mx-auto flex items-end gap-2">
                 <input
                     type="text"
-                    placeholder="Написать сообщение..."
+                    placeholder={t("chat.messagePlaceholder")}
                     className="flex-1 min-h-[44px] rounded-xl bg-gray-100 dark:bg-gray-700 px-4 py-2 border-none focus:outline-none"
                     value={text}
                     onChange={(e) => setText(e.target.value)}

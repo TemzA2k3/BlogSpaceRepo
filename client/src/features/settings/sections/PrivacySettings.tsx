@@ -1,62 +1,40 @@
 import { type FC } from "react";
+import { useTranslation } from "react-i18next";
 
-import { 
-    SectionHeader, 
-    SettingGroup, 
-    SettingRow, 
-    // SelectButton, 
-    Toggle 
+import {
+    SectionHeader,
+    SettingGroup,
+    SettingRow,
+    Toggle
 } from "../components";
 
-import type { User, UpdateSettingsPayload } from "@/shared/types/user.types";
+import type { SettingsProps } from "@/shared/types/settings.types";
 
-interface PrivacySettingsProps {
-    settings: User;
-    updating: boolean;
-    onUpdate: <K extends keyof UpdateSettingsPayload>(
-        key: K,
-        value: UpdateSettingsPayload[K]
-    ) => Promise<{ success: boolean }>;
-}
+export const PrivacySettings: FC<SettingsProps> = ({ settings, onUpdate }) => {
+    const { t } = useTranslation();
 
-// const WHO_CAN_MESSAGE_LABELS: Record<NonNullable<User["whoCanMessage"]>, string> = {
-//     everyone: "Everyone",
-//     followers: "Followers only",
-//     nobody: "Nobody",
-// };
-
-export const PrivacySettings: FC<PrivacySettingsProps> = ({ settings, onUpdate }) => {
     const handleTogglePublicProfile = () => {
         onUpdate("isPublicProfile", !settings.isPublicProfile);
     };
 
     return (
         <>
-            <SectionHeader title="Privacy & Security" subtitle="Control your privacy settings" />
+            <SectionHeader
+                title={t("settings.privacy")}
+                subtitle={t("settings.privacySubtitle")}
+            />
 
-            <SettingGroup title="Profile Visibility">
-                <SettingRow label="Public Profile" description="Allow anyone to see your profile">
+            <SettingGroup title={t("settings.profileVisibility")}>
+                <SettingRow
+                    label={t("settings.publicProfile")}
+                    description={t("settings.publicProfileHint")}
+                >
                     <Toggle
                         enabled={settings.isPublicProfile ?? true}
                         onChange={handleTogglePublicProfile}
-                        // disabled={updating}
                     />
                 </SettingRow>
             </SettingGroup>
-
-            {/* <SettingGroup title="Interactions">
-                <SettingRow label="Who can message me">
-                    <SelectButton 
-                        value={WHO_CAN_MESSAGE_LABELS[settings.whoCanMessage ?? "everyone"]} 
-                    />
-                </SettingRow>
-            </SettingGroup>
-
-            <SettingGroup title="Blocked Users">
-                <SettingRow label="Blocked Users" description="Manage your block list">
-                    <SelectButton value="0 users" />
-                </SettingRow>
-            </SettingGroup> */}
         </>
     );
 };

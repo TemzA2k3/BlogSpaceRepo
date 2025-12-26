@@ -1,4 +1,4 @@
-import type { HashTag } from "./hashTag.types";
+import type { HashTag } from "./hashtag.types";
 import type { Comment } from "./comment.types";
 import type { Paggination } from "./paggination.types";
 
@@ -71,4 +71,13 @@ export interface ToggleLikeResponse {
 export interface ToggleSaveResponse {
     saved: number;
     savedByCurrentUser: boolean;
+}
+
+export interface ArticleSectionProps {
+    title?: string;
+    content?: string;
+}
+
+export interface ArticlesGridProps {
+    articles: ArticlePreview[];
 }

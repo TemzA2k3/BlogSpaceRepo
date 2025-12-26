@@ -1,10 +1,6 @@
-import { type FC, type ReactNode } from "react";
+import { type FC } from "react";
 
-interface SettingRowProps {
-    label: string;
-    description?: string;
-    children: ReactNode;
-}
+import type { SettingRowProps } from "@/shared/types/settings.types"
 
 export const SettingRow: FC<SettingRowProps> = ({ label, description, children }) => (
     <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 last:border-b-0">

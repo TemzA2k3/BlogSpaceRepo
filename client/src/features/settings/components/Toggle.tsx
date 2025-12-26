@@ -1,9 +1,6 @@
 import { type FC } from "react";
 
-interface ToggleProps {
-    enabled: boolean;
-    onChange: (value: boolean) => void;
-}
+import type { ToggleProps } from "@/shared/types/toggler.types"
 
 export const Toggle: FC<ToggleProps> = ({ enabled, onChange }) => (
     <button

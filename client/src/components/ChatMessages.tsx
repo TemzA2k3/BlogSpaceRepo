@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 import { ChatMessage } from "@/components/ChatMessage";
 import { BlankData } from "@/shared/components/BlankData";
@@ -6,15 +7,7 @@ import { InfiniteObserver } from "@/shared/components/InfiniteObserver";
 
 import { formatDate, groupMessagesByDate } from "@/shared/utils/timeFormatter";
 
-import type { ChatMessage as ChatMessageType, ChatUser } from "@/shared/types/chat.types";
-
-interface ChatMessagesProps {
-    messages: ChatMessageType[];
-    selectedUser: ChatUser;
-    markMessageAsRead?: (msg: ChatMessageType) => void;
-    fetchMoreMessages: () => void;
-    hasMore: boolean;
-}
+import type { ChatMessagesProps } from "@/shared/types/chat.types";
 
 export const ChatMessages = ({
     messages,
@@ -23,6 +16,7 @@ export const ChatMessages = ({
     fetchMoreMessages,
     hasMore
 }: ChatMessagesProps) => {
+    const { t } = useTranslation();
     const containerRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const prevMessagesLengthRef = useRef(messages.length);
@@ -38,12 +32,12 @@ export const ChatMessages = ({
         }
     });
 
-    useLayoutEffect(() => {        
+    useLayoutEffect(() => {
         if (messages.length === 0) return;
-    
+
         const currentLength = messages.length;
         const prevLength = prevMessagesLengthRef.current;
-        
+
         if (prevLength === 0) {
             messagesEndRef.current?.scrollIntoView({
                 behavior: "auto",
@@ -56,19 +50,19 @@ export const ChatMessages = ({
             const scrollDiff = newScrollHeight - prevScrollHeightRef.current;
             containerRef.current.scrollTop += scrollDiff;
         }
-        
+
         prevMessagesLengthRef.current = currentLength;
     }, [messages.length]);
 
     useEffect(() => {
         if (messages.length === 0) return;
-    
+
         const lastMessage = messages[messages.length - 1];
-        
+
         if (lastMessage.id === lastMessageIdRef.current) return;
-        
+
         lastMessageIdRef.current = lastMessage.id;
-        
+
         if (lastMessage.sender === 'me') {
             messagesEndRef.current?.scrollIntoView({
                 behavior: "smooth",
@@ -92,8 +86,8 @@ export const ChatMessages = ({
                 <div className="absolute inset-0 flex items-center justify-center">
                     <BlankData
                         icon="💬"
-                        title="Нет сообщений"
-                        message={`Вы ещё не переписывались с ${selectedUser?.firstName}.`}
+                        title={t("chat.noMessages")}
+                        message={t("chat.noMessagesWithUser", { name: selectedUser?.firstName })}
                         bordered={false}
                         background={false}
                     />

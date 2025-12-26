@@ -1,7 +1,11 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+
 import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
+
 import { likePost, deletePost, toggleSavePost } from "@/store/slices/postSlice";
+
 import type { UsersPosts } from "@/shared/types/post.types";
 
 export const usePostCard = (
@@ -9,6 +13,7 @@ export const usePostCard = (
     onPostUpdate?: (updatedPost: UsersPosts | null) => void,
     onPostDelete?: (postId: number) => void
 ) => {
+    const { t } = useTranslation();
     const dispatch = useAppDispatch();
     const { showAlert } = useAlert();
     const { currentUser } = useAppSelector(state => state.auth);
@@ -33,7 +38,7 @@ export const usePostCard = (
             const updatedPost = await dispatch(likePost(post.id)).unwrap();
             onPostUpdate?.(updatedPost);
         } catch (err: any) {
-            showAlert(err.message ?? "Ошибка при лайке", "error");
+            showAlert(err.message ?? t("posts.likeError"), "error");
         }
     };
 
@@ -44,7 +49,7 @@ export const usePostCard = (
             const updatedPost = await dispatch(toggleSavePost(post.id)).unwrap();
             onPostUpdate?.(updatedPost);
         } catch (err: any) {
-            showAlert(err.message ?? "Ошибка при сохранении", "error");
+            showAlert(err.message ?? t("posts.saveError"), "error");
         }
     };
 
@@ -52,13 +57,13 @@ export const usePostCard = (
         try {
             const resultAction = await dispatch(deletePost(post.id));
             if (deletePost.fulfilled.match(resultAction)) {
-                showAlert("Пост успешно удален", "success");
+                showAlert(t("posts.deleteSuccess"), "success");
                 onPostDelete?.(post.id);
             } else {
-                showAlert(resultAction.payload as string ?? "Ошибка при удалении", "error");
+                showAlert(resultAction.payload as string ?? t("posts.deleteError"), "error");
             }
         } catch (err: any) {
-            showAlert(err.message ?? "Ошибка при удалении", "error");
+            showAlert(err.message ?? t("posts.deleteError"), "error");
         }
     };
 

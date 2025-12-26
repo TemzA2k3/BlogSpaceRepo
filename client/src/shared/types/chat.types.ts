@@ -41,14 +41,33 @@ export interface ModalContentUsersListProps {
     onChatCreated?: (user: ChatUser) => void;
 }
 
-export interface ChatMessageProps {
-    msg: ChatMessage;
-    selectedUser: ChatUser;
-}
-
 export interface ChatInputProps {
     socket: Socket | null;
     currentUserId: number | null;
     selectedUserId: number | null;
     onSend: (text: string) => void;
+}
+
+export interface ChatHeaderProps {
+    firstName: string;
+    lastName: string;
+    avatar: string | null;
+    online: boolean;
+    typing?: boolean;
+    onDeleteChat?: () => void;
+    deleting?: boolean;
+}
+
+export interface ChatMessageProps {
+    msg: ChatMessage;
+    selectedUser: any;
+    markMessageAsRead?: (msg: ChatMessage) => void;
+}
+
+export interface ChatMessagesProps {
+    messages: ChatMessage[];
+    selectedUser: ChatUser;
+    markMessageAsRead?: (msg: ChatMessage) => void;
+    fetchMoreMessages: () => void;
+    hasMore: boolean;
 }

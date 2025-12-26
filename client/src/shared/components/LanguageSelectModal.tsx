@@ -1,16 +1,7 @@
 import { useEffect, type FC } from "react";
+import { useTranslation } from "react-i18next";
 
-interface LanguageOption {
-    code: string;
-    name: string;
-    flag: string;
-}
-
-interface LanguageSelectModalProps {
-    currentLanguage: string;
-    onSelect: (lang: string) => void;
-    onClose: () => void;
-}
+import type { LanguageOption, LanguageSelectModalProps } from "../types/modal.types";
 
 const LANGUAGES: LanguageOption[] = [
     { code: "en", name: "English", flag: "https://flagcdn.com/us.svg" },
@@ -22,7 +13,8 @@ export const LanguageSelectModal: FC<LanguageSelectModalProps> = ({
     onSelect,
     onClose,
 }) => {
-    // Lock body scroll when modal is open
+    const { t } = useTranslation();
+
     useEffect(() => {
         const originalOverflow = document.body.style.overflow;
         document.body.style.overflow = "hidden";
@@ -61,10 +53,9 @@ export const LanguageSelectModal: FC<LanguageSelectModalProps> = ({
             onClick={handleBackdropClick}
         >
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-sm overflow-hidden">
-                {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        Select Language
+                        {t("settings.selectLanguage")}
                     </h3>
                     <button
                         onClick={onClose}
@@ -74,17 +65,15 @@ export const LanguageSelectModal: FC<LanguageSelectModalProps> = ({
                     </button>
                 </div>
 
-                {/* Language Options */}
                 <div className="py-2">
                     {LANGUAGES.map((lang) => (
                         <button
                             key={lang.code}
                             onClick={() => handleSelect(lang.code)}
-                            className={`w-full flex items-center gap-4 px-6 py-3 transition-colors ${
-                                currentLanguage === lang.code
+                            className={`w-full flex items-center gap-4 px-6 py-3 transition-colors ${currentLanguage === lang.code
                                     ? "bg-blue-50 dark:bg-blue-900/20"
                                     : "hover:bg-gray-50 dark:hover:bg-gray-700"
-                            }`}
+                                }`}
                         >
                             <img
                                 src={lang.flag}

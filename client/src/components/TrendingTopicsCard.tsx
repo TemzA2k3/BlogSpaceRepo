@@ -1,14 +1,7 @@
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 
-interface TrendingTopic {
-    tag: string;
-    count: number;
-}
-
-interface TrendingTopicsCardProps {
-    topics: TrendingTopic[];
-}
+import type { TrendingTopicsCardProps } from "@/shared/types/trending-topics.types"
 
 export const TrendingTopicsCard: FC<TrendingTopicsCardProps> = ({ topics }) => {
     const { t } = useTranslation();

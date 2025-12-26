@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { type FC, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useAppSelector } from '@/hooks/redux/reduxHooks';
 
@@ -13,8 +14,7 @@ import { fetchUserFollowing } from '@/shared/services/fetchUserSubs';
 
 import type { ChatUser, UsersListProps } from '@/shared/types/chat.types';
 
-
-export const UsersList: React.FC<UsersListProps> = ({
+export const UsersList: FC<UsersListProps> = ({
     users,
     setUsers,
     selectedUser,
@@ -22,6 +22,7 @@ export const UsersList: React.FC<UsersListProps> = ({
     searchQuery,
     setSearchQuery,
 }) => {
+    const { t } = useTranslation();
     const { currentUser } = useAppSelector(state => state.auth);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const noUsers = users.length === 0;
@@ -32,7 +33,7 @@ export const UsersList: React.FC<UsersListProps> = ({
             return prev;
         });
 
-        setIsModalOpen(false);        
+        setIsModalOpen(false);
 
         setSelectedUser(user);
     }, [setUsers]);
@@ -41,7 +42,7 @@ export const UsersList: React.FC<UsersListProps> = ({
     return (
         <div className="w-80 border-r border-gray-200 dark:border-gray-700 flex flex-col bg-gray-50 dark:bg-gray-800">
             <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col gap-4">
-                <h1 className="text-2xl font-bold">Сообщения</h1>
+                <h1 className="text-2xl font-bold">{t("header.messages")}</h1>
                 <div className="flex gap-2">
                     <SearchInput
                         value={searchQuery}
@@ -51,7 +52,7 @@ export const UsersList: React.FC<UsersListProps> = ({
                     <button
                         onClick={() => setIsModalOpen(true)}
                         className="text-white bg-blue-600 hover:bg-blue-700 rounded-lg h-10 w-10 flex items-center justify-center shrink-0"
-                        title="Написать сообщение"
+                        title={t("chat.writeMessage")}
                     >
                         <i className="fa fa-comment-dots text-lg"></i>
                     </button>
@@ -63,8 +64,8 @@ export const UsersList: React.FC<UsersListProps> = ({
                     <div className="flex flex-col items-center justify-center flex-1">
                         <BlankData
                             icon="🔍"
-                            title="Нет пользователей"
-                            message="Попробуйте изменить запрос поиска."
+                            title={t("chat.noUsers")}
+                            message={t("chat.noUsersHint")}
                             bordered={false}
                         />
                     </div>
@@ -84,7 +85,7 @@ export const UsersList: React.FC<UsersListProps> = ({
                 <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                     <ModalContentUsersList
                         fetchData={() => fetchUserFollowing(currentUser.id)}
-                        title="Подписки пользователя"
+                        title={t("chat.userSubscriptions")}
                         onChatCreated={handleChatCreated}
                     />
                 </Modal>

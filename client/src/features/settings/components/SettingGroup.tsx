@@ -1,9 +1,6 @@
-import { type FC, type ReactNode } from "react";
+import { type FC } from "react";
 
-interface SettingGroupProps {
-    title: string;
-    children: ReactNode;
-}
+import type { SettingGroupProps } from "@/shared/types/settings.types"
 
 export const SettingGroup: FC<SettingGroupProps> = ({ title, children }) => (
     <div className="mb-2">

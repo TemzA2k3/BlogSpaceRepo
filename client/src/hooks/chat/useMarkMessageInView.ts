@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
+
 import type { ChatMessage } from '@/shared/types/chat.types';
 
 export const useMarkMessageInView = (

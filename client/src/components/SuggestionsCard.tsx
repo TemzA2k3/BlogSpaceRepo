@@ -25,9 +25,6 @@ export const SuggestionsCard: FC<SuggestionsCardProps> = ({ users }) => {
                                 {user.username}
                             </span>
                         </Link>
-                        <button className="text-blue-600 dark:text-blue-400 text-sm sm:text-base hover:underline">
-                            {t('posts.follow')}
-                        </button>
                     </li>
                 ))}
             </ul>

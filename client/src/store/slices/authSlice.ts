@@ -88,7 +88,6 @@ export const getMe = createAsyncThunk(
     }
 );
 
-// Settings thunks
 export const fetchSettings = createAsyncThunk(
     "auth/fetchSettings",
     async (_, { getState, rejectWithValue }) => {

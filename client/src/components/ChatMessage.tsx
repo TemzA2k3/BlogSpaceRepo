@@ -7,15 +7,9 @@ import { useMarkMessageInView } from '@/hooks/chat/useMarkMessageInView';
 
 import { formatTime } from "@/shared/utils/timeFormatter";
 
-import type { ChatMessage as ChatMessageType } from "@/shared/types/chat.types";
+import type { ChatMessageProps } from "@/shared/types/chat.types";
 
-interface Props {
-    msg: ChatMessageType;
-    selectedUser: any;
-    markMessageAsRead?: (msg: ChatMessageType) => void;
-}
-
-export const ChatMessage: FC<Props> = ({ msg, selectedUser, markMessageAsRead }) => {
+export const ChatMessage: FC<ChatMessageProps> = ({ msg, selectedUser, markMessageAsRead }) => {
     const { currentUser } = useAppSelector(state => state.auth);
     const textRef = useRef<HTMLParagraphElement>(null);
 

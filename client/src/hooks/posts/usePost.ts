@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 
@@ -11,6 +12,7 @@ import type { SpecificUserPost } from "@/shared/types/post.types";
 import type { Comment } from "@/shared/types/comment.types";
 
 export const usePost = (postId?: number) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { showAlert } = useAlert();
 
@@ -22,7 +24,7 @@ export const usePost = (postId?: number) => {
     const [hasMoreComments, setHasMoreComments] = useState(true);
     const [commentsLoading, setCommentsLoading] = useState(false);
 
-    const limit = 5; // корневые комментарии за один запрос
+    const limit = 5;
 
     useEffect(() => {
         if (!postId) return;
@@ -43,7 +45,7 @@ export const usePost = (postId?: number) => {
                 setHasMoreComments((postData?.comments ?? 0) > initialComments.length);
 
             } catch (err: any) {
-                showAlert(err.message || "Ошибка загрузки данных");
+                showAlert(err.message || t("posts.loadError"));
             } finally {
                 setLoading(false);
             }
@@ -65,11 +67,11 @@ export const usePost = (postId?: number) => {
             setHasMoreComments((post.comments ?? 0) > newOffset);
 
         } catch (err: any) {
-            showAlert(err.message || "Ошибка загрузки комментариев");
+            showAlert(err.message || t("posts.commentsLoadError"));
         } finally {
             setCommentsLoading(false);
         }
-    }, [postId, post, commentsOffset, hasMoreComments, commentsLoading]);
+    }, [postId, post, commentsOffset, hasMoreComments, commentsLoading, t]);
 
     const loadReplies = useCallback(async (parentId: number) => {
         const parentComment = comments.find(c => c.id === parentId);
@@ -88,7 +90,7 @@ export const usePost = (postId?: number) => {
                 );
             }
         } catch (err: any) {
-            showAlert(err.message || "Ошибка загрузки ответов");
+            showAlert(err.message || t("posts.repliesLoadError"));
         }
     }, [comments]);
 
@@ -109,7 +111,7 @@ export const usePost = (postId?: number) => {
 
                 return newComment;
             } catch (err: any) {
-                showAlert(err.message || "Ошибка добавления комментария");
+                showAlert(err.message || t("posts.commentAddError"));
                 return null;
             }
         },

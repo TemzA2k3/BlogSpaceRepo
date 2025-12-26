@@ -1,9 +1,8 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 
-import type { ArticlePreview, ArticlesState } from "@/shared/types/article.types";
-
 import { apiRequest } from "@/shared/api/apiClient";
 
+import type { ArticlePreview, ArticlesState } from "@/shared/types/article.types";
 
 const initialState: ArticlesState = {
     articles: [],
@@ -13,7 +12,6 @@ const initialState: ArticlesState = {
     limit: 21,
     hasMore: true,
 };
-
 
 export const fetchArticles = createAsyncThunk<
     ArticlePreview[],
@@ -43,23 +41,16 @@ export const createArticle = createAsyncThunk<
     { rejectValue: string }
 >("articles/create", async (formData, { rejectWithValue }) => {
     try {
-        // for (const [key, value] of formData.entries()) {
-        //     console.log(key, value);
-        // }
-
         const data = await apiRequest<ArticlePreview>("/articles", "POST", {
             credentials: "include",
             body: formData
         })
-
 
         return data as ArticlePreview
     } catch (err: any) {
         return rejectWithValue(err.message || "Ошибка при создании статьи")
     }
 })
-
-
 
 const articlesSlice = createSlice({
     name: "articles",
