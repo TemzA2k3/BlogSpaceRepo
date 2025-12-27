@@ -6,22 +6,22 @@ import en from "@/locales/en/translation.json";
 import ru from "@/locales/ru/translation.json";
 
 i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources: {
-      en: { translation: en },
-      ru: { translation: ru },
-    },
-    fallbackLng: "en",
-    load: "languageOnly",
-    interpolation: {
-      escapeValue: false,
-    },
-    detection: {
-      order: ["localStorage", "navigator"],
-      caches: ["localStorage"],
-    },
-  });
+    .use(LanguageDetector)
+    .use(initReactI18next)
+    .init({
+        resources: {
+            en: { translation: en },
+            ru: { translation: ru },
+        },
+        fallbackLng: "en",
+        load: "languageOnly",
+        interpolation: {
+            escapeValue: false,
+        },
+        detection: {
+            order: ["localStorage", "navigator"],
+            caches: ["localStorage"],
+        },
+    });
 
 export default i18n;

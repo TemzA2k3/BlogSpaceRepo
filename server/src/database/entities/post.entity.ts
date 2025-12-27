@@ -6,10 +6,15 @@ import {
     ManyToMany,
     JoinTable,
     CreateDateColumn,
+    OneToMany
 } from 'typeorm';
 
 import { User } from './user.entity';
 import { Hashtag } from './hashtag.entity';
+import { PostLike } from './post-likes.entity';
+import { PostSave } from './post-saves.entity';
+import { Comment } from './comment.entity';
+import { Report } from './report.entity';
 
 @Entity('posts')
 export class Post {
@@ -20,13 +25,7 @@ export class Post {
     content: string;
 
     @Column({ default: 0 })
-    likes: number;
-
-    @Column({ default: 0 })
     comments: number;
-
-    @Column({ default: 0 })
-    saved: number;
 
     @Column({ nullable: true })
     image?: string;
@@ -36,6 +35,18 @@ export class Post {
 
     @ManyToOne(() => User, (user) => user.posts, { onDelete: 'CASCADE' })
     user: User;
+
+    @OneToMany(() => Comment, (comment) => comment.post)
+    commentsRelation: Comment[];
+
+    @OneToMany(() => PostLike, like => like.post)
+    likesRelation: PostLike[];
+
+    @OneToMany(() => PostSave, save => save.post)
+    savesRelation: PostSave[];
+
+    @OneToMany(() => Report, report => report.post)
+    reports: Report[];
 
     @ManyToMany(() => Hashtag, (hashtag) => hashtag.posts, { cascade: true })
     @JoinTable()

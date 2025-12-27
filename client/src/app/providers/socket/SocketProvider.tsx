@@ -1,13 +1,7 @@
-import { createContext, useContext, type ReactNode } from "react";
-import type { SocketContextType } from "@/shared/types/socket-context.types";
-import { useInitSocket } from "@/hooks/socket/useInitSocket";
+import type { ReactNode } from "react";
 
-export const SocketContext = createContext<SocketContextType>({
-    socket: null,
-    connected: false,
-    usersStatus: {},
-    setUserStatus: () => {},
-});
+import { SocketContext } from "./SocketContext";
+import { useInitSocket } from "@/hooks/socket/useInitSocket";
 
 export const SocketProvider = ({ children }: { children: ReactNode }) => {
     const value = useInitSocket();
@@ -18,5 +12,3 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         </SocketContext.Provider>
     );
 };
-
-export const useSocketContext = () => useContext(SocketContext);

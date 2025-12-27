@@ -10,7 +10,9 @@ import {
     Post,
     BadRequestException,
     Delete,
-    HttpCode
+    HttpCode,
+    Body,
+    ForbiddenException,
 } from '@nestjs/common';
 import { File as MulterFile } from 'multer';
 
@@ -20,18 +22,23 @@ import { type JwtPayload } from '@/shared/types/jwt-payload.interface';
 
 import { UserReq } from '@/common/decorators/user.decorator';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '@/common/guards/optional-jwt-auth.guard';
 import { ImageUploadInterceptor } from '@/common/interceptors/image-upload.interceptor';
+
+import { UpdateSettingsDto } from './dtos/update-user.dto'
+import { ChangePasswordDto } from './dtos/change-password.dto';
 
 @Controller('users')
 export class UsersController {
     constructor(private usersService: UsersService) {}
 
     @Get(':id')
+    @UseGuards(OptionalJwtAuthGuard)
     getUserProfileData(
         @Param('id') id: string,
-        @Query('currentUserId') currentUserId?: string
+        @UserReq() user?: JwtPayload
     ) {
-        return this.usersService.getUserProfileData(+id, currentUserId ? +currentUserId : undefined);
+        return this.usersService.getUserProfileData(+id, user?.userId);
     }
 
     @Patch('avatar')
@@ -41,12 +48,18 @@ export class UsersController {
         folder: 'avatars',
         prefix: 'avatar',
         maxSizeMB: 2,
-      }))
+    }))
     changeAvatar(
         @UploadedFile() file: MulterFile, 
         @UserReq() user: JwtPayload
     ) {        
-      return this.usersService.updateAvatar(user.userId, file.filename);
+        return this.usersService.updateAvatar(user.userId, file.filename);
+    }
+
+    @Delete('avatar')
+    @UseGuards(JwtAuthGuard)
+    deleteAvatar(@UserReq() user: JwtPayload) {
+        return this.usersService.deleteAvatar(user.userId);
     }
 
     @Post(':id/follow')
@@ -72,17 +85,88 @@ export class UsersController {
     }
 
     @Get('/search/users')
-    getUsersBySearch(@Query('query') query: string) {        
-        return this.usersService.getUsersBySearch(query)
+    getUsersBySearch(
+        @Query('query') query: string,
+        @Query('offset') offset = '0',
+        @Query('limit') limit = '20'
+    ) {
+        const offsetNum = parseInt(offset, 10);
+        const limitNum = parseInt(limit, 10);
+    
+        return this.usersService.getUsersBySearch(query, offsetNum, limitNum);
     }
 
     @Get('/:id/following')
-    getUserFollowing(@Param('id') userId: string){
-        return this.usersService.getUserFollowing(+userId)
+    getUserFollowing(
+        @Param('id') userId: string,
+        @Query('offset') offset = '0',
+        @Query('limit') limit = '20',
+    ){
+        return this.usersService.getUserFollowing(+userId, Number(offset), Number(limit))
     }
 
     @Get('/:id/followers')
-    getUserFollowers(@Param('id') userId: string){
-        return this.usersService.getUserFollowers(+userId)
+    getUserFollowers(
+        @Param('id') userId: string,
+        @Query('offset') offset = '0',
+        @Query('limit') limit = '20',
+    ){
+        return this.usersService.getUserFollowers(+userId, Number(offset), Number(limit))
+    }
+
+    @Get(':id/settings')
+    @UseGuards(JwtAuthGuard)
+    getUserSettings(
+        @Param('id') id: string,
+        @UserReq() user: JwtPayload
+    ) {
+        if (+id !== user.userId) {
+            throw new ForbiddenException("You can only access your own settings");
+        }
+
+        return this.usersService.getUserSettings(+id);
+    }
+
+    @Patch(':id/settings')
+    @UseGuards(JwtAuthGuard)
+    updateUserSettings(
+        @Param('id') id: string,
+        @Body() dto: UpdateSettingsDto,
+        @UserReq() user: JwtPayload
+    ) {
+        if (+id !== user.userId) {
+            throw new ForbiddenException("You can only update your own settings");
+        }
+
+        return this.usersService.updateUserSettings(+id, dto);
+    }
+
+    @Patch(':id/password')
+    @UseGuards(JwtAuthGuard)
+    async changePassword(
+        @Param('id') id: string,
+        @Body() dto: ChangePasswordDto,
+        @UserReq() user: JwtPayload
+    ) {
+        if (+id !== user.userId) {
+            throw new ForbiddenException("You can only change your own password");
+        }
+
+        await this.usersService.changePassword(+id, dto);
+        return { message: "Password changed successfully" };
+    }
+
+    @Delete(':id')
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(204)
+    async deleteAccount(
+        @Param('id') id: string,
+        @UserReq() user: JwtPayload
+    ) {
+        if (+id !== user.userId) {
+            throw new ForbiddenException("You can only delete your own account");
+        }
+
+        await this.usersService.deleteAccount(+id);
     }
 }

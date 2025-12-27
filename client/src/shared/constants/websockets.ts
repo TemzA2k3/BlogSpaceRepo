@@ -4,4 +4,6 @@ export const webSocketSettings = {
     reconnection: true,       // включить авто-подключение
     reconnectionAttempts: 5,  // максимум 5 попыток
     reconnectionDelay: 5000,  // задержка между попытками
+    pingTimeout: 5000,
+    pingInterval: 10000,
 }

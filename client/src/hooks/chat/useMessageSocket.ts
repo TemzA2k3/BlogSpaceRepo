@@ -1,13 +1,7 @@
 import { useEffect } from 'react';
-import { Socket } from 'socket.io-client';
-import type { ChatMessage } from '@/shared/types/chat.types';
 
-interface UseMessageSocketParams {
-    socket: Socket | null;
-    currentUserId: number | null;
-    selectedChatId: number | null;
-    setMessages: React.Dispatch<React.SetStateAction<Record<number, ChatMessage[]>>>;
-}
+import type { ChatMessage } from '@/shared/types/chat.types';
+import type { UseMessageSocketParams } from "@/shared/types/socket.types"
 
 export const useMessageSocket = ({
     socket,

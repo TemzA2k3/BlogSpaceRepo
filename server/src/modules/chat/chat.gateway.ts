@@ -20,6 +20,8 @@ import { UsersService } from '../users/users.service';
         methods: ['GET', 'POST'],
         credentials: true,
     },
+    pingInterval: 10000,
+    pingTimeout: 5000,
 })
 @Injectable()
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {

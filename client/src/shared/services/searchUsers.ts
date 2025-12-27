@@ -1,15 +1,23 @@
 import { apiRequest } from "@/shared/api/apiClient";
 
-import type { UserCardProps } from "@/shared/types/user.types"
+import type { UserCardProps } from "@/shared/types/user.types";
 
-export const searchUsers = async (searchStr: string) => {
+export const searchUsers = async (
+    searchStr: string,
+    offset = 0,
+    limit = 20
+): Promise<UserCardProps[]> => {
+    console.log(`call - offset - ${offset}`);
+    
     try {
-        const data = await apiRequest<UserCardProps[]>(`/users/search/users?query=${searchStr}`, "GET", {
-            credentials: "include",
-        });
+        const data = await apiRequest<UserCardProps[]>(
+            `/users/search/users?query=${encodeURIComponent(searchStr)}&offset=${offset}&limit=${limit}`,
+            "GET",
+            { credentials: "include" }
+        );
 
         return data || [];
     } catch (err: any) {
-        throw new Error(err.message || "Something went wrong...")
+        throw new Error(err.message || "Something went wrong...");
     }
-}
+};

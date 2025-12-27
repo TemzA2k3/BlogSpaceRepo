@@ -1,66 +1,94 @@
-import { useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
-
-import { useAppSelector } from "@/hooks/redux/reduxHooks";
-
-import { API_BASE_URL } from "@/shared/constants/urls";
-import type { SocketContextType } from "@/shared/types/socket-context.types";
+import { useEffect, useState, useRef } from "react";
+import { Socket } from "socket.io-client";
+import { useTranslation } from "react-i18next";
 
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 
-import { webSocketSettings } from "@/shared/constants/websockets";
+import { useAppSelector } from "@/hooks/redux/reduxHooks";
 
-export const useInitSocket = (): SocketContextType => {
-    const { loading, currentUser } = useAppSelector(state => state.auth);
+import { getSocket, disconnectSocket } from "./socket";
+
+export const useInitSocket = () => {
+    const { t } = useTranslation();
+    const { currentUser } = useAppSelector(state => state.auth);
     const { showAlert } = useAlert();
 
-    const [socket, setSocket] = useState<Socket | null>(null);
     const [connected, setConnected] = useState(false);
     const [usersStatus, setUsersStatus] = useState<Record<number, boolean>>({});
-    const [alertShown, setAlertShown] = useState(false);
 
-    const setUserStatus = (userId: number, online: boolean) => {
-        setUsersStatus(prev => ({ ...prev, [userId]: online }));
-    };
+    const alertShownRef = useRef(false);
 
     useEffect(() => {
-        // Если пользователь не залогинен или ещё идёт загрузка, сокет не создаём
-        if (loading || !currentUser) return;
+        if (!currentUser) return;
 
-        const newSocket = io(API_BASE_URL, webSocketSettings);
-        setSocket(newSocket);
+        const socket: Socket = getSocket();
 
-        newSocket.on("connect", () => {
+        const onConnect = () => {
             setConnected(true);
-            if (alertShown) setAlertShown(false); // соединение восстановлено, можно показывать алерты снова
-        });
+            alertShownRef.current = false;
+        };
 
-        newSocket.on("disconnect", (reason) => {
+        const onDisconnect = (reason: string) => {
             setConnected(false);
-            if (!alertShown) {
-                showAlert(`Соединение потеряно: ${reason}`, "error");
-                setAlertShown(true);
-            }
-        });
 
-        newSocket.on("connect_error", (err) => {
-            if (!alertShown) {
-                showAlert(`Ошибка подключения: ${err.message}`, "error");
-                setAlertShown(true);
+            if (!alertShownRef.current) {
+                showAlert(t("socket.connectionLost", { reason }), "error");
+                alertShownRef.current = true;
             }
-        });
+        };
 
-        newSocket.on("error", (err) => {
-            if (!alertShown) {
-                showAlert(typeof err === "string" ? err : err?.message ?? "Неизвестная ошибка сокета", "error");
-                setAlertShown(true);
+        const onConnectError = (err: Error) => {
+            if (!alertShownRef.current) {
+                showAlert(t("socket.connectionError", { message: err.message }), "error");
+                alertShownRef.current = true;
             }
-        });
+        };
+
+        const onSocketError = (err: any) => {
+            if (!alertShownRef.current) {
+                showAlert(err?.message || t("socket.socketError"), "error");
+                alertShownRef.current = true;
+            }
+        };
+
+        const onInitialUsers = (ids: number[]) => {
+            const map: Record<number, boolean> = {};
+            ids.forEach(id => (map[id] = true));
+            setUsersStatus(map);
+        };
+
+        const onUserStatusChanged = ({ userId, online }: { userId: number; online: boolean }) => {
+            setUsersStatus(prev => ({ ...prev, [userId]: online }));
+        };
+
+        socket.on("connect", onConnect);
+        socket.on("disconnect", onDisconnect);
+        socket.on("connect_error", onConnectError);
+        socket.on("error", onSocketError);
+        socket.on("initialOnlineUsers", onInitialUsers);
+        socket.on("userStatusChanged", onUserStatusChanged);
 
         return () => {
-            newSocket.disconnect();
+            socket.off("connect", onConnect);
+            socket.off("disconnect", onDisconnect);
+            socket.off("connect_error", onConnectError);
+            socket.off("error", onSocketError);
+            socket.off("initialOnlineUsers", onInitialUsers);
+            socket.off("userStatusChanged", onUserStatusChanged);
         };
-    }, [loading, currentUser, showAlert, alertShown]);
+    }, [currentUser, showAlert, t]);
 
-    return { socket, connected, usersStatus, setUserStatus };
+    useEffect(() => {
+        if (!currentUser) {
+            setConnected(false);
+            setUsersStatus({});
+            disconnectSocket();
+        }
+    }, [currentUser]);
+
+    return {
+        socket: currentUser ? getSocket() : null,
+        connected,
+        usersStatus,
+    };
 };

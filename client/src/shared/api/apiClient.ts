@@ -1,11 +1,9 @@
+import type {
+    RequestMethod,
+    ApiOptions
+} from "@/shared/types/api-client.types"
+
 import { API_BASE_URL } from "@/shared/constants/urls";
-
-type RequestMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-
-interface ApiOptions extends RequestInit {
-    body?: any;
-    auth?: boolean;
-}
 
 export async function apiRequest<T>(
     endpoint: string,

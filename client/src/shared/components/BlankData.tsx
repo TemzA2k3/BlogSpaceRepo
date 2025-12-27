@@ -4,7 +4,6 @@ interface BlankDataProps {
     message?: string;
     className?: string;
 
-    // Опции
     bordered?: boolean;         // показывать рамку (default = true)
     background?: boolean;       // показывать фон (default = true)
     borderColor?: string;       // цвет рамки

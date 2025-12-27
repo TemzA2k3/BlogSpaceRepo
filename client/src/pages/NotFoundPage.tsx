@@ -14,17 +14,14 @@ export const NotFoundPage = () => {
                 transition={{ duration: 0.4 }}
                 className="flex flex-col items-center text-center max-w-md"
             >
-                {/* Большой 404 */}
                 <h1 className="text-8xl sm:text-9xl font-extrabold text-gray-900 dark:text-gray-100 mb-4">
                     404
                 </h1>
 
-                {/* Заголовок */}
                 <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-gray-200 mb-3">
                     {t('notFound404.title')}
                 </h2>
 
-                {/* Описание */}
                 <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
                     {t('notFound404.label')}
                 </p>

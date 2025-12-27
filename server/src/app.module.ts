@@ -7,6 +7,8 @@ import { AuthModule } from '@/modules/auth/auth.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { ArticlesModule } from './modules/articles/articles.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { CommentsModule } from './modules/comments/comments.module';
+import { ContactModule } from './modules/contact/contact.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { ChatModule } from './modules/chat/chat.module';
     PostsModule,
     ArticlesModule,
     ChatModule,
+    CommentsModule,
+    ContactModule,
   ],
   providers: [],
 })

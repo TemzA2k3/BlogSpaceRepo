@@ -1,28 +1,23 @@
 import { useEffect } from "react";
-import { Socket } from "socket.io-client";
-import type { ChatUser } from '@/shared/types/chat.types';
 
-interface UseTypingStatusProps {
-  socket: Socket | null;
-  setUsersList: React.Dispatch<React.SetStateAction<ChatUser[]>>;
-}
+import type { UseTypingStatusProps } from "@/shared/types/socket.types"
 
 export const useTypingStatus = ({ socket, setUsersList }: UseTypingStatusProps) => {
-  useEffect(() => {
-    if (!socket) return;
+    useEffect(() => {
+        if (!socket) return;
 
-    const handleTyping = ({ userId, typing }: { userId: number; typing: boolean }) => {
-      setUsersList(prev =>
-        prev.map(user =>
-          user.id === userId ? { ...user, typing } : user
-        )
-      );
-    };
+        const handleTyping = ({ userId, typing }: { userId: number; typing: boolean }) => {
+            setUsersList(prev =>
+                prev.map(user =>
+                    user.id === userId ? { ...user, typing } : user
+                )
+            );
+        };
 
-    socket.on("userTyping", handleTyping);
+        socket.on("userTyping", handleTyping);
 
-    return () => {
-      socket.off("userTyping", handleTyping);
-    };
-  }, [socket, setUsersList]);
+        return () => {
+            socket.off("userTyping", handleTyping);
+        };
+    }, [socket, setUsersList]);
 };

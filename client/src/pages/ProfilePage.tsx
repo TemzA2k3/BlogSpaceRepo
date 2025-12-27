@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { useAlert } from "@/app/providers/alert/AlertProvider"; 
+import { useAlert } from "@/app/providers/alert/AlertProvider";
 import { useAppSelector } from "@/hooks/redux/reduxHooks";
 
 import { useProfile } from "@/hooks/profile/useProfile";
@@ -10,11 +10,12 @@ import { useAvatarUpdater } from "@/hooks/profile/useAvatarUpdater";
 import { useFollow } from "@/hooks/profile/useFollow";
 import { useCreateChat } from "@/hooks/profile/useCreateChat";
 
-import { PostCard } from "@/components/PostCard";
+import { StatCard } from "@/features/profile/StatCard";
 import { Loader } from "@/shared/components/Loader";
+import { BlankData } from "@/shared/components/BlankData";
 
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
-
+import { mapProfileStatsToCards } from "@/shared/utils/profileStatsMapper";
 
 export const ProfilePage = () => {
     const { t } = useTranslation();
@@ -28,11 +29,15 @@ export const ProfilePage = () => {
     const { handleFollow, loading: followLoading } = useFollow(userData, setUserData, currentUser?.id);
     const { handleMessageClick } = useCreateChat();
 
+    const statsData = mapProfileStatsToCards(userData?.stats);
+
+    const isPrivateProfile = !isMyProfile && userData?.isPublicProfile === false;
+
     useEffect(() => {
         if (error) {
             showAlert(error, "error");
         }
-    }, [error, showAlert]);
+    }, [error]);
 
     if (loading || !userData) return <Loader />;
 
@@ -80,51 +85,58 @@ export const ProfilePage = () => {
                             {userData.userName}
                         </p>
 
-                        <div className="mt-3 flex flex-wrap justify-center sm:justify-start gap-4 text-sm text-gray-600 dark:text-gray-400">
-                            <span>📍 {userData.location || "—"}</span>
-                            {userData.website && (
-                                <a
-                                    href={`https://${userData.website}`}
-                                    target="_blank"
-                                    className="text-blue-600 dark:text-blue-400 hover:underline"
-                                >
-                                    🌐 {userData.website}
-                                </a>
-                            )}
-                        </div>
+                        {/* Show location/website/bio only for public profiles */}
+                        {!isPrivateProfile && (
+                            <>
+                                <div className="mt-3 flex flex-wrap justify-center sm:justify-start gap-4 text-sm text-gray-600 dark:text-gray-400">
+                                    {userData.location && (
+                                        <span>📍 {userData.location}</span>
+                                    )}
+                                    {userData.website && (
+                                        <a
+                                            href={userData.website}
+                                            target="_blank"
+                                            className="text-blue-600 dark:text-blue-400 hover:underline"
+                                        >
+                                            🌐 {userData.website}
+                                        </a>
+                                    )}
+                                </div>
 
-                        {userData.bio && (
-                            <p className="mt-4 text-gray-700 dark:text-gray-300">
-                                {userData.bio}
-                            </p>
+                                {userData.bio && (
+                                    <p className="mt-4 text-gray-700 dark:text-gray-300">
+                                        {userData.bio}
+                                    </p>
+                                )}
+
+                                <div className="mt-5 flex justify-center sm:justify-start gap-6 text-sm">
+                                    <span
+                                        className="cursor-pointer px-2 py-1 rounded-lg 
+                                            hover:bg-gray-200 dark:hover:bg-gray-700 
+                                            transition-colors"
+                                        onClick={() => navigate(`/users/${userData.id}/followers`)}
+                                    >
+                                        <strong>{userData.followersCount}</strong> {t("profile.followers")}
+                                    </span>
+
+                                    <span
+                                        className="cursor-pointer px-2 py-1 rounded-lg 
+                                            hover:bg-gray-200 dark:hover:bg-gray-700 
+                                            transition-colors"
+                                        onClick={() => navigate(`/users/${userData.id}/following`)}
+                                    >
+                                        <strong>{userData.followingCount}</strong> {t("profile.following")}
+                                    </span>
+                                </div>
+                            </>
                         )}
-
-                        <div className="mt-5 flex justify-center sm:justify-start gap-6 text-sm">
-                            <span
-                                className="cursor-pointer px-2 py-1 rounded-lg 
-               hover:bg-gray-200 dark:hover:bg-gray-700 
-               transition-colors"
-                                onClick={() => navigate(`/users/${userData.id}/followers`)}
-                            >
-                                <strong>{userData.followersCount}</strong> {t("profile.followers")}
-                            </span>
-
-                            <span
-                                className="cursor-pointer px-2 py-1 rounded-lg 
-               hover:bg-gray-200 dark:hover:bg-gray-700 
-               transition-colors"
-                                onClick={() => navigate(`/users/${userData.id}/following`)}
-                            >
-                                <strong>{userData.followingCount}</strong> {t("profile.following")}
-                            </span>
-                        </div>
-
-
 
                         {isMyProfile ? (
                             <div className="mt-6 flex flex-wrap justify-center sm:justify-start gap-3">
-                                <button className="mt-6 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition">
-                                    Edit Profile
+                                <button
+                                    onClick={() => navigate(`/users/${userData.id}/settings#profile`)}
+                                    className="mt-6 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition">
+                                    {t("profile.editProfile")}
                                 </button>
                             </div>
                         ) : (
@@ -140,18 +152,18 @@ export const ProfilePage = () => {
                                     {followLoading && <i className="fa fa-spinner fa-spin" />}
                                     {followLoading
                                         ? userData.isFollowing
-                                            ? "Unfollowing..."
-                                            : "Following..."
+                                            ? t("profile.unfollowing")
+                                            : t("profile.followingDots")
                                         : userData.isFollowing
-                                            ? "Unfollow"
-                                            : "Follow"}
+                                            ? t("profile.unfollow")
+                                            : t("profile.follow")}
                                 </button>
 
-                                <button 
+                                <button
                                     className="px-5 py-2 rounded-xl bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium transition"
                                     onClick={() => handleMessageClick(userData.id, currentUser?.id)}
-                                    >
-                                    Message
+                                >
+                                    {t("profile.message")}
                                 </button>
                             </div>
                         )}
@@ -159,29 +171,31 @@ export const ProfilePage = () => {
                 </div>
             </section>
 
-            <section>
-                <h3 className="text-xl font-semibold mb-4">Posts</h3>
-                <div className="space-y-6">
-                    {userData.posts.map((post) => (
-                        <PostCard
-                            key={post.id}
-                            id={post.id}
-                            userId={userData.id}
-                            avatar={getAvatarUrl(userData.firstName, userData.lastName, userData.avatar)}
-                            firstName={userData.firstName}
-                            lastName={userData.lastName}
-                            username={userData.userName}
-                            content={post.content}
-                            image={post.image}
-                            hashtags={post.hashtags}
-                            date={post.createdAt}
-                            likes={post.likes}
-                            comments={post.comments}
-                            saved={post.saved}
-                        />
-                    ))}
-                </div>
-            </section>
+            {/* Show private profile notice OR stats section */}
+            {isPrivateProfile ? (
+                <BlankData
+                    icon="🔒"
+                    title={t("profile.privateProfile")}
+                    message={t("profile.privateProfileMessage")}
+                />
+            ) : (
+                <section>
+                    <div className="mb-6">
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                            {t("profile.activityStats")}
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400">
+                            {t("profile.activityPeriod")}
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {statsData.map((stat, index) => (
+                            <StatCard key={index} {...stat} />
+                        ))}
+                    </div>
+                </section>
+            )}
         </main>
     );
 };

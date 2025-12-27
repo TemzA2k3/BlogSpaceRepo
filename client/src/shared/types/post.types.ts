@@ -1,5 +1,6 @@
-import type { HashTag } from "./hashTag.types";
+import type { HashTag } from "./hashtag.types";
 import type { User } from "./user.types";
+import type { Paggination } from "./paggination.types"; 
 
 export interface Post {
     id: number;
@@ -10,6 +11,8 @@ export interface Post {
     saved: number;
     image: string | null;
     createdAt: string;
+    likedByCurrentUser: boolean;
+    savedByCurrentUser: boolean;
 }
 
 export interface UsersPosts extends Post {
@@ -20,7 +23,36 @@ export interface UsersPosts extends Post {
     username: string;
 }
 
-export interface PostsState {
+export interface TrendingTopic {
+    tag: string;
+    count: number;
+}
+
+export interface SuggestedUser {
+    id: number;
+    username: string;
+    avatar?: string | null;
+    firstName: string;
+    lastName: string;
+}
+
+export interface SuggestionsCardProps {
+    users: SuggestedUser[];
+}
+
+export interface RecommendationsResponse {
+    trendingTopics: TrendingTopic[];
+    suggestedUsers: SuggestedUser[];
+}
+
+export interface PostCardProps extends UsersPosts {
+    onPostUpdate?: (updatedPost: UsersPosts | null) => void;
+    onPostDelete?: (postId: number) => void;
+}
+
+export interface SpecificUserPost extends UsersPosts {}
+
+export interface PostsState extends Paggination {
     posts: UsersPosts[];
     loading: boolean;
     error: string | null;
@@ -31,22 +63,6 @@ export interface CreatePostData {
     content: string | null;
     hashtags: string[] | null;
     image: File | null
-}
-
-export interface PostCardProps {
-    id: number;
-    userId: number;
-    avatar: string;
-    firstName: string;
-    lastName: string;
-    username: string;
-    content: string;
-    image: string | null;
-    hashtags: HashTag[]
-    date: string;
-    likes: number;
-    comments: number;
-    saved: number;
 }
 
 export type CreatePostSectionProps = Pick<

@@ -1,71 +1,58 @@
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 
-import { useAlert } from "@/app/providers/alert/AlertProvider";
+import { useUserSubs } from "@/hooks/users/useUserSubs";
 
+import { InfiniteObserver } from "@/shared/components/InfiniteObserver";
 import { Loader } from "@/shared/components/Loader";
 import { BlankData } from "@/shared/components/BlankData";
 
-import { UserCard } from "@/components/UserCard";
+import { UserCard } from "@/features/profile/UserCard";
 
-import type { UserCardProps } from "@/shared/types/user.types";
 
 import { fetchUserFollowing } from "@/shared/services/fetchUserSubs";
 
 export const UserFollowingPage = () => {
     const { t } = useTranslation();
-    const { id } = useParams();
-    const { showAlert } = useAlert();
-
-    const [following, setFollowing] = useState<UserCardProps[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (!id) return;
-        setLoading(true);
-
-        fetchUserFollowing(id)
-            .then(data => setFollowing(data))
-            .catch(e => setError(e.message || t("error.fetchError")))
-            .finally(() => setLoading(false));
-    }, [id, t]);
-
-    useEffect(() => {
-        if (!error) return;
-        showAlert(error, "error");
-    }, [error]);
+    const {
+        items: following,
+        loading,
+        hasMore,
+        fetchNext,
+        containerRef,
+    } = useUserSubs(fetchUserFollowing);
 
     return (
         <main className="max-w-3xl mx-auto py-10 px-4 text-gray-800 dark:text-gray-100">
             <h2 className="text-2xl font-bold mb-6">{t("profile.followingHeader")}</h2>
-
-            {loading ? (
+            {loading && following.length === 0 ? (
                 <Loader />
-            ) : following.length > 0 ? (
-                <div className="flex flex-col gap-4">
-                    {following.map((user) => (
-                        <div
-                            key={user.id}
-                            className="bg-gray-50 dark:bg-darkbg p-4 rounded-xl shadow hover:shadow-lg hover:scale-105 transition-transform duration-200 cursor-pointer"
-                        >
-                            <UserCard
-                                id={user.id}
-                                firstName={user.firstName}
-                                lastName={user.lastName}
-                                userName={user.userName}
-                                avatar={user.avatar}
-                            />
-                        </div>
-                    ))}
-                </div>
-            ) : (
+            ) : following.length === 0 ? (
                 <div className="mt-10">
                     <BlankData
-                        icon="👥"
+                        icon="📭"
                         title={t("profile.blankFollowing")}
                         message={t("profile.blankFollowingLabel")}
+                    />
+                </div>
+            ) : (
+                <div
+                    ref={containerRef}
+                    className="flex flex-col gap-4 h-[60vh] overflow-y-auto"
+                >
+                    {following.map(user => (
+                        <div
+                            key={user.id}
+                            className="bg-gray-50 dark:bg-darkbg p-4 rounded-xl shadow hover:shadow-lg transition"
+                        >
+                            <UserCard {...user} />
+                        </div>
+                    ))}
+
+                    <InfiniteObserver
+                        root={containerRef.current}
+                        enabled={!loading && hasMore}
+                        onIntersect={fetchNext}
+                        rootMargin="200px"
                     />
                 </div>
             )}

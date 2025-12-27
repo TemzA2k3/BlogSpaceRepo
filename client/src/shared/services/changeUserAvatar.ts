@@ -13,8 +13,20 @@ export const changeUserAvatar = async (file: File): Promise<User> => {
             body: formData,
         });
 
-        return data;
+        return data as User;
     } catch (err: any) {
         throw new Error(err.message || "Something went wrong...")
     }
 }
+
+export const deleteUserAvatar = async (): Promise<User> => {
+    try {
+        const data = await apiRequest<User>("/users/avatar", "DELETE", {
+            credentials: "include",
+        });
+
+        return data as User;
+    } catch (err: any) {
+        throw new Error(err.message || "Failed to delete avatar");
+    }
+};

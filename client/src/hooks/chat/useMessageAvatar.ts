@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+
 import { getAvatarUrl } from '@/shared/utils/getImagesUrls';
 
 export const useMessageAvatar = (msg: any, currentUser: any, selectedUser: any) => {

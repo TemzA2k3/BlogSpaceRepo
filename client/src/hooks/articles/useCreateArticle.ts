@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
@@ -9,6 +10,7 @@ import { createArticle } from "@/store/slices/articleSlice";
 import type { ArticleSections } from "@/shared/types/article.types";
 
 export const useCreateArticle = () => {
+    const { t } = useTranslation();
     const { currentUser } = useAppSelector((state) => state.auth);
     const { isLoading, error } = useAppSelector((state) => state.articles);
 
@@ -27,18 +29,15 @@ export const useCreateArticle = () => {
     const lastFocusedTextarea = useRef<HTMLTextAreaElement | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // --- Sections ---
     const addSection = () => setSections(prev => [...prev, { id: Date.now(), title: "", content: "" }]);
     const removeSection = (id: number) => setSections(prev => prev.length > 1 ? prev.filter(s => s.id !== id) : prev);
     const updateSection = (id: number, field: "title" | "content", value: string) =>
         setSections(prev => prev.map(s => s.id === id ? { ...s, [field]: value } : s));
 
-    // --- File ---
     const handleImageClick = () => fileInputRef.current?.click();
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => e.target.files && setCoverImage(e.target.files[0]);
     const removeImage = () => setCoverImage(null);
 
-    // --- Emoji ---
     const toggleEmojiPicker = () => setShowEmojiPicker(prev => !prev);
     const addEmoji = (emoji: string) => {
         const textarea = lastFocusedTextarea.current;
@@ -51,8 +50,6 @@ export const useCreateArticle = () => {
         updateSection(sectionId, "content", newContent);
     };
 
-    // --- Tags ---
-    // --- Tags ---
     const handleTagClick = () => {
         const textarea = lastFocusedTextarea.current;
         if (!textarea) return;
@@ -69,7 +66,6 @@ export const useCreateArticle = () => {
         const emojiRegex = /[\p{Emoji_Presentation}\u200d]/u;
         if (emojiRegex.test(selectedText)) return;
 
-        // Проверяем, есть ли такой тег уже
         if (!tags.includes(selectedText)) {
             setTags(prev => [...prev, selectedText]);
         }
@@ -81,13 +77,11 @@ export const useCreateArticle = () => {
         );
     };
 
-
-    // --- Submit ---
     const handleSubmit = async () => {
-        if (!title.trim()) return setValidationError("Заголовок обязателен");
-        if (!coverImage) return setValidationError("Нужно добавить обложку статьи");
+        if (!title.trim()) return setValidationError(t("articles.titleRequired"));
+        if (!coverImage) return setValidationError(t("articles.coverRequired"));
         const hasContent = sections.some(s => s.title.trim() || s.content.trim());
-        if (!hasContent) return setValidationError("Хотя бы одна секция должна содержать текст");
+        if (!hasContent) return setValidationError(t("articles.sectionRequired"));
 
         const formData = new FormData();
         formData.append("title", title);
@@ -98,10 +92,10 @@ export const useCreateArticle = () => {
 
         try {
             await dispatch(createArticle(formData)).unwrap();
-            showAlert("Статья успешно опубликована!", "success");
+            showAlert(t("articles.publishSuccess"), "success");
             navigate("/articles");
         } catch (err: any) {
-            showAlert(err || "Ошибка при публикации статьи", "error");
+            showAlert(err || t("articles.publishError"), "error");
         }
     };
 

@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '@/hooks/redux/reduxHooks';
-import { useSocketContext } from '@/app/providers/socket/SocketProvider';
+import { useSocketContext } from '@/app/providers/socket/index';
+import { useAlert } from '@/app/providers/alert/AlertProvider';
 
-import { UsersList } from '@/components/UsersList';
-import { ChatHeader } from '@/components/ChatHeader';
-import { ChatMessages } from '@/components/ChatMessages';
-import { ChatInput } from '@/components/ChatInput';
+import { UsersList } from '@/features/chat/UsersList';
+import { ChatHeader } from '@/features/chat/ChatHeader';
+import { ChatMessages } from '@/features/chat/ChatMessages';
+import { ChatInput } from '@/features/chat/ChatInput';
 import { Loader } from '@/shared/components/Loader';
 import { BlankData } from '@/shared/components/BlankData';
 
@@ -17,18 +19,28 @@ import { useTypingStatus } from '@/hooks/chat/useTypingStatus';
 
 
 export const MessagesPage = () => {
+    const { t } = useTranslation();
     const { currentUser } = useAppSelector(state => state.auth);
     const { socket, usersStatus } = useSocketContext();
+    const { showAlert } = useAlert();
 
     const {
         usersList,
         selectedUser,
         loading,
+        deleting,
         setUsersList,
-        handleSelectUser
+        handleSelectUser,
+        handleDeleteChat,
     } = useChats(socket, currentUser?.id ?? null);
 
-    const { messages, setMessages } = useChatMessages(selectedUser);
+    const {
+        messages,
+        setMessages,
+        fetchMoreMessages,
+        hasMore,
+        // loading,
+    } = useChatMessages(selectedUser);
 
     const { sendMessage } = useChatSocket({
         socket,
@@ -56,6 +68,15 @@ export const MessagesPage = () => {
         [selectedUser, messages]
     );
 
+    const onDeleteChat = async () => {
+        try {
+            await handleDeleteChat();
+            showAlert(t("chat.chatDeleted"), "success");
+        } catch (err: any) {
+            showAlert(err.message || t("chat.chatDeleteError"), "error");
+        }
+    };
+
 
     if (loading) return <Loader />;
 
@@ -70,13 +91,13 @@ export const MessagesPage = () => {
                 setSearchQuery={() => { }}
             />
 
-            <div className="flex-1 flex flex-col relative" style={{ height: 'calc(100vh - 64px)' }}>
+            <div className="flex-1 flex flex-col relative h-[calc(100vh-64px)]">
                 {!selectedUser || !filteredUsers.length ? (
                     <div className="absolute inset-0 flex items-center justify-center">
                         <BlankData
                             icon="💬"
-                            title="Нет переписок"
-                            message="Выберите пользователя слева, чтобы начать диалог."
+                            title={t("chat.noChats")}
+                            message={t("chat.noChatsHint")}
                             bordered={false}
                         />
                     </div>
@@ -88,12 +109,16 @@ export const MessagesPage = () => {
                             avatar={selectedUser.avatar}
                             online={usersStatus[selectedUser.id] ?? false}
                             typing={selectedUser.typing}
+                            onDeleteChat={onDeleteChat}
+                            deleting={deleting}
                         />
 
                         <ChatMessages
                             messages={currentMessages}
                             selectedUser={selectedUser}
                             markMessageAsRead={markMessageAsRead}
+                            fetchMoreMessages={fetchMoreMessages}
+                            hasMore={hasMore}
                         />
 
                         <ChatInput

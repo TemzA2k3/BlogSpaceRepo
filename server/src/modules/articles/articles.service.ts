@@ -1,12 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, IsNull } from 'typeorm';
 import { File as MulterFile } from 'multer';
 
 import { Article } from '@/database/entities/article.entity';
 import { Hashtag } from '@/database/entities/hashtag.entity';
 import { User } from '@/database/entities/user.entity';
+import { ArticleLike } from '@/database/entities/article-like.entity';
+import { ArticleSave } from '@/database/entities/article-save.entity';
+import { Comment } from '@/database/entities/comment.entity';
+
 import { CreateArticleDto } from './dtos/create-article.dto';
+import type { CommentDto } from '@/shared/types/comment.types';
+
 
 @Injectable()
 export class ArticlesService {
@@ -19,6 +25,15 @@ export class ArticlesService {
 
         @InjectRepository(Hashtag)
         private readonly hashtagRepository: Repository<Hashtag>,
+
+        @InjectRepository(ArticleLike)
+        private readonly articleLikeRepository: Repository<ArticleLike>,
+
+        @InjectRepository(ArticleSave)
+        private readonly articleSaveRepository: Repository<ArticleSave>,
+
+        @InjectRepository(Comment)
+        private readonly commentRepository: Repository<Comment>,
     ) { }
 
     async createArticle(
@@ -55,7 +70,7 @@ export class ArticlesService {
 
         await this.articleRepository.save(newArticle);
 
-        const preview = {
+        return {
             id: newArticle.id,
             title: newArticle.title,
             author: user.userName,
@@ -68,15 +83,14 @@ export class ArticlesService {
             })),
             imageUrl: `/uploads/articles/${newArticle.coverImage}`,
         };
-
-        return preview;
     }
 
-    async findAll() {
+    async findAll(limit = 21, offset = 0) {
         const articles = await this.articleRepository.find({
-            relations: ['user', 'hashtags'],
+            relations: ['user', 'hashtags', 'likesRelation', 'savesRelation'],
             order: { createdAt: 'DESC' },
-            take: 12,
+            take: limit,
+            skip: offset,
         });
 
         return articles.map((article) => ({
@@ -86,43 +100,165 @@ export class ArticlesService {
             authorId: article.user.id,
             description: article.description,
             sections: article.sections,
-            tags: article.hashtags.map((tag) => ({
-                id: tag.id,
-                name: tag.name.startsWith('#') ? tag.name : `#${tag.name}`,
-            })),
+            tags: article.hashtags.map((tag) => ({ id: tag.id, name: tag.name })),
             imageUrl: `/uploads/articles/${article.coverImage}`,
+            likes: article.likesRelation?.length ?? 0,
+            saved: article.savesRelation?.length ?? 0,
         }));
     }
 
-    async getArticleData(articleId: number) {
-        const article = await this.articleRepository.findOne({
-            where: { id: articleId },
-            relations: ['user', 'hashtags'],
+    async getArticleData(articleId: number, userId?: number) {
+        const article = await this.articleRepository
+            .createQueryBuilder('article')
+            .leftJoinAndSelect('article.user', 'user')
+            .leftJoinAndSelect('article.hashtags', 'hashtags')
+            .leftJoinAndSelect('article.likesRelation', 'likes')
+            .leftJoinAndSelect('likes.user', 'likeUser')
+            .leftJoinAndSelect('article.savesRelation', 'saves')
+            .leftJoinAndSelect('saves.user', 'saveUser')
+            .where('article.id = :articleId', { articleId })
+            .getOne();
+
+        if (!article) throw new NotFoundException('Article not found');
+
+        const likes = article.likesRelation?.length ?? 0;
+        const saved = article.savesRelation?.length ?? 0;
+
+        const likedByCurrentUser = userId
+            ? article.likesRelation?.some(like => like.user?.id === userId) ?? false
+            : false;
+
+        const savedByCurrentUser = userId
+            ? article.savesRelation?.some(save => save.user?.id === userId) ?? false
+            : false;
+
+        // 1️⃣ Получаем последние 5 корневых комментариев
+        const rootComments = await this.commentRepository.find({
+            where: {
+                article: { id: articleId },
+                parent: IsNull(),
+            },
+            relations: ['user'],
+            order: { createdAt: 'DESC' },
+            take: 5,
         });
 
-        if (!article) throw new Error('Article not found');
-        
+        // 2️⃣ Для каждого корневого комментария получаем максимум 3 ответа
+        const commentsDto: CommentDto[] = [];
+
+        for (const root of rootComments) {
+            const replies = await this.commentRepository.find({
+                where: { parent: { id: root.id } },
+                relations: ['user'],
+                order: { createdAt: 'DESC' },
+                take: 3,
+            });
+
+            commentsDto.push({
+                id: root.id,
+                firstName: root.user.firstName,
+                lastName: root.user.lastName,
+                authorId: root.user.id,
+                avatar: root.user.avatar || '',
+                date: root.createdAt.toISOString(),
+                content: root.content,
+                indent: false,
+                replies: replies.map(r => ({
+                    id: r.id,
+                    firstName: r.user.firstName,
+                    lastName: r.user.lastName,
+                    authorId: r.user.id,
+                    avatar: r.user.avatar || '',
+                    date: r.createdAt.toISOString(),
+                    content: r.content,
+                    indent: true,
+                    replies: [],
+                })),
+            });
+        }
+
+        // ✅ Считаем только корневые комментарии
+        const rootCommentsCount = await this.commentRepository.count({
+            where: { article: { id: articleId }, parent: IsNull() },
+        });
+
         return {
             id: article.id,
             title: article.title,
             description: article.description,
             sections: article.sections,
             coverImage: `/uploads/articles/${article.coverImage}`,
-            createdAt: article.createdAt,
+            createdAt: article.createdAt.toISOString(),
             author: {
                 id: article.user.id,
                 userName: article.user.userName,
                 fullName: `${article.user.firstName} ${article.user.lastName}`,
                 avatar: article.user.avatar || null,
             },
-            hashtags: article.hashtags.map(tag => ({
-                id: tag.id,
-                name: tag.name,
-            })),
-            likes: article.likes,
-            comments: article.comments,
-            saved: article.saved,
+            hashtags: article.hashtags.map(tag => ({ id: tag.id, name: tag.name })),
+            likes,
+            saved,
+            likedByCurrentUser,
+            savedByCurrentUser,
+            comments: commentsDto,
+            commentsCount: rootCommentsCount,
         };
     }
 
+
+    async toggleLike(userId: number, articleId: number) {
+        const existing = await this.articleLikeRepository.findOne({
+            where: { user: { id: userId }, article: { id: articleId } },
+        });
+
+        if (existing) {
+            await this.articleLikeRepository.remove(existing);
+        } else {
+            const newLike = this.articleLikeRepository.create({
+                user: { id: userId },
+                article: { id: articleId },
+            });
+
+            await this.articleLikeRepository.save(newLike);
+        }
+
+        const totalLikes = await this.articleLikeRepository.count({
+            where: { article: { id: articleId } },
+        });
+
+        const likedByCurrentUser = !existing;
+
+        return {
+            likedByCurrentUser,
+            likes: totalLikes,
+        };
+    }
+
+    async toggleSave(userId: number, articleId: number) {
+        const existing = await this.articleSaveRepository.findOne({
+            where: { user: { id: userId }, article: { id: articleId } },
+        });
+
+        if (existing) {
+            await this.articleSaveRepository.remove(existing);
+        } else {
+            const newSave = this.articleSaveRepository.create({
+                user: { id: userId },
+                article: { id: articleId },
+            });
+
+            await this.articleSaveRepository.save(newSave);
+        }
+
+        const totalSaved = await this.articleSaveRepository.count({
+            where: { article: { id: articleId } },
+        });
+
+        const savedByCurrentUser = !existing;
+
+        return {
+            savedByCurrentUser,
+            saved: totalSaved,
+        };
+    }
 }

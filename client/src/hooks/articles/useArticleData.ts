@@ -1,37 +1,215 @@
-import { useState, useEffect } from "react";
-import { fetchArticleData } from "@/shared/services/fetchArticleData";
+import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+
 import { useAlert } from "@/app/providers/alert/AlertProvider";
+
+import { fetchArticleData } from "@/shared/services/fetchArticleData";
+import { toggleArticleLike, toggleArticleSave } from "@/shared/services/toggleArticleActions";
+import { createArticleComment, loadCommentReplies } from "@/shared/services/articleComments";
+import { loadArticleComments } from "@/shared/services/articleComments";
+
+import { addReplyToTree } from "@/shared/utils/addCommentReply";
+
 import type { ArticleData } from "@/shared/types/article.types";
 
-export const useArticleData = (articleId: string | undefined) => {
-  const [articleData, setArticleData] = useState<ArticleData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export const useArticleData = (articleId?: string) => {
+    const { t } = useTranslation();
+    const [articleData, setArticleData] = useState<ArticleData | null>(null);
+    const [loading, setLoading] = useState(true);
 
-  const { showAlert } = useAlert();
+    const [commentsOffset, setCommentsOffset] = useState(5);
+    const [hasMoreComments, setHasMoreComments] = useState(true);
+    const [commentsLoading, setCommentsLoading] = useState(false);
 
-  const getArticleData = async (id: string) => {
-    setLoading(true);
-    try {
-      const data = await fetchArticleData(id);
-      setArticleData(data || null);
-    } catch (err: any) {
-      setError(err.message || "Ошибка загрузки статьи");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const { showAlert } = useAlert();
 
-  useEffect(() => {
-    if (!articleId) return;
-    getArticleData(articleId);
-  }, [articleId]);
+    useEffect(() => {
+        if (!articleId) return;
 
-  useEffect(() => {
-    if (!error) return;
+        (async () => {
+            try {
+                setLoading(true);
+                const data = await fetchArticleData(articleId);
+                setArticleData(data || null);
 
-    showAlert(error)
-  }, [error])
+                if (data) {
+                    setCommentsOffset(data.comments.length);
+                    setHasMoreComments(data.comments.length < data.commentsCount);
+                }
+            } catch (err: any) {
+                showAlert(err.message || t("articles.loadError"));
+            } finally {
+                setLoading(false);
+            }
+        })();
+    }, [articleId, t]);
 
-  return { articleData, loading };
+
+    const submitArticleComment = useCallback(
+        async (content: string, parentId?: number) => {
+            if (!articleData) return null;
+
+            try {
+                const comment = await createArticleComment(articleData.id, {
+                    content,
+                    parentId,
+                });
+
+                if (!comment) return null;
+
+                setArticleData(prev => {
+                    if (!prev) return prev;
+
+                    if (!parentId) {
+                        return {
+                            ...prev,
+                            comments: [comment, ...prev.comments],
+                            commentsCount: prev.commentsCount + 1,
+                        };
+                    }
+
+                    return {
+                        ...prev,
+                        comments: addReplyToTree(
+                            prev.comments,
+                            parentId,
+                            [{ ...comment, indent: true }]
+                        ),
+                        commentsCount: prev.commentsCount + 1,
+                    };
+                });
+
+                return comment;
+            } catch (err: any) {
+                showAlert(err.message || t("articles.commentError"));
+                return null;
+            }
+        },
+        [articleData, t]
+    );
+
+    const loadComments = useCallback(async () => {
+        if (!articleData || commentsLoading || !hasMoreComments) return;
+
+        try {
+            setCommentsLoading(true);
+
+            const nextComments = await loadArticleComments(
+                articleData.id,
+                commentsOffset
+            );
+
+            if (nextComments.length === 0) {
+                setHasMoreComments(false);
+                return;
+            }
+
+            setArticleData(prev =>
+                prev
+                    ? {
+                        ...prev,
+                        comments: [...prev.comments, ...nextComments],
+                    }
+                    : prev
+            );
+
+            const newOffset = commentsOffset + nextComments.length;
+            setCommentsOffset(newOffset);
+
+            if (newOffset >= articleData.commentsCount) {
+                setHasMoreComments(false);
+            }
+        } catch (e: any) {
+            showAlert(e.message);
+        } finally {
+            setCommentsLoading(false);
+        }
+    }, [articleData, commentsOffset, commentsLoading, hasMoreComments]);
+
+    const loadReplies = useCallback(
+        async (parentId: number) => {
+            if (!articleData) return;
+    
+            const parentComment = articleData.comments.find(c => c.id === parentId);
+            if (!parentComment) return;
+    
+            const loaded = parentComment.replies?.length ?? 0;
+            const total = parentComment.repliesCount ?? 0;
+    
+            const remaining = total - loaded;
+            if (remaining <= 0) return;
+    
+            try {
+                const replies = await loadCommentReplies(
+                    parentId,
+                    loaded,
+                    remaining
+                );
+    
+                if (!replies.length) return;
+    
+                setArticleData(prev =>
+                    prev
+                        ? {
+                            ...prev,
+                            comments: addReplyToTree(
+                                prev.comments,
+                                parentId,
+                                replies
+                            ),
+                        }
+                        : prev
+                );
+            } catch (err: any) {
+                showAlert(err.message || t("articles.repliesError"));
+            }
+        },
+        [articleData, t]
+    );
+    
+
+    const handleLike = useCallback(async () => {
+        if (!articleData) return;
+
+        try {
+            const res = await toggleArticleLike(articleData.id);
+            if (!res) return;
+
+            setArticleData(prev =>
+                prev
+                    ? { ...prev, likes: res.likes, likedByCurrentUser: res.likedByCurrentUser }
+                    : prev
+            );
+        } catch (err: any) {
+            showAlert(err.message);
+        }
+    }, [articleData]);
+
+    const handleSave = useCallback(async () => {
+        if (!articleData) return;
+
+        try {
+            const res = await toggleArticleSave(articleData.id);
+            if (!res) return;
+
+            setArticleData(prev =>
+                prev
+                    ? { ...prev, saved: res.saved, savedByCurrentUser: res.savedByCurrentUser }
+                    : prev
+            );
+        } catch (err: any) {
+            showAlert(err.message);
+        }
+    }, [articleData]);
+
+    return {
+        articleData,
+        loading,
+        handleLike,
+        handleSave,
+        submitArticleComment,
+        loadComments,
+        hasMoreComments,
+        loadReplies
+    };
 };

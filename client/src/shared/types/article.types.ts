@@ -1,4 +1,6 @@
-import type { HashTag } from "./hashTag.types";
+import type { HashTag } from "./hashtag.types";
+import type { Comment } from "./comment.types";
+import type { Paggination } from "./paggination.types";
 
 export interface ArticlePreview {
     id: number;
@@ -38,7 +40,7 @@ export interface SectionsEditorProps {
     removeTag: (index: number) => void
 }
 
-export interface ArticlesState {
+export interface ArticlesState extends Paggination {
     articles: ArticlePreview[];
     isLoading: boolean;
     error: string | null;
@@ -54,6 +56,28 @@ export interface ArticleData {
     author: ArticleAuthor;
     hashtags: HashTag[];
     likes: number;
-    comments: number;
+    commentsCount: number;
     saved: number;
+    likedByCurrentUser: boolean;
+    savedByCurrentUser: boolean;
+    comments: Comment[];
+}
+
+export interface ToggleLikeResponse {
+    likes: number;
+    likedByCurrentUser: boolean;
+}
+
+export interface ToggleSaveResponse {
+    saved: number;
+    savedByCurrentUser: boolean;
+}
+
+export interface ArticleSectionProps {
+    title?: string;
+    content?: string;
+}
+
+export interface ArticlesGridProps {
+    articles: ArticlePreview[];
 }

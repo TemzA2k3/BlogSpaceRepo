@@ -1,17 +1,10 @@
 import { useEffect, useCallback } from 'react';
-import { Socket } from 'socket.io-client';
 import { formatTime } from '@/shared/utils/timeFormatter';
-import type { ChatUser, ChatMessage } from '@/shared/types/chat.types';
 
-interface UseChatSocketProps {
-    socket: Socket | null;
-    currentUserId: number | null;
-    selectedUser: ChatUser | null;
-    setMessages: React.Dispatch<React.SetStateAction<Record<number, ChatMessage[]>>>;
-    setUsersList: React.Dispatch<React.SetStateAction<ChatUser[]>>;
-}
+import type { UseChatSocketProps } from "@/shared/types/socket.types"
 
 export const useChatSocket = ({ socket, currentUserId, selectedUser, setMessages, setUsersList }: UseChatSocketProps) => {
+    
     useEffect(() => {
         if (!socket || !selectedUser) return;
         socket.emit('joinChat', selectedUser.chatId);
