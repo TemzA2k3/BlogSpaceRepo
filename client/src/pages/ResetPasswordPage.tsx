@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 
-import { FormContainer } from "@/components/FormContainer";
+import { FormContainer } from "@/shared/components/FormContainer";
 import { sendNewPassword } from "@/shared/services/sendNewPassword";
 import { Button } from "@/shared/components/Button";
 import { initialResetPasswordValues, getResetPasswordSchema } from "@/shared/utils/authValidation";

@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { Outlet } from "react-router-dom";
-import { Header } from "@/components/Header";
+import { Header } from "@/layouts/Header";
 
 export const HeaderLayout: FC = () => {
     return (

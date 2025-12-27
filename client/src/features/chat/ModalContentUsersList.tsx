@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 import { Loader } from "@/shared/components/Loader";
 import { BlankData } from "@/shared/components/BlankData";
-import { UserCard } from "@/components/UserCard";
+import { UserCard } from "@/features/profile/UserCard";
 import { createChat } from "@/shared/services/createChat";
 
 import type { UserCardProps } from "@/shared/types/user.types";

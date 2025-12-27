@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 
-import { UserCard } from "@/components/UserCard";
+import { UserCard } from "@/features/profile/UserCard";
 
 import { BlankData } from "@/shared/components/BlankData";
 import { Loader } from "@/shared/components/Loader";

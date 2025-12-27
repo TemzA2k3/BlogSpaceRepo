@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, type FC } from "react";
 import { useTranslation, Trans } from "react-i18next";
 
-import type { DeleteAccountModalProps } from "../types/modal.types";
+import type { DeleteAccountModalProps } from "@/shared/types/modal.types";
 
 const CONFIRMATION_WORD = "DELETE";
 

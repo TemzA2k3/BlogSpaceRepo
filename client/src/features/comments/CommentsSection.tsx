@@ -2,7 +2,7 @@ import { type FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { EmojiPicker } from "@/shared/components/EmojiPicker";
-import { CommentItem } from "@/components/CommentItem";
+import { CommentItem } from "@/features/comments/CommentItem";
 
 import type { CommentsSectionProps } from "@/shared/types/comment.types";
 

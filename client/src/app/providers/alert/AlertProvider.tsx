@@ -5,7 +5,7 @@ import {
     type FC
 } from "react";
 
-import { Alert } from "@/shared/components/Alert";
+import { Alert } from "@/features/alert/Alert";
 
 import type {
     AlertContextType,

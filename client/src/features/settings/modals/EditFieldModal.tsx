@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, type FC } from "react";
 import { useTranslation } from "react-i18next";
 
-import { isValidUrl } from "../utils/urlValidator";
+import { isValidUrl } from "../../../shared/utils/urlValidator";
 
-import type { EditFieldModalProps } from "../types/modal.types";
+import type { EditFieldModalProps } from "../../../shared/types/modal.types";
 
 export const EditFieldModal: FC<EditFieldModalProps> = ({
     title,

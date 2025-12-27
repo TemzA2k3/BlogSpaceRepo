@@ -1,6 +1,6 @@
 import { useEffect, useState, type FC } from "react";
 
-import type { AlertProps } from "../types/alert.types";
+import type { AlertProps } from "@/shared/types/alert.types";
 
 export const Alert: FC<AlertProps> = ({
     message,

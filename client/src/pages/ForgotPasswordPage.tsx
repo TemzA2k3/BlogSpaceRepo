@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { FormContainer } from "@/components/FormContainer";
+import { FormContainer } from "@/shared/components/FormContainer";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 
 import { sendPasswordResetEmail } from "@/shared/services/sendPasswordResetEmail";

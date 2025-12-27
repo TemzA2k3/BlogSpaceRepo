@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 
-import { FormContainer } from "@/components/FormContainer";
-import { SignUpForm } from "@/components/SignUpForm"
+import { FormContainer } from "@/shared/components/FormContainer";
+import { SignUpForm } from "@/features/auth/SignUpForm"
 
 export const SignUpPage = () => {
     const { t } = useTranslation();

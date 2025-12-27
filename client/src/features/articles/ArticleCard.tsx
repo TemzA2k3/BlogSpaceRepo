@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { getImageUrl } from "@/shared/utils/getImagesUrls";
 
-import { HashTagsDisplay } from "./HashTagsDisplay";
+import { HashTagsDisplay } from "@/features/hashtags/HashTagsDisplay";
 
 import { type ArticlePreview } from "@/shared/types/article.types";
 

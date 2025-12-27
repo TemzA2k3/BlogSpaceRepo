@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { ErrorFallback } from "./ErrorFallback";
+import { ErrorFallback } from "../features/errors/ErrorFallback";
 
 import { AlertProvider } from "@/app/providers/alert/AlertProvider"
 import { ThemeProvider } from "@/app/providers/theme/ThemeProvider";

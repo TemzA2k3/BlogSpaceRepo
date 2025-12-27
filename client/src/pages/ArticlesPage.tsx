@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-import { ArticlesGrid } from "@/components/ArticlesGrid";
+import { ArticlesGrid } from "@/features/articles/ArticlesGrid";
 import { Loader } from "@/shared/components/Loader";
 import { BlankData } from "@/shared/components/BlankData";
 import { InfiniteObserver } from "@/shared/components/InfiniteObserver";

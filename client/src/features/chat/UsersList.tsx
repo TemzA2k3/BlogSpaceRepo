@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '@/hooks/redux/reduxHooks';
 
 import { UserItem } from './UserItem';
-import { SearchInput } from './SearchInput';
+import { SearchInput } from '../../shared/components/SearchInput';
 import { ModalContentUsersList } from './ModalContentUsersList';
 
 import { BlankData } from '@/shared/components/BlankData';

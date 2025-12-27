@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import type {
     FormErrors,
     ChangePasswordModalProps
-} from "../types/modal.types";
+} from "@/shared/types/modal.types";
 
 export const ChangePasswordModal: FC<ChangePasswordModalProps> = ({
     loading,

@@ -8,11 +8,11 @@ import { Button } from "@/shared/components/Button";
 import { logout, clearAuthStatus } from "@/store/slices/authSlice";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 
-import { HeaderNavLinks } from "./HeaderNavLinks";
-import { ToggleTheme } from "./ToogleTheme";
-import { LanguageSwitcher } from "./LanguageSwitcher";
-import { LoggedUserPreview } from "./LoggedUserPreview";
-import { MobileMenu } from "./MobileMenu";
+import { HeaderNavLinks } from "../components/HeaderNavLinks";
+import { ToggleTheme } from "../features/theme/ToogleTheme";
+import { LanguageSwitcher } from "../features/locales/LanguageSwitcher";
+import { LoggedUserPreview } from "../components/LoggedUserPreview";
+import { MobileMenu } from "../features/mobile/MobileMenu";
 
 export const Header = () => {
     const { t } = useTranslation();

@@ -8,7 +8,7 @@ import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 
 import { EmojiPicker } from "@/shared/components/EmojiPicker";
 
-import { HashTag } from "@/components/HashTag"
+import { HashTag } from "@/features/hashtags/HashTag"
 
 import { createPost } from "@/store/slices/postSlice"
 import { isValidPost } from "@/shared/utils/postValidation"

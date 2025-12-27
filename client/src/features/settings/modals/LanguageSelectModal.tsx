@@ -1,7 +1,7 @@
 import { useEffect, type FC } from "react";
 import { useTranslation } from "react-i18next";
 
-import type { LanguageOption, LanguageSelectModalProps } from "../types/modal.types";
+import type { LanguageOption, LanguageSelectModalProps } from "@/shared/types/modal.types";
 
 const LANGUAGES: LanguageOption[] = [
     { code: "en", name: "English", flag: "https://flagcdn.com/us.svg" },

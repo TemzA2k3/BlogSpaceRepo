@@ -1,6 +1,6 @@
 import { type FC } from "react";
 
-import { ArticleCard } from "@/components/ArticleCard";
+import { ArticleCard } from "@/features/articles/ArticleCard";
 
 import type { ArticlesGridProps} from "@/shared/types/article.types";
 

@@ -2,8 +2,8 @@ import { useState, type FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { HashTagsDisplay } from "@/components/HashTagsDisplay";
-import { ReportPostModal } from "@/shared/components/ReportPostModal";
+import { HashTagsDisplay } from "@/features/hashtags/HashTagsDisplay";
+import { ReportPostModal } from "@/features/posts/modals/ReportPostModal";
 
 import { useAlert } from "@/app/providers/alert/AlertProvider";
 import { reportPost } from "@/shared/services/reportService";

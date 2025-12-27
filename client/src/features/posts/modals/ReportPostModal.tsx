@@ -1,7 +1,7 @@
 import { useState, useEffect, type FC } from "react";
 import { useTranslation } from "react-i18next";
 
-import type { ReportReason, ReportPostModalProps } from "../types/modal.types";
+import type { ReportReason, ReportPostModalProps } from "@/shared/types/modal.types";
 
 export const ReportPostModal: FC<ReportPostModalProps> = ({
     loading = false,

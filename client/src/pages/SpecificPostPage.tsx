@@ -3,9 +3,9 @@ import { useTranslation } from "react-i18next";
 
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 import { Loader } from "@/shared/components/Loader";
-import { PostCard } from "@/components/PostCard";
+import { PostCard } from "@/features/posts/PostCard";
 import { NotFoundPage } from "./NotFoundPage";
-import { CommentsSection } from "@/components/CommentsSection";
+import { CommentsSection } from "@/features/comments/CommentsSection";
 
 import { usePost } from "@/hooks/posts/usePost";
 

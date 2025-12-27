@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 
 import { useCreateArticle } from "@/hooks/articles/useCreateArticle";
 
-import { SectionsEditor } from "@/components/SectionsEditor";
+import { SectionsEditor } from "@/features/articles/SectionsEditor";
 
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 

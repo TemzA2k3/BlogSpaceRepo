@@ -7,11 +7,11 @@ import { formatDate, calculateReadTime } from "@/shared/utils/timeFormatter";
 import { getImageUrl } from "@/shared/utils/getImagesUrls";
 
 import { Loader } from "@/shared/components/Loader";
-import { ArticleSection } from "@/components/ArticleSection";
+import { ArticleSection } from "@/features/articles/ArticleSection";
 import { NotFoundPage } from "./NotFoundPage";
 
-import { HashTagsDisplay } from "@/components/HashTagsDisplay";
-import { CommentsSection } from "@/components/CommentsSection";
+import { HashTagsDisplay } from "@/features/hashtags/HashTagsDisplay";
+import { CommentsSection } from "@/features/comments/CommentsSection";
 
 export const SpecificArticlePage = () => {
     const { t } = useTranslation();

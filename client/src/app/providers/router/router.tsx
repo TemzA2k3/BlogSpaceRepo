@@ -27,7 +27,7 @@ import { UserFollowersPage } from "@/pages/UserFollowersPage";
 import { SpecificArticlePage } from "@/pages/SpecificArticlePage";
 import { MessagesPage } from "@/pages/MessagesPage";
 
-import { ErrorFallback } from "@/components/ErrorFallback";
+import { ErrorFallback } from "@/features/errors/ErrorFallback";
 
 import { NotFoundPage } from "@/pages/NotFoundPage";
 

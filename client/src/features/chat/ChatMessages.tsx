@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
-import { ChatMessage } from "@/components/ChatMessage";
+import { ChatMessage } from "@/features/chat/ChatMessage";
 import { BlankData } from "@/shared/components/BlankData";
 import { InfiniteObserver } from "@/shared/components/InfiniteObserver";
 

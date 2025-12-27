@@ -4,10 +4,10 @@ import { useTranslation } from "react-i18next";
 import { useAppSelector } from "@/hooks/redux/reduxHooks";
 import { usePosts } from "@/hooks/posts/usePosts";
 
-import { PostCard } from "@/components/PostCard";
-import { TrendingTopicsCard } from "@/components/TrendingTopicsCard";
-import { SuggestionsCard } from "@/components/SuggestionsCard";
-import { CreatePostSection } from "@/components/CreatePostSection";
+import { PostCard } from "@/features/posts/PostCard";
+import { TrendingTopicsCard } from "@/features/posts/TrendingTopicsCard";
+import { SuggestionsCard } from "@/features/posts/SuggestionsCard";
+import { CreatePostSection } from "@/features/posts/CreatePostSection";
 
 import { Loader } from "@/shared/components/Loader";
 import { BlankData } from "@/shared/components/BlankData";

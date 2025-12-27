@@ -2,7 +2,7 @@ import { type FC } from "react"
 import { useTranslation } from "react-i18next";
 
 import { EmojiPicker } from "@/shared/components/EmojiPicker"
-import { HashTag } from "@/components/HashTag"
+import { HashTag } from "@/features/hashtags/HashTag"
 
 import type { SectionsEditorProps } from "@/shared/types/article.types"
 

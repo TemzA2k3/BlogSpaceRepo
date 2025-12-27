@@ -2,7 +2,6 @@ import { apiRequest } from "@/shared/api/apiClient";
 
 import type { ChatMessage } from "@/shared/types/chat.types"
 
-
 export const getChatMessages = async (
     chatId: number,
     offset: number,

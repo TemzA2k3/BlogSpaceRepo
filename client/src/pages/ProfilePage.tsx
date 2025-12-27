@@ -10,7 +10,7 @@ import { useAvatarUpdater } from "@/hooks/profile/useAvatarUpdater";
 import { useFollow } from "@/hooks/profile/useFollow";
 import { useCreateChat } from "@/hooks/profile/useCreateChat";
 
-import { StatCard } from "@/components/StatCard";
+import { StatCard } from "@/features/profile/StatCard";
 import { Loader } from "@/shared/components/Loader";
 import { BlankData } from "@/shared/components/BlankData";
 

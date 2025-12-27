@@ -4,10 +4,10 @@ import { useAppSelector } from '@/hooks/redux/reduxHooks';
 import { useSocketContext } from '@/app/providers/socket/index';
 import { useAlert } from '@/app/providers/alert/AlertProvider';
 
-import { UsersList } from '@/components/UsersList';
-import { ChatHeader } from '@/components/ChatHeader';
-import { ChatMessages } from '@/components/ChatMessages';
-import { ChatInput } from '@/components/ChatInput';
+import { UsersList } from '@/features/chat/UsersList';
+import { ChatHeader } from '@/features/chat/ChatHeader';
+import { ChatMessages } from '@/features/chat/ChatMessages';
+import { ChatInput } from '@/features/chat/ChatInput';
 import { Loader } from '@/shared/components/Loader';
 import { BlankData } from '@/shared/components/BlankData';
 

@@ -6,7 +6,7 @@ import { useAvatarUpdater } from "@/hooks/profile/useAvatarUpdater";
 
 import { SectionHeader, SettingGroup, SettingRow, SelectButton } from "../components";
 
-import { EditFieldModal } from "@/shared/components/EditFieldModal"
+import { EditFieldModal } from "@/features/settings/modals/EditFieldModal"
 
 import type { ProfileSettingsProps, EditableField } from "@/shared/types/settings.types";
 

@@ -6,7 +6,7 @@ import { Loader } from "@/shared/components/Loader";
 import { BlankData } from "@/shared/components/BlankData";
 import { InfiniteObserver } from "@/shared/components/InfiniteObserver";
 
-import { UserCard } from "@/components/UserCard";
+import { UserCard } from "@/features/profile/UserCard";
 import { fetchUserFollowers } from "@/shared/services/fetchUserSubs";
 
 export const UserFollowersPage = () => {
