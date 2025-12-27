@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '@/hooks/redux/reduxHooks';
 import { useSocketContext } from '@/app/providers/socket/index';
 import { useAlert } from '@/app/providers/alert/AlertProvider';
@@ -18,6 +19,7 @@ import { useTypingStatus } from '@/hooks/chat/useTypingStatus';
 
 
 export const MessagesPage = () => {
+    const { t } = useTranslation();
     const { currentUser } = useAppSelector(state => state.auth);
     const { socket, usersStatus } = useSocketContext();
     const { showAlert } = useAlert();
@@ -32,7 +34,7 @@ export const MessagesPage = () => {
         handleDeleteChat,
     } = useChats(socket, currentUser?.id ?? null);
 
-    const { 
+    const {
         messages,
         setMessages,
         fetchMoreMessages,
@@ -69,9 +71,9 @@ export const MessagesPage = () => {
     const onDeleteChat = async () => {
         try {
             await handleDeleteChat();
-            showAlert("Чат удален", "success");
+            showAlert(t("chat.chatDeleted"), "success");
         } catch (err: any) {
-            showAlert(err.message || "Не удалось удалить чат", "error");
+            showAlert(err.message || t("chat.chatDeleteError"), "error");
         }
     };
 
@@ -94,8 +96,8 @@ export const MessagesPage = () => {
                     <div className="absolute inset-0 flex items-center justify-center">
                         <BlankData
                             icon="💬"
-                            title="Нет переписок"
-                            message="Выберите пользователя слева, чтобы начать диалог."
+                            title={t("chat.noChats")}
+                            message={t("chat.noChatsHint")}
                             bordered={false}
                         />
                     </div>

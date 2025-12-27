@@ -32,7 +32,6 @@ export const ArticlesPage = () => {
 
     return (
         <main className="max-w-6xl mx-auto py-10 px-6 text-gray-800 dark:text-gray-100">
-            {/* Search & Create */}
             <div className="mb-8 flex flex-col sm:flex-row justify-start gap-3">
                 <input
                     type="text"
@@ -49,7 +48,6 @@ export const ArticlesPage = () => {
                 </button>
             </div>
 
-            {/* Articles */}
             {isLoading && articles.length === 0 ? (
                 <Loader />
             ) : articles.length === 0 ? (

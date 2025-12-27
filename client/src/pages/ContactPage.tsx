@@ -100,33 +100,18 @@ export const ContactPage = () => {
     const [sending, setSending] = useState(false);
 
     const contactInfo = [
-        { icon: "fa-envelope", title: "Email", value: "support@blogspace.com", link: "mailto:support@blogspace.com" },
-        { icon: "fa-phone", title: "Телефон", value: "+370 999 12 345", link: "tel:+37099912345" },
-        { icon: "fa-location-dot", title: "Адрес", value: "Вильнюс, Литва" },
-        { icon: "fa-clock", title: "Время работы", value: "Пн-Пт: 9:00 - 18:00" },
+        { icon: "fa-envelope", title: t("contact.email"), value: "support@blogspace.com", link: "mailto:support@blogspace.com" },
+        { icon: "fa-phone", title: t("contact.phone"), value: "+370 999 12 345", link: "tel:+37099912345" },
+        { icon: "fa-location-dot", title: t("contact.address"), value: t("contact.addressValue") },
+        { icon: "fa-clock", title: t("contact.workingHours"), value: t("contact.workingHoursValue") },
     ];
 
     const faqItems = [
-        {
-            question: "Как создать аккаунт?",
-            answer: "Нажмите кнопку «Регистрация» в правом верхнем углу, заполните форму с вашими данными и подтвердите email. После этого вы сможете начать пользоваться всеми функциями BlogSpace.",
-        },
-        {
-            question: "Как восстановить пароль?",
-            answer: "На странице входа нажмите «Забыли пароль?», введите ваш email и следуйте инструкциям в письме. Ссылка для сброса пароля действует 24 часа.",
-        },
-        {
-            question: "Как удалить свой аккаунт?",
-            answer: "Перейдите в Настройки → Аккаунт → Удалить аккаунт. Обратите внимание, что это действие необратимо и все ваши данные будут удалены.",
-        },
-        {
-            question: "Как пожаловаться на контент?",
-            answer: "Нажмите на три точки рядом с постом и выберите «Пожаловаться». Выберите причину жалобы, и наша команда модерации рассмотрит её в течение 24 часов.",
-        },
-        {
-            question: "Как связаться с поддержкой?",
-            answer: "Вы можете написать нам через форму на этой странице, отправить email на support@blogspace.com или связаться с нами в социальных сетях.",
-        },
+        { question: t("contact.faq1Question"), answer: t("contact.faq1Answer") },
+        { question: t("contact.faq2Question"), answer: t("contact.faq2Answer") },
+        { question: t("contact.faq3Question"), answer: t("contact.faq3Answer") },
+        { question: t("contact.faq4Question"), answer: t("contact.faq4Answer") },
+        { question: t("contact.faq5Question"), answer: t("contact.faq5Answer") },
     ];
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -145,10 +130,10 @@ export const ContactPage = () => {
                 message: formData.message,
             });
 
-            showAlert("Сообщение отправлено! Мы ответим вам в ближайшее время.", "success");
+            showAlert(t("contact.messageSent"), "success");
             setFormData({ name: "", email: "", subject: "", message: "" });
         } catch (err: any) {
-            showAlert(err.message || "Не удалось отправить сообщение", "error");
+            showAlert(err.message || t("contact.messageError"), "error");
         } finally {
             setSending(false);
         }
@@ -158,7 +143,6 @@ export const ContactPage = () => {
 
     return (
         <div className="space-y-16 py-8">
-            {/* Hero Section */}
             <section>
                 <motion.div
                     initial="hidden"
@@ -169,7 +153,7 @@ export const ContactPage = () => {
                     <motion.div variants={fadeInUp} className="mb-6">
                         <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium">
                             <i className="fa-solid fa-headset" />
-                            Поддержка
+                            {t("contact.badge")}
                         </span>
                     </motion.div>
 
@@ -177,20 +161,18 @@ export const ContactPage = () => {
                         variants={fadeInUp}
                         className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight"
                     >
-                        Свяжитесь с нами
+                        {t("contact.heroTitle")}
                     </motion.h1>
 
                     <motion.p
                         variants={fadeInUp}
                         className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed"
                     >
-                        Есть вопросы или предложения? Мы всегда рады помочь!
-                        Выберите удобный способ связи или заполните форму ниже.
+                        {t("contact.heroDescription")}
                     </motion.p>
                 </motion.div>
             </section>
 
-            {/* Contact Info Cards */}
             <section>
                 <motion.div
                     initial="hidden"
@@ -205,9 +187,7 @@ export const ContactPage = () => {
                 </motion.div>
             </section>
 
-            {/* Contact Form & Map Section */}
             <section className="grid lg:grid-cols-2 gap-8">
-                {/* Contact Form */}
                 <motion.div
                     initial="hidden"
                     whileInView="visible"
@@ -219,14 +199,14 @@ export const ContactPage = () => {
                         variants={fadeInUp}
                         className="text-2xl font-bold text-gray-900 dark:text-white mb-6"
                     >
-                        Напишите нам
+                        {t("contact.formTitle")}
                     </motion.h2>
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <motion.div variants={fadeInUp} className="grid sm:grid-cols-2 gap-5">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Ваше имя
+                                    {t("contact.nameLabel")}
                                 </label>
                                 <input
                                     type="text"
@@ -235,12 +215,12 @@ export const ContactPage = () => {
                                     onChange={handleChange}
                                     required
                                     className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-neutral-900 dark:focus:ring-neutral-100 focus:border-transparent outline-none transition-all"
-                                    placeholder="Иван Иванов"
+                                    placeholder={t("contact.namePlaceholder")}
                                 />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Email
+                                    {t("contact.emailLabel")}
                                 </label>
                                 <input
                                     type="email"
@@ -249,14 +229,14 @@ export const ContactPage = () => {
                                     onChange={handleChange}
                                     required
                                     className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-neutral-900 dark:focus:ring-neutral-100 focus:border-transparent outline-none transition-all"
-                                    placeholder="ivan@example.com"
+                                    placeholder={t("contact.emailPlaceholder")}
                                 />
                             </div>
                         </motion.div>
 
                         <motion.div variants={fadeInUp}>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Тема обращения
+                                {t("contact.subjectLabel")}
                             </label>
                             <select
                                 name="subject"
@@ -265,19 +245,19 @@ export const ContactPage = () => {
                                 required
                                 className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-neutral-900 dark:focus:ring-neutral-100 focus:border-transparent outline-none transition-all"
                             >
-                                <option value="">Выберите тему</option>
-                                <option value="general">Общий вопрос</option>
-                                <option value="technical">Техническая проблема</option>
-                                <option value="billing">Вопрос по оплате</option>
-                                <option value="partnership">Сотрудничество</option>
-                                <option value="feedback">Отзыв или предложение</option>
-                                <option value="other">Другое</option>
+                                <option value="">{t("contact.subjectPlaceholder")}</option>
+                                <option value="general">{t("contact.subjectGeneral")}</option>
+                                <option value="technical">{t("contact.subjectTechnical")}</option>
+                                <option value="billing">{t("contact.subjectBilling")}</option>
+                                <option value="partnership">{t("contact.subjectPartnership")}</option>
+                                <option value="feedback">{t("contact.subjectFeedback")}</option>
+                                <option value="other">{t("contact.subjectOther")}</option>
                             </select>
                         </motion.div>
 
                         <motion.div variants={fadeInUp}>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Сообщение
+                                {t("contact.messageLabel")}
                             </label>
                             <textarea
                                 name="message"
@@ -286,7 +266,7 @@ export const ContactPage = () => {
                                 required
                                 rows={5}
                                 className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-neutral-900 dark:focus:ring-neutral-100 focus:border-transparent outline-none transition-all resize-none"
-                                placeholder="Опишите ваш вопрос или проблему..."
+                                placeholder={t("contact.messagePlaceholder")}
                             />
                         </motion.div>
 
@@ -299,11 +279,11 @@ export const ContactPage = () => {
                                 {sending ? (
                                     <>
                                         <i className="fa-solid fa-spinner fa-spin" />
-                                        Отправка...
+                                        {t("contact.sending")}
                                     </>
                                 ) : (
                                     <>
-                                        Отправить сообщение
+                                        {t("contact.sendMessage")}
                                         <i className="fa-solid fa-paper-plane" />
                                     </>
                                 )}
@@ -312,7 +292,6 @@ export const ContactPage = () => {
                     </form>
                 </motion.div>
 
-                {/* Social & Additional Info */}
                 <motion.div
                     initial="hidden"
                     whileInView="visible"
@@ -320,73 +299,33 @@ export const ContactPage = () => {
                     variants={staggerContainer}
                     className="space-y-6"
                 >
-                    {/* Social Links */}
                     <motion.div
                         variants={fadeInUp}
                         className="bg-white dark:bg-gray-800 rounded-3xl p-8 border border-gray-200 dark:border-gray-700"
                     >
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                            Мы в социальных сетях
+                            {t("contact.socialTitle")}
                         </h3>
                         <div className="grid grid-cols-2 gap-4">
                             {[
-                                {
-                                    icon: "fa-telegram",
-                                    name: "Telegram",
-                                    link: "#",
-                                    hover: "hover:bg-blue-500 dark:hover:bg-blue-600",
-                                },
-                                {
-                                    icon: "fa-vk",
-                                    name: "VK",
-                                    link: "#",
-                                    hover: "hover:bg-blue-600 dark:hover:bg-blue-700",
-                                },
-                                {
-                                    icon: "fa-twitter",
-                                    name: "Twitter",
-                                    link: "#",
-                                    hover: "hover:bg-sky-500 dark:hover:bg-sky-600",
-                                },
-                                {
-                                    icon: "fa-youtube",
-                                    name: "YouTube",
-                                    link: "#",
-                                    hover: "hover:bg-red-600 dark:hover:bg-red-700",
-                                },
+                                { icon: "fa-telegram", name: "Telegram", link: "#", hover: "hover:bg-blue-500 dark:hover:bg-blue-600" },
+                                { icon: "fa-vk", name: "VK", link: "#", hover: "hover:bg-blue-600 dark:hover:bg-blue-700" },
+                                { icon: "fa-twitter", name: "Twitter", link: "#", hover: "hover:bg-sky-500 dark:hover:bg-sky-600" },
+                                { icon: "fa-youtube", name: "YouTube", link: "#", hover: "hover:bg-red-600 dark:hover:bg-red-700" },
                             ].map((social, index) => (
                                 <a
                                     key={index}
                                     href={social.link}
-                                    className={`
-        group flex items-center gap-3 p-4 rounded-xl
-        bg-gray-100 text-gray-800
-        dark:bg-gray-800 dark:text-gray-100
-        ${social.hover}
-        hover:text-white
-        transition-all duration-300
-        dark:shadow-md dark:hover:shadow-lg
-      `}
+                                    className={`group flex items-center gap-3 p-4 rounded-xl bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100 ${social.hover} hover:text-white transition-all duration-300 dark:shadow-md dark:hover:shadow-lg`}
                                 >
                                     <i className={`fa-brands ${social.icon} text-xl`} />
-
-                                    <span className="font-medium">
-                                        {social.name}
-                                    </span>
-
-                                    <i className="
-        fa-solid fa-arrow-right ml-auto
-        opacity-0 group-hover:opacity-100
-        translate-x-[-4px] group-hover:translate-x-0
-        transition-all duration-300
-      " />
+                                    <span className="font-medium">{social.name}</span>
+                                    <i className="fa-solid fa-arrow-right ml-auto opacity-0 group-hover:opacity-100 translate-x-[-4px] group-hover:translate-x-0 transition-all duration-300" />
                                 </a>
                             ))}
                         </div>
-
                     </motion.div>
 
-                    {/* Response Time */}
                     <motion.div
                         variants={fadeInUp}
                         className="bg-gradient-to-br from-neutral-900 to-neutral-700 dark:from-neutral-800 dark:to-neutral-600 rounded-3xl p-8 text-white"
@@ -396,10 +335,9 @@ export const ContactPage = () => {
                                 <i className="fa-solid fa-bolt text-xl" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold mb-2">Быстрый ответ</h3>
+                                <h3 className="text-xl font-bold mb-2">{t("contact.fastResponseTitle")}</h3>
                                 <p className="text-neutral-300 text-sm leading-relaxed">
-                                    Среднее время ответа на обращения — 2 часа в рабочее время.
-                                    Для срочных вопросов используйте Telegram.
+                                    {t("contact.fastResponseText")}
                                 </p>
                             </div>
                         </div>
@@ -420,7 +358,6 @@ export const ContactPage = () => {
                 </motion.div>
             </section>
 
-            {/* FAQ Section */}
             <section>
                 <motion.div
                     initial="hidden"
@@ -430,10 +367,10 @@ export const ContactPage = () => {
                 >
                     <motion.div variants={fadeInUp} className="text-center mb-12">
                         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                            Часто задаваемые вопросы
+                            {t("contact.faqTitle")}
                         </h2>
                         <p className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
-                            Ответы на популярные вопросы наших пользователей
+                            {t("contact.faqSubtitle")}
                         </p>
                     </motion.div>
 

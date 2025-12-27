@@ -136,7 +136,7 @@ export const ProfilePage = () => {
                                 <button
                                     onClick={() => navigate(`/users/${userData.id}/settings#profile`)}
                                     className="mt-6 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition">
-                                    Edit Profile
+                                    {t("profile.editProfile")}
                                 </button>
                             </div>
                         ) : (
@@ -152,18 +152,18 @@ export const ProfilePage = () => {
                                     {followLoading && <i className="fa fa-spinner fa-spin" />}
                                     {followLoading
                                         ? userData.isFollowing
-                                            ? "Unfollowing..."
-                                            : "Following..."
+                                            ? t("profile.unfollowing")
+                                            : t("profile.followingDots")
                                         : userData.isFollowing
-                                            ? "Unfollow"
-                                            : "Follow"}
+                                            ? t("profile.unfollow")
+                                            : t("profile.follow")}
                                 </button>
 
                                 <button
                                     className="px-5 py-2 rounded-xl bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium transition"
                                     onClick={() => handleMessageClick(userData.id, currentUser?.id)}
                                 >
-                                    Message
+                                    {t("profile.message")}
                                 </button>
                             </div>
                         )}
@@ -175,17 +175,17 @@ export const ProfilePage = () => {
             {isPrivateProfile ? (
                 <BlankData
                     icon="🔒"
-                    title={t("profile.privateProfile", "This account is private")}
-                    message={t("profile.privateProfileMessage", "Follow this account to see their posts and activity")}
+                    title={t("profile.privateProfile")}
+                    message={t("profile.privateProfileMessage")}
                 />
             ) : (
                 <section>
                     <div className="mb-6">
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                            Статистика активности
+                            {t("profile.activityStats")}
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400">
-                            Активность за последний месяц
+                            {t("profile.activityPeriod")}
                         </p>
                     </div>
 

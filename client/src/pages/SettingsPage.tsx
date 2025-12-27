@@ -1,5 +1,6 @@
 import { useState, useEffect, type FC } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { useAppSelector } from "@/hooks/redux/reduxHooks";
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
@@ -17,7 +18,7 @@ type SettingsSection = "profile" | "account" | "privacy" | "language";
 
 interface SettingsMenuItem {
     id: SettingsSection;
-    label: string;
+    labelKey: string;
     icon: string;
 }
 
@@ -28,6 +29,7 @@ const isValidSection = (hash: string): hash is SettingsSection => {
 };
 
 export const SettingsPage: FC = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
     const { currentUser } = useAppSelector((state) => state.auth);
@@ -42,10 +44,10 @@ export const SettingsPage: FC = () => {
     const [activeSection, setActiveSection] = useState<SettingsSection>(getInitialSection);
 
     const menuItems: SettingsMenuItem[] = [
-        { id: "profile", label: "My Profile", icon: "fa-user" },
-        { id: "account", label: "Account", icon: "fa-shield-halved" },
-        { id: "privacy", label: "Privacy & Security", icon: "fa-lock" },
-        { id: "language", label: "Language", icon: "fa-globe" },
+        { id: "profile", labelKey: "settings.myProfile", icon: "fa-user" },
+        { id: "account", labelKey: "settings.account", icon: "fa-shield-halved" },
+        { id: "privacy", labelKey: "settings.privacy", icon: "fa-lock" },
+        { id: "language", labelKey: "settings.language", icon: "fa-globe" },
     ];
 
     useEffect(() => {
@@ -106,10 +108,8 @@ export const SettingsPage: FC = () => {
     return (
         <main className="max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8 min-h-screen">
             <div className="flex flex-col lg:flex-row gap-6">
-                {/* Sidebar */}
                 <aside className="w-full lg:w-72 shrink-0">
                     <div className="bg-white dark:bg-darkbg border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
-                        {/* User Preview */}
                         <div
                             className="p-4 border-b border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                             onClick={() => navigate(`/users/${currentUser?.id}`)}
@@ -136,33 +136,29 @@ export const SettingsPage: FC = () => {
                             </div>
                         </div>
 
-                        {/* Navigation Menu */}
                         <nav className="p-2">
                             {menuItems.map((item) => (
                                 <button
                                     key={item.id}
                                     onClick={() => handleSectionChange(item.id)}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${
-                                        activeSection === item.id
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${activeSection === item.id
                                             ? "bg-blue-600 text-white shadow-md"
                                             : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                                    }`}
+                                        }`}
                                 >
                                     <i
-                                        className={`fa-solid ${item.icon} w-5 text-center ${
-                                            activeSection === item.id
+                                        className={`fa-solid ${item.icon} w-5 text-center ${activeSection === item.id
                                                 ? "text-white"
                                                 : "text-gray-500 dark:text-gray-400"
-                                        }`}
+                                            }`}
                                     />
-                                    <span className="font-medium">{item.label}</span>
+                                    <span className="font-medium">{t(item.labelKey)}</span>
                                 </button>
                             ))}
                         </nav>
                     </div>
                 </aside>
 
-                {/* Content Panel */}
                 <section className="flex-1">
                     <div className="bg-white dark:bg-darkbg border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm">
                         {renderSectionContent()}

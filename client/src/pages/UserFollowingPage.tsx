@@ -30,8 +30,8 @@ export const UserFollowingPage = () => {
                 <div className="mt-10">
                     <BlankData
                         icon="📭"
-                        title={t("profile.blankFollowers")}
-                        message={t("profile.blankFollowersLabel")}
+                        title={t("profile.blankFollowing")}
+                        message={t("profile.blankFollowingLabel")}
                     />
                 </div>
             ) : (

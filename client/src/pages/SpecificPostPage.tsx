@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 import { Loader } from "@/shared/components/Loader";
@@ -9,6 +10,7 @@ import { CommentsSection } from "@/components/CommentsSection";
 import { usePost } from "@/hooks/posts/usePost";
 
 export const SpecificPostPage = () => {
+    const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const postId = id ? +id : undefined;
@@ -35,7 +37,7 @@ export const SpecificPostPage = () => {
                 onClick={() => navigate(-1)}
             >
                 <span className="text-lg">←</span>
-                <span>Вернуться назад</span>
+                <span>{t("posts.goBack")}</span>
             </div>
 
             <PostCard

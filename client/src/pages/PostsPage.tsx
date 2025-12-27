@@ -25,7 +25,6 @@ export const PostsPage = () => {
 
     return (
         <main className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-6 lg:gap-10 text-gray-800 dark:text-gray-100">
-            {/* Левая колонка */}
             <aside className="w-full lg:w-80 xl:w-[40rem] hidden lg:flex flex-col gap-6">
                 {recommendations.trendingTopics.length > 0 ? (
                     <TrendingTopicsCard topics={recommendations.trendingTopics} />
@@ -39,7 +38,6 @@ export const PostsPage = () => {
                 )}
             </aside>
 
-            {/* Центр — посты */}
             <div
                 ref={scrollRef} 
                 className="w-full max-w-3xl h-[70vh] sm:h-[75vh] md:h-[80vh] overflow-y-auto flex flex-col gap-6 custom-scroll">
@@ -74,7 +72,6 @@ export const PostsPage = () => {
                             />
                         ))}
 
-                        {/* Infinite scroll триггер */}
                         <InfiniteObserver
                             root={scrollRef.current}
                             enabled={!loading && hasMore}
@@ -85,7 +82,6 @@ export const PostsPage = () => {
                 )}
             </div>
 
-            {/* Правая колонка */}
             <aside className="w-full lg:w-80 xl:w-[40rem] hidden lg:block space-y-6">
             {recommendations.suggestedUsers.length > 0 ? (
                      <SuggestionsCard users={recommendations.suggestedUsers} />

@@ -88,37 +88,37 @@ export const AboutPage = () => {
     const values = [
         {
             icon: "fa-users",
-            title: "Сообщество",
-            description: "Мы верим в силу объединения людей с общими интересами и целями",
+            title: t("about.valueCommunity"),
+            description: t("about.valueCommunityDesc"),
         },
         {
             icon: "fa-shield-halved",
-            title: "Безопасность",
-            description: "Защита данных и приватность пользователей — наш главный приоритет",
+            title: t("about.valueSecurity"),
+            description: t("about.valueSecurityDesc"),
         },
         {
             icon: "fa-lightbulb",
-            title: "Инновации",
-            description: "Постоянно развиваемся и внедряем новые технологии для лучшего опыта",
+            title: t("about.valueInnovation"),
+            description: t("about.valueInnovationDesc"),
         },
         {
             icon: "fa-heart",
-            title: "Открытость",
-            description: "Прозрачность в работе и честность с нашими пользователями",
+            title: t("about.valueOpenness"),
+            description: t("about.valueOpennessDesc"),
         },
     ];
 
     const team = [
-        { name: "Алексей Иванов", role: "Основатель & CEO", avatar: "fa-user-tie" },
-        { name: "Мария Петрова", role: "CTO", avatar: "fa-user-gear" },
-        { name: "Дмитрий Сидоров", role: "Lead Designer", avatar: "fa-user-pen" },
-        { name: "Анна Козлова", role: "Community Manager", avatar: "fa-user-group" },
+        { name: t("about.teamMember1Name"), role: t("about.teamMember1Role"), avatar: "fa-user-tie" },
+        { name: t("about.teamMember2Name"), role: t("about.teamMember2Role"), avatar: "fa-user-gear" },
+        { name: t("about.teamMember3Name"), role: t("about.teamMember3Role"), avatar: "fa-user-pen" },
+        { name: t("about.teamMember4Name"), role: t("about.teamMember4Role"), avatar: "fa-user-group" },
     ];
 
     const timeline = [
-        { year: "23", title: "Идея", description: "Зародилась идея создать платформу, где каждый может делиться своими мыслями" },
-        { year: "24", title: "Запуск", description: "Официальный запуск BlogSpace с базовым функционалом постов и профилей" },
-        { year: "25", title: "Рост", description: "Добавлены чаты, статьи, хештеги и достигнута отметка в 10,000 пользователей" },
+        { year: "23", title: t("about.timeline23Title"), description: t("about.timeline23Desc") },
+        { year: "24", title: t("about.timeline24Title"), description: t("about.timeline24Desc") },
+        { year: "25", title: t("about.timeline25Title"), description: t("about.timeline25Desc") },
     ];
 
     return (
@@ -134,7 +134,7 @@ export const AboutPage = () => {
                     <motion.div variants={fadeInUp} className="mb-6">
                         <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium">
                             <i className="fa-solid fa-info-circle" />
-                            О нас
+                            {t("about.badge")}
                         </span>
                     </motion.div>
 
@@ -142,16 +142,15 @@ export const AboutPage = () => {
                         variants={fadeInUp}
                         className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight"
                     >
-                        Мы создаём пространство для{" "}
-                        <span className="text-gray-500 dark:text-gray-400">ваших идей</span>
+                        {t("about.heroTitle")}{" "}
+                        <span className="text-gray-500 dark:text-gray-400">{t("about.heroTitleHighlight")}</span>
                     </motion.h1>
 
                     <motion.p
                         variants={fadeInUp}
                         className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed"
                     >
-                        BlogSpace — это больше чем просто социальная сеть. Это место, где рождаются 
-                        идеи, формируются сообщества и каждый голос имеет значение.
+                        {t("about.heroDescription")}
                     </motion.p>
                 </motion.div>
             </section>
@@ -167,15 +166,13 @@ export const AboutPage = () => {
                 >
                     <motion.div variants={fadeInUp}>
                         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                            Наша миссия
+                            {t("about.missionTitle")}
                         </h2>
                         <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
-                            Мы стремимся создать платформу, где каждый человек может свободно 
-                            выражать свои мысли, находить единомышленников и строить значимые связи.
+                            {t("about.missionText1")}
                         </p>
                         <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                            BlogSpace объединяет лучшее от социальных сетей и блог-платформ, 
-                            предоставляя инструменты как для коротких постов, так и для глубоких статей.
+                            {t("about.missionText2")}
                         </p>
                     </motion.div>
 
@@ -189,7 +186,7 @@ export const AboutPage = () => {
                                     <i className="fa-solid fa-infinity text-3xl" />
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">BlogSpace</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Бесконечные возможности</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t("about.infinitePossibilities")}</p>
                             </div>
                         </div>
                     </motion.div>
@@ -206,10 +203,10 @@ export const AboutPage = () => {
                 >
                     <motion.div variants={fadeInUp} className="text-center mb-12">
                         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                            Наши ценности
+                            {t("about.valuesTitle")}
                         </h2>
                         <p className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
-                            Принципы, которыми мы руководствуемся каждый день
+                            {t("about.valuesSubtitle")}
                         </p>
                     </motion.div>
 
@@ -231,10 +228,10 @@ export const AboutPage = () => {
                 >
                     <motion.div variants={fadeInUp} className="text-center mb-12">
                         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                            Наша история
+                            {t("about.historyTitle")}
                         </h2>
                         <p className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
-                            Путь от идеи до платформы с тысячами пользователей
+                            {t("about.historySubtitle")}
                         </p>
                     </motion.div>
 
@@ -260,10 +257,10 @@ export const AboutPage = () => {
                 >
                     <motion.div variants={fadeInUp} className="text-center mb-12">
                         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                            Наша команда
+                            {t("about.teamTitle")}
                         </h2>
                         <p className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
-                            Люди, которые делают BlogSpace лучше каждый день
+                            {t("about.teamSubtitle")}
                         </p>
                     </motion.div>
 
@@ -292,17 +289,17 @@ export const AboutPage = () => {
 
                     <div className="relative z-10">
                         <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-                            Есть вопросы?
+                            {t("about.ctaTitle")}
                         </h2>
                         <p className="text-neutral-400 mb-8 max-w-md mx-auto">
-                            Мы всегда рады помочь и ответить на любые вопросы о BlogSpace
+                            {t("about.ctaSubtitle")}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link
                                 to="/contact"
                                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-neutral-900 font-semibold rounded-xl hover:bg-gray-100 transition-colors duration-300"
                             >
-                                Связаться с нами
+                                {t("about.ctaButton")}
                                 <i className="fa-solid fa-envelope" />
                             </Link>
                             <a
