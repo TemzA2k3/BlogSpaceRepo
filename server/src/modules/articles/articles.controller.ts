@@ -62,9 +62,14 @@ export class ArticlesController {
     @Get()
     findAll(
         @Query('limit') limit: string,
-        @Query('offset') offset: string
+        @Query('offset') offset: string,
+        @Query('search') search?: string,
     ) {
-        return this.articlesService.findAll(Number(limit) || 20, Number(offset) || 0);
+        return this.articlesService.findAll(
+            Number(limit) || 20, 
+            Number(offset) || 0,
+            search,
+        );
     }
 
     @Get(':id')

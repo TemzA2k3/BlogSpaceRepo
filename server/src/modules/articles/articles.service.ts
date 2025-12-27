@@ -85,14 +85,27 @@ export class ArticlesService {
         };
     }
 
-    async findAll(limit = 21, offset = 0) {
-        const articles = await this.articleRepository.find({
-            relations: ['user', 'hashtags', 'likesRelation', 'savesRelation'],
-            order: { createdAt: 'DESC' },
-            take: limit,
-            skip: offset,
-        });
-
+    async findAll(limit = 20, offset = 0, search?: string) {
+        const queryBuilder = this.articleRepository
+            .createQueryBuilder('article')
+            .leftJoinAndSelect('article.user', 'user')
+            .leftJoinAndSelect('article.hashtags', 'hashtags')
+            .leftJoinAndSelect('article.likesRelation', 'likes')
+            .leftJoinAndSelect('article.savesRelation', 'saves');
+    
+        if (search && search.trim()) {
+            queryBuilder.where('LOWER(article.title) LIKE LOWER(:search)', {
+                search: `%${search.trim()}%`,
+            });
+        }
+    
+        queryBuilder
+            .orderBy('article.createdAt', 'DESC')
+            .skip(offset)
+            .take(limit);
+    
+        const articles = await queryBuilder.getMany();
+    
         return articles.map((article) => ({
             id: article.id,
             title: article.title,
@@ -132,7 +145,6 @@ export class ArticlesService {
             ? article.savesRelation?.some(save => save.user?.id === userId) ?? false
             : false;
 
-        // 1️⃣ Получаем последние 5 корневых комментариев
         const rootComments = await this.commentRepository.find({
             where: {
                 article: { id: articleId },
@@ -143,7 +155,6 @@ export class ArticlesService {
             take: 5,
         });
 
-        // 2️⃣ Для каждого корневого комментария получаем максимум 3 ответа
         const commentsDto: CommentDto[] = [];
 
         for (const root of rootComments) {
@@ -177,7 +188,6 @@ export class ArticlesService {
             });
         }
 
-        // ✅ Считаем только корневые комментарии
         const rootCommentsCount = await this.commentRepository.count({
             where: { article: { id: articleId }, parent: IsNull() },
         });
@@ -204,7 +214,6 @@ export class ArticlesService {
             commentsCount: rootCommentsCount,
         };
     }
-
 
     async toggleLike(userId: number, articleId: number) {
         const existing = await this.articleLikeRepository.findOne({
