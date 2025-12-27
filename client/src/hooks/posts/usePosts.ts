@@ -19,9 +19,6 @@ export const usePosts = () => {
         suggestedUsers: [],
     });
 
-    console.log(recommendations);
-
-
     useEffect(() => {
         dispatch(resetPosts());
         dispatch(getPosts());

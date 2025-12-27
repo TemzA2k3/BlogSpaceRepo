@@ -64,7 +64,7 @@ export class ArticlesController {
         @Query('limit') limit: string,
         @Query('offset') offset: string
     ) {
-        return this.articlesService.findAll(Number(limit) || 21, Number(offset) || 0);
+        return this.articlesService.findAll(Number(limit) || 20, Number(offset) || 0);
     }
 
     @Get(':id')

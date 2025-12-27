@@ -47,9 +47,6 @@ export const createPost = createAsyncThunk<UsersPosts, FormData>(
                 credentials: "include",
             });
 
-            console.log(data);
-
-
             return data as UsersPosts;
         } catch (err: any) {
             return rejectWithValue(err.message || "Failed to create post");

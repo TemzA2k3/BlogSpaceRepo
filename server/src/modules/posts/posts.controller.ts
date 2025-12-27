@@ -74,9 +74,7 @@ export class PostsController {
     async reportPost(
         @Body() dto: CreateReportDto,
         @UserReq() user?: JwtPayload
-    ) {
-        console.log('2222222');
-        
+    ) {        
         await this.postsService.createReport(dto, user?.userId);
     }
 

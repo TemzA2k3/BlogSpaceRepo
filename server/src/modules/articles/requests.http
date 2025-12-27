@@ -1,26 +1,120 @@
-### Create Article (multipart/form-data)
+### ═══════════════════════════════════════════════════════════════
+### ARTICLES MODULE
+### ═══════════════════════════════════════════════════════════════
+
+### ─────────────────────────────────────────────────────────────────
+### Create article
+### POST /articles
+### Requires: JWT auth cookie
+### Body: multipart/form-data
+###   - title: string
+###   - description: string
+###   - sections: JSON array [{ title, content }]
+###   - hashtags: JSON array (optional)
+###   - coverImage: file (optional, max 5MB)
+### Returns: Created article
+### ─────────────────────────────────────────────────────────────────
 POST http://localhost:8080/articles
 Content-Type: multipart/form-data; boundary=boundary123
 
 --boundary123
 Content-Disposition: form-data; name="title"
 
-title
---boundary123
-Content-Disposition: form-data; name="content"
-
-content
+My Article Title
 --boundary123
 Content-Disposition: form-data; name="description"
 
-description
+This is a brief description of the article
+--boundary123
+Content-Disposition: form-data; name="sections"
+
+[{"title": "Introduction", "content": "This is the intro..."}, {"title": "Main Part", "content": "This is the main content..."}]
 --boundary123
 Content-Disposition: form-data; name="hashtags"
 
-["QWRRTY", "TestTag"]
+["Technology", "Programming", "NestJS"]
 --boundary123
-Content-Disposition: form-data; name="image"; filename="test.png"
-Content-Type: image/png
+Content-Disposition: form-data; name="coverImage"; filename="cover.jpg"
+Content-Type: image/jpeg
 
-< ./test.png
+< ./cover.jpg
 --boundary123--
+
+### ─────────────────────────────────────────────────────────────────
+### Create article (without cover image)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/articles
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="title"
+
+Article Without Cover
+--boundary123
+Content-Disposition: form-data; name="description"
+
+Description here
+--boundary123
+Content-Disposition: form-data; name="sections"
+
+[{"title": "Section 1", "content": "Content of section 1"}]
+--boundary123--
+
+### ─────────────────────────────────────────────────────────────────
+### Get all articles
+### GET /articles
+### Query params:
+###   - limit: number (default: 20)
+###   - offset: number (default: 0)
+### Returns: Array of articles
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/articles
+
+### ─────────────────────────────────────────────────────────────────
+### Get all articles (with pagination)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/articles?limit=10&offset=0
+
+### ─────────────────────────────────────────────────────────────────
+### Get all articles (page 2)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/articles?limit=10&offset=10
+
+### ─────────────────────────────────────────────────────────────────
+### Get article by ID
+### GET /articles/:id
+### Optional: JWT auth cookie (for likedByCurrentUser, savedByCurrentUser)
+### Returns: Article with full data
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/articles/1
+
+### ─────────────────────────────────────────────────────────────────
+### Get article by ID (different article)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/articles/5
+
+### ─────────────────────────────────────────────────────────────────
+### Toggle article like
+### PATCH /articles/:id/like
+### Requires: JWT auth cookie
+### Returns: Updated like status
+### ─────────────────────────────────────────────────────────────────
+PATCH http://localhost:8080/articles/1/like
+
+### ─────────────────────────────────────────────────────────────────
+### Toggle article like (different article)
+### ─────────────────────────────────────────────────────────────────
+PATCH http://localhost:8080/articles/5/like
+
+### ─────────────────────────────────────────────────────────────────
+### Toggle article save
+### PATCH /articles/:id/save
+### Requires: JWT auth cookie
+### Returns: Updated save status
+### ─────────────────────────────────────────────────────────────────
+PATCH http://localhost:8080/articles/1/save
+
+### ─────────────────────────────────────────────────────────────────
+### Toggle article save (different article)
+### ─────────────────────────────────────────────────────────────────
+PATCH http://localhost:8080/articles/5/save

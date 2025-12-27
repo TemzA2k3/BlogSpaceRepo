@@ -1,5 +1,5 @@
 import { IsBoolean, IsEmail, IsString, MinLength } from "class-validator";
-import { PASSWORD_MIN_LENGTH } from "@/shared/constants";
+import { PASSWORD_MIN_LENGTH } from "@/shared/constants/constants";
 
 export class LoginUserDto {
     @IsEmail()

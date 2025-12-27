@@ -9,7 +9,7 @@ const initialState: ArticlesState = {
     isLoading: false,
     error: null,
     offset: 0,
-    limit: 21,
+    limit: 20,
     hasMore: true,
 };
 

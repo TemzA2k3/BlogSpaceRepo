@@ -49,7 +49,6 @@ export const useUserSubs = (fetchFn: FetchFn) => {
             try {
                 setLoading(true);
                 const data = await fetchFn(id, 0, SUBS_LIMIT);
-                console.log(data.length);
 
                 setItems(data);
                 setHasMore(data.length === SUBS_LIMIT);

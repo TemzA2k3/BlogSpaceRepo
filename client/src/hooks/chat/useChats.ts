@@ -89,8 +89,6 @@ export const useChats = (socket: Socket | null, currentUserId: number | null) =>
         if (!socket || !currentUserId) return;
 
         const handler = (newChat: ChatUser) => {
-            console.log('newChat', newChat);
-
             setUsersList(prev => {
                 const exists = prev.some(u => u.chatId === newChat.chatId);
 
@@ -116,8 +114,6 @@ export const useChats = (socket: Socket | null, currentUserId: number | null) =>
         if (!socket || !currentUserId) return;
 
         const handler = (updatedChat: ChatUser) => {
-            console.log("chatUnread", updatedChat);
-
             setUsersList(prev =>
                 prev.map(u =>
                     u.chatId === updatedChat.chatId

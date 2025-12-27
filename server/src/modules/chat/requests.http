@@ -1,13 +1,175 @@
-### Create Chat with user
+### ═══════════════════════════════════════════════════════════════
+### CHAT MODULE
+### ═══════════════════════════════════════════════════════════════
+
+
+### ─────────────────────────────────────────────────────────────────
+###                        REST API
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
+### Create chat
+### POST /chat
+### Requires: JWT auth cookie
+### Body: { targetUserId }
+### Returns: Created chat or existing chat
+### ─────────────────────────────────────────────────────────────────
 POST http://localhost:8080/chat
 Content-Type: application/json
 
 {
-    "targetUserId": 7
+  "targetUserId": 2
 }
 
-### Get All chats
+### ─────────────────────────────────────────────────────────────────
+### Create chat (with different user)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/chat
+Content-Type: application/json
+
+{
+  "targetUserId": 5
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Get all user chats
+### GET /chat
+### Requires: JWT auth cookie
+### Returns: Array of chats with last message and unread count
+### ─────────────────────────────────────────────────────────────────
 GET http://localhost:8080/chat
 
-### Get all chat messages
-GET http://localhost:8080/chat/10/messages
+### ─────────────────────────────────────────────────────────────────
+### Get chat messages
+### GET /chat/:chat_id/messages
+### Requires: JWT auth cookie
+### Query params:
+###   - offset: number (default: 0)
+###   - limit: number (default: 30)
+### Returns: Array of messages
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/chat/1/messages
+
+### ─────────────────────────────────────────────────────────────────
+### Get chat messages (with pagination)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/chat/1/messages?offset=0&limit=30
+
+### ─────────────────────────────────────────────────────────────────
+### Get chat messages (page 2)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/chat/1/messages?offset=30&limit=30
+
+### ─────────────────────────────────────────────────────────────────
+### Delete chat
+### DELETE /chat/:id
+### Requires: JWT auth cookie
+### Returns: 204 No Content
+### ─────────────────────────────────────────────────────────────────
+DELETE http://localhost:8080/chat/1
+
+### ─────────────────────────────────────────────────────────────────
+### Delete chat (different chat)
+### ─────────────────────────────────────────────────────────────────
+DELETE http://localhost:8080/chat/5
+
+
+### ─────────────────────────────────────────────────────────────────
+###                     WEBSOCKET EVENTS
+### ─────────────────────────────────────────────────────────────────
+###
+### Connection: ws://localhost:8080
+### Auth: JWT token from cookie (access_token)
+###
+### ─────────────────────────────────────────────────────────────────
+### SERVER → CLIENT EVENTS (Listen)
+### ─────────────────────────────────────────────────────────────────
+###
+### userStatusChanged
+###   Fired when user goes online/offline
+###   Payload: { userId: number, online: boolean }
+###
+### initialOnlineUsers
+###   Fired on connection, returns list of online user IDs
+###   Payload: number[]
+###
+### newMessage
+###   Fired when new message in chat
+###   Payload: { id, chatId, senderId, text, createdAt, isRead }
+###
+### newChat
+###   Fired when receiving message in inactive chat
+###   Payload: { id, chatId, firstName, lastName, avatar, lastMessage, time, online, unread }
+###
+### chatUnread
+###   Fired when receiving message in active chat
+###   Payload: { id, chatId, firstName, lastName, avatar, lastMessage, time, online, unread: 0 }
+###
+### messageRead
+###   Fired when messages marked as read
+###   Payload: { chatId: number, messageIds: number[] }
+###
+### userTyping
+###   Fired when user starts/stops typing
+###   Payload: { userId: number, typing: boolean }
+###
+### ─────────────────────────────────────────────────────────────────
+### CLIENT → SERVER EVENTS (Emit)
+### ─────────────────────────────────────────────────────────────────
+###
+### joinChat
+###   Join a chat room
+###   Payload: chatId (number)
+###   Example: socket.emit('joinChat', 1)
+###
+### leaveChat
+###   Leave a chat room
+###   Payload: chatId (number)
+###   Example: socket.emit('leaveChat', 1)
+###
+### sendMessage
+###   Send message to chat
+###   Payload: { chatId: number, senderId: number, recipientId: number, text: string }
+###   Example: socket.emit('sendMessage', { chatId: 1, senderId: 1, recipientId: 2, text: 'Hello!' })
+###
+### markAsRead
+###   Mark messages as read
+###   Payload: { chatId: number, userId: number }
+###   Example: socket.emit('markAsRead', { chatId: 1, userId: 1 })
+###
+### typing
+###   Notify that user is typing
+###   Payload: { userId: number }
+###   Example: socket.emit('typing', { userId: 1 })
+###
+### stopTyping
+###   Notify that user stopped typing
+###   Payload: { userId: number }
+###   Example: socket.emit('stopTyping', { userId: 1 })
+###
+### ─────────────────────────────────────────────────────────────────
+### JAVASCRIPT EXAMPLE (Client)
+### ─────────────────────────────────────────────────────────────────
+###
+### import { io } from 'socket.io-client';
+###
+### const socket = io('http://localhost:8080', {
+###   withCredentials: true,
+### });
+###
+### // Listen for events
+### socket.on('connect', () => console.log('Connected'));
+### socket.on('initialOnlineUsers', (users) => console.log('Online:', users));
+### socket.on('userStatusChanged', (data) => console.log('Status:', data));
+### socket.on('newMessage', (msg) => console.log('Message:', msg));
+### socket.on('messageRead', (data) => console.log('Read:', data));
+### socket.on('userTyping', (data) => console.log('Typing:', data));
+###
+### // Emit events
+### socket.emit('joinChat', 1);
+### socket.emit('sendMessage', { chatId: 1, senderId: 1, recipientId: 2, text: 'Hi!' });
+### socket.emit('typing', { userId: 1 });
+### socket.emit('stopTyping', { userId: 1 });
+### socket.emit('markAsRead', { chatId: 1, userId: 1 });
+### socket.emit('leaveChat', 1);
+###
