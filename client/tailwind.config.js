@@ -11,7 +11,6 @@ export default {
           md2: "890px",
         },
         colors: {
-        //   darkbg: "rgb(22,29,57)",
           darkbg: "rgb(31, 41, 55)",
         },
       },
