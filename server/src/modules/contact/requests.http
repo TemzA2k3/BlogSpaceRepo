@@ -1,92 +1,84 @@
 ### ═══════════════════════════════════════════════════════════════
-### AUTH MODULE
+### CONTACT MODULE
 ### ═══════════════════════════════════════════════════════════════
 
 ### ─────────────────────────────────────────────────────────────────
-### Register new user
-### POST /auth/register
-### Body: { firstName, lastName, email, password }
-### Returns: User (without password)
-### ─────────────────────────────────────────────────────────────────
-POST http://localhost:8080/auth/register
-Content-Type: application/json
-
-{
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john.doe@example.com",
-  "password": "password123"
-}
-
-### ─────────────────────────────────────────────────────────────────
-### Login user
-### POST /auth/login
-### Body: { email, password, remember }
-### Returns: User (without password)
-### Sets: auth cookie
-### ─────────────────────────────────────────────────────────────────
-POST http://localhost:8080/auth/login
-Content-Type: application/json
-
-{
-  "email": "john.doe@example.com",
-  "password": "password123",
-  "remember": false
-}
-
-### ─────────────────────────────────────────────────────────────────
-### Login with remember me
-### Sets longer-lived cookie
-### ─────────────────────────────────────────────────────────────────
-POST http://localhost:8080/auth/login
-Content-Type: application/json
-
-{
-  "email": "john.doe@example.com",
-  "password": "password123",
-  "remember": true
-}
-
-### ─────────────────────────────────────────────────────────────────
-### Logout
-### POST /auth/logout
+### Create contact message
+### POST /contact
+### Body: { name, email, subject, message }
 ### Returns: { success: true }
-### Clears: auth cookie
 ### ─────────────────────────────────────────────────────────────────
-POST http://localhost:8080/auth/logout
-
-### ─────────────────────────────────────────────────────────────────
-### Get current user
-### GET /auth/me
-### Requires: JWT auth cookie
-### Returns: User profile data
-### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/auth/me
-
-### ─────────────────────────────────────────────────────────────────
-### Request password reset
-### POST /auth/reset-password
-### Body: { email }
-### Returns: { message }
-### Note: Always returns success (security)
-### ─────────────────────────────────────────────────────────────────
-POST http://localhost:8080/auth/reset-password
+POST http://localhost:8080/contact
 Content-Type: application/json
 
 {
-  "email": "john.doe@example.com"
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "subject": "general",
+  "message": "Hello! I have a question about your platform."
 }
 
 ### ─────────────────────────────────────────────────────────────────
-### Confirm password reset
-### POST /auth/reset-password/confirm
-### Body: { token, password }
-### Returns: { message }
+### Create contact message (technical issue)
 ### ─────────────────────────────────────────────────────────────────
-POST http://localhost:8080/auth/reset-password/confirm
+POST http://localhost:8080/contact
 Content-Type: application/json
 
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "password": "newPassword123"
+  "name": "Jane Smith",
+  "email": "jane.smith@example.com",
+  "subject": "technical",
+  "message": "I'm experiencing issues with uploading images to my articles."
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Create contact message (billing)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/contact
+Content-Type: application/json
+
+{
+  "name": "Bob Wilson",
+  "email": "bob.wilson@example.com",
+  "subject": "billing",
+  "message": "I have a question about my subscription."
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Create contact message (partnership)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/contact
+Content-Type: application/json
+
+{
+  "name": "Alice Brown",
+  "email": "alice@company.com",
+  "subject": "partnership",
+  "message": "We would like to discuss a potential partnership opportunity."
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Create contact message (feedback)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/contact
+Content-Type: application/json
+
+{
+  "name": "Mike Johnson",
+  "email": "mike.j@example.com",
+  "subject": "feedback",
+  "message": "Great platform! I love the article editor feature."
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Create contact message (other)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/contact
+Content-Type: application/json
+
+{
+  "name": "Sarah Davis",
+  "email": "sarah.d@example.com",
+  "subject": "other",
+  "message": "I have a question that doesn't fit other categories."
 }

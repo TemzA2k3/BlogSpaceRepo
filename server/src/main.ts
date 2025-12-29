@@ -1,33 +1,53 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import cookieParser from 'cookie-parser';
 
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+    const app = await NestFactory.create<NestExpressApplication>(AppModule);
+    const configService = app.get(ConfigService);
+    const logger = new Logger('Bootstrap');
 
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
-    prefix: '/uploads/',
-  });
+    // Глобальный префикс для API
+    app.setGlobalPrefix('api');
 
-  app.use(cookieParser());
+    // Статические файлы (uploads)
+    // В Docker: /app/uploads, локально: ../uploads от dist
+    const uploadsPath =
+        process.env.NODE_ENV === 'production'
+            ? join(process.cwd(), 'uploads')
+            : join(__dirname, '..', 'uploads');
 
-  app.enableCors({
-    origin: 'http://localhost:3000',
-    credentials: true,
-  });
+    app.useStaticAssets(uploadsPath, {
+        prefix: '/uploads/',
+    });
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
+    app.use(cookieParser());
 
-  await app.listen(process.env.PORT ?? 3000);
+    // CORS — берём из переменных окружения
+    const clientUrl = configService.get<string>('CLIENT_URL');
+    app.enableCors({
+        origin: clientUrl || 'http://localhost:3000',
+        credentials: true,
+    });
+
+    app.useGlobalPipes(
+        new ValidationPipe({
+            whitelist: true,
+            forbidNonWhitelisted: true,
+            transform: true,
+        }),
+    );
+
+    const port = configService.get<number>('PORT') || 8080;
+    await app.listen(port);
+
+    logger.log(`Application running on port ${port}`);
+    logger.log(`CORS enabled for: ${clientUrl || 'http://localhost:3000'}`);
+    logger.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 }
 bootstrap();

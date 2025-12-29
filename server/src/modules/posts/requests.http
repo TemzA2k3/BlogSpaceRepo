@@ -1,18 +1,267 @@
-### Create Post (multipart/form-data)
+### ═══════════════════════════════════════════════════════════════
+### POSTS MODULE
+### ═══════════════════════════════════════════════════════════════
+
+
+### ─────────────────────────────────────────────────────────────────
+###                      CREATE POST
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
+### Create post (with image and hashtags)
+### POST /posts
+### Requires: JWT auth cookie
+### Body: multipart/form-data
+###   - content: string (optional)
+###   - hashtags: JSON array (optional)
+###   - image: file (optional, max 5MB)
+### Returns: Created post
+### ─────────────────────────────────────────────────────────────────
 POST http://localhost:8080/posts
 Content-Type: multipart/form-data; boundary=boundary123
 
 --boundary123
 Content-Disposition: form-data; name="content"
 
-Artsemxxxxx
+This is my new post with an image!
 --boundary123
 Content-Disposition: form-data; name="hashtags"
 
-["QWRRTY", "TestTag"]
+["Technology", "Programming", "NestJS"]
 --boundary123
-Content-Disposition: form-data; name="image"; filename="test.png"
+Content-Disposition: form-data; name="image"; filename="photo.jpg"
+Content-Type: image/jpeg
+
+< ./photo.jpg
+--boundary123--
+
+### ─────────────────────────────────────────────────────────────────
+### Create post (text only)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/posts
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="content"
+
+Just a simple text post without any image.
+--boundary123--
+
+### ─────────────────────────────────────────────────────────────────
+### Create post (with hashtags, no image)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/posts
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="content"
+
+Check out this new framework!
+--boundary123
+Content-Disposition: form-data; name="hashtags"
+
+["JavaScript", "WebDev"]
+--boundary123--
+
+### ─────────────────────────────────────────────────────────────────
+### Create post (image only)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/posts
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="image"; filename="screenshot.png"
 Content-Type: image/png
 
-< ./test.png
+< ./screenshot.png
 --boundary123--
+
+
+### ─────────────────────────────────────────────────────────────────
+###                       GET POSTS
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
+### Get all posts
+### GET /posts
+### Optional: JWT auth cookie (for likedByCurrentUser, savedByCurrentUser)
+### Query params:
+###   - limit: number (default: 15)
+###   - offset: number (default: 0)
+### Returns: Array of posts
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/posts
+
+### ─────────────────────────────────────────────────────────────────
+### Get all posts (with pagination)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/posts?limit=15&offset=0
+
+### ─────────────────────────────────────────────────────────────────
+### Get all posts (page 2)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/posts?limit=15&offset=15
+
+### ─────────────────────────────────────────────────────────────────
+### Get all posts (load more)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/posts?limit=10&offset=30
+
+### ─────────────────────────────────────────────────────────────────
+### Get post by ID
+### GET /posts/:id
+### Optional: JWT auth cookie (for likedByCurrentUser, savedByCurrentUser)
+### Returns: Post with full data
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/posts/1
+
+### ─────────────────────────────────────────────────────────────────
+### Get post by ID (different post)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/posts/5
+
+
+### ─────────────────────────────────────────────────────────────────
+###                    RECOMMENDATIONS
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
+### Get recommendations
+### GET /posts/recommendations
+### Optional: JWT auth cookie (for personalized recommendations)
+### Returns: { hashtags: [...], users: [...] }
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/posts/recommendations
+
+
+### ─────────────────────────────────────────────────────────────────
+###                      POST ACTIONS
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
+### Toggle post like
+### PATCH /posts/:id/like
+### Requires: JWT auth cookie
+### Returns: Updated like status
+### ─────────────────────────────────────────────────────────────────
+PATCH http://localhost:8080/posts/1/like
+
+### ─────────────────────────────────────────────────────────────────
+### Toggle post like (different post)
+### ─────────────────────────────────────────────────────────────────
+PATCH http://localhost:8080/posts/5/like
+
+### ─────────────────────────────────────────────────────────────────
+### Toggle post save
+### PATCH /posts/:id/save
+### Requires: JWT auth cookie
+### Returns: Updated save status
+### ─────────────────────────────────────────────────────────────────
+PATCH http://localhost:8080/posts/1/save
+
+### ─────────────────────────────────────────────────────────────────
+### Toggle post save (different post)
+### ─────────────────────────────────────────────────────────────────
+PATCH http://localhost:8080/posts/5/save
+
+### ─────────────────────────────────────────────────────────────────
+### Delete post
+### DELETE /posts/:id
+### Requires: JWT auth cookie (must be post author)
+### Returns: Deleted post info
+### ─────────────────────────────────────────────────────────────────
+DELETE http://localhost:8080/posts/1
+
+### ─────────────────────────────────────────────────────────────────
+### Delete post (different post)
+### ─────────────────────────────────────────────────────────────────
+DELETE http://localhost:8080/posts/5
+
+
+### ─────────────────────────────────────────────────────────────────
+###                        REPORT
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
+### Report post (spam)
+### POST /posts/report
+### Optional: JWT auth cookie
+### Body: { postId, reason, additionalInfo? }
+### Returns: 204 No Content
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/posts/report
+Content-Type: application/json
+
+{
+  "postId": 1,
+  "reason": "spam"
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Report post (harassment)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/posts/report
+Content-Type: application/json
+
+{
+  "postId": 2,
+  "reason": "harassment",
+  "additionalInfo": "This user is sending offensive messages"
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Report post (violence)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/posts/report
+Content-Type: application/json
+
+{
+  "postId": 3,
+  "reason": "violence"
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Report post (misinformation)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/posts/report
+Content-Type: application/json
+
+{
+  "postId": 4,
+  "reason": "misinformation",
+  "additionalInfo": "This post contains false medical information"
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Report post (hate speech)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/posts/report
+Content-Type: application/json
+
+{
+  "postId": 5,
+  "reason": "hatespeech"
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Report post (inappropriate)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/posts/report
+Content-Type: application/json
+
+{
+  "postId": 6,
+  "reason": "inappropriate"
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Report post (other)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/posts/report
+Content-Type: application/json
+
+{
+  "postId": 7,
+  "reason": "other",
+  "additionalInfo": "Custom reason description here"
+}

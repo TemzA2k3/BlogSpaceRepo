@@ -1,4 +1,4 @@
-import { useRef } from "react"; 
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useAppSelector } from "@/hooks/redux/reduxHooks";
@@ -18,7 +18,14 @@ import "@/app/styles/scroll.css";
 
 export const PostsPage = () => {
     const { t } = useTranslation();
-    const { userPosts, loading, hasMore, fetchNextPosts, recommendations } = usePosts();
+    const {
+        userPosts,
+        loading,
+        hasMore,
+        fetchNextPosts,
+        recommendations,
+        recommendationsLoading
+    } = usePosts();
     const { currentUser } = useAppSelector(state => state.auth);
 
     const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -26,20 +33,24 @@ export const PostsPage = () => {
     return (
         <main className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-6 lg:gap-10 text-gray-800 dark:text-gray-100">
             <aside className="w-full lg:w-80 xl:w-[40rem] hidden lg:flex flex-col gap-6">
-                {recommendations.trendingTopics.length > 0 ? (
-                    <TrendingTopicsCard topics={recommendations.trendingTopics} />
-                ) : (
+                {recommendationsLoading ? (
+                     <div className="border border-gray-200 dark:border-gray-700 rounded-2xl p-4 sm:p-5 bg-white dark:bg-darkbg">
+                        <Loader />
+                     </div>
+                ) : recommendations.trendingTopics.length === 0 ? (
                     <BlankData
                         icon="🔥"
                         title={t('posts.trendingTopics')}
                         message={t('posts.blankHashTags')}
                         background={false}
                     />
+                ) : (
+                    <TrendingTopicsCard topics={recommendations.trendingTopics} />
                 )}
             </aside>
 
             <div
-                ref={scrollRef} 
+                ref={scrollRef}
                 className="w-full max-w-3xl h-[70vh] sm:h-[75vh] md:h-[80vh] overflow-y-auto flex flex-col gap-6 custom-scroll">
                 {currentUser && (
                     <CreatePostSection
@@ -83,15 +94,19 @@ export const PostsPage = () => {
             </div>
 
             <aside className="w-full lg:w-80 xl:w-[40rem] hidden lg:block space-y-6">
-            {recommendations.suggestedUsers.length > 0 ? (
-                     <SuggestionsCard users={recommendations.suggestedUsers} />
-                ) : (
+                {recommendationsLoading ? (
+                    <div className="border border-gray-200 dark:border-gray-700 rounded-2xl p-4 sm:p-5 bg-white dark:bg-darkbg">
+                        <Loader />
+                    </div>
+                ) : recommendations.suggestedUsers.length === 0 ? (
                     <BlankData
                         icon="👥"
                         title={t('posts.suggestions')}
                         message={t('posts.blankRecommendUsers')}
                         background={false}
                     />
+                ) : (
+                    <SuggestionsCard users={recommendations.suggestedUsers} />
                 )}
             </aside>
         </main>

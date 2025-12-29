@@ -1,11 +1,279 @@
-### Get user data by id
+### ═══════════════════════════════════════════════════════════════
+### USERS MODULE
+### ═══════════════════════════════════════════════════════════════
+
+
+### ─────────────────────────────────────────────────────────────────
+###                       PROFILE
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
+### Get user profile data
+### GET /users/:id
+### Optional: JWT auth cookie (for isFollowing status)
+### Returns: User profile with stats
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/users/1
+
+### ─────────────────────────────────────────────────────────────────
+### Get user profile data (different user)
+### ─────────────────────────────────────────────────────────────────
 GET http://localhost:8080/users/14
 
-### Get users by search
+
+### ─────────────────────────────────────────────────────────────────
+###                        AVATAR
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
+### Change avatar
+### PATCH /users/avatar
+### Requires: JWT auth cookie
+### Body: multipart/form-data
+###   - avatar: file (max 2MB)
+### Returns: Updated user with new avatar
+### ─────────────────────────────────────────────────────────────────
+PATCH http://localhost:8080/users/avatar
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="avatar"; filename="avatar.jpg"
+Content-Type: image/jpeg
+
+< ./avatar.jpg
+--boundary123--
+
+### ─────────────────────────────────────────────────────────────────
+### Delete avatar
+### DELETE /users/avatar
+### Requires: JWT auth cookie
+### Returns: Updated user without avatar
+### ─────────────────────────────────────────────────────────────────
+DELETE http://localhost:8080/users/avatar
+
+
+### ─────────────────────────────────────────────────────────────────
+###                    FOLLOW / UNFOLLOW
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
+### Follow user
+### POST /users/:id/follow
+### Requires: JWT auth cookie
+### Returns: 204 No Content
+### Note: Cannot follow yourself
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/users/2/follow
+
+### ─────────────────────────────────────────────────────────────────
+### Follow user (different user)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/users/5/follow
+
+### ─────────────────────────────────────────────────────────────────
+### Unfollow user
+### DELETE /users/:id/unfollow
+### Requires: JWT auth cookie
+### Returns: 204 No Content
+### ─────────────────────────────────────────────────────────────────
+DELETE http://localhost:8080/users/2/unfollow
+
+### ─────────────────────────────────────────────────────────────────
+### Unfollow user (different user)
+### ─────────────────────────────────────────────────────────────────
+DELETE http://localhost:8080/users/5/unfollow
+
+
+### ─────────────────────────────────────────────────────────────────
+###                        SEARCH
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
+### Search users
+### GET /users/search/users
+### Query params:
+###   - query: string (search term)
+###   - offset: number (default: 0)
+###   - limit: number (default: 20)
+### Returns: Array of users matching query
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/users/search/users?query=john
+
+### ─────────────────────────────────────────────────────────────────
+### Search users (with pagination)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/users/search/users?query=john&offset=0&limit=20
+
+### ─────────────────────────────────────────────────────────────────
+### Search users (page 2)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/users/search/users?query=john&offset=20&limit=20
+
+### ─────────────────────────────────────────────────────────────────
+### Search users (different query)
+### ─────────────────────────────────────────────────────────────────
 GET http://localhost:8080/users/search/users?query=zxc
 
+
+### ─────────────────────────────────────────────────────────────────
+###                  FOLLOWERS / FOLLOWING
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
 ### Get user followers
+### GET /users/:id/followers
+### Query params:
+###   - offset: number (default: 0)
+###   - limit: number (default: 20)
+### Returns: Array of users who follow this user
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/users/1/followers
+
+### ─────────────────────────────────────────────────────────────────
+### Get user followers (with pagination)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/users/1/followers?offset=0&limit=20
+
+### ─────────────────────────────────────────────────────────────────
+### Get user followers (page 2)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/users/1/followers?offset=20&limit=20
+
+### ─────────────────────────────────────────────────────────────────
+### Get user followers (different user)
+### ─────────────────────────────────────────────────────────────────
 GET http://localhost:8080/users/6/followers
 
+### ─────────────────────────────────────────────────────────────────
 ### Get user following
+### GET /users/:id/following
+### Query params:
+###   - offset: number (default: 0)
+###   - limit: number (default: 20)
+### Returns: Array of users this user follows
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/users/1/following
+
+### ─────────────────────────────────────────────────────────────────
+### Get user following (with pagination)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/users/1/following?offset=0&limit=20
+
+### ─────────────────────────────────────────────────────────────────
+### Get user following (page 2)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/users/1/following?offset=20&limit=20
+
+### ─────────────────────────────────────────────────────────────────
+### Get user following (different user)
+### ─────────────────────────────────────────────────────────────────
 GET http://localhost:8080/users/6/following
+
+
+### ─────────────────────────────────────────────────────────────────
+###                       SETTINGS
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
+### Get user settings
+### GET /users/:id/settings
+### Requires: JWT auth cookie (owner only)
+### Returns: User settings object
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/users/1/settings
+
+### ─────────────────────────────────────────────────────────────────
+### Update user settings (full update)
+### PATCH /users/:id/settings
+### Requires: JWT auth cookie (owner only)
+### Body: UpdateSettingsDto
+### Returns: Updated settings
+### ─────────────────────────────────────────────────────────────────
+PATCH http://localhost:8080/users/1/settings
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "userName": "@johndoe",
+  "bio": "Software developer passionate about web technologies",
+  "location": "San Francisco, CA",
+  "website": "https://johndoe.dev",
+  "isPublicProfile": true
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Update user settings (partial - name only)
+### ─────────────────────────────────────────────────────────────────
+PATCH http://localhost:8080/users/1/settings
+Content-Type: application/json
+
+{
+  "firstName": "Jonathan",
+  "lastName": "Smith"
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Update user settings (bio and location)
+### ─────────────────────────────────────────────────────────────────
+PATCH http://localhost:8080/users/1/settings
+Content-Type: application/json
+
+{
+  "bio": "Full-stack developer | Open source enthusiast",
+  "location": "New York, NY"
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Update user settings (privacy toggle)
+### ─────────────────────────────────────────────────────────────────
+PATCH http://localhost:8080/users/1/settings
+Content-Type: application/json
+
+{
+  "isPublicProfile": false
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Update user settings (website)
+### ─────────────────────────────────────────────────────────────────
+PATCH http://localhost:8080/users/1/settings
+Content-Type: application/json
+
+{
+  "website": "https://myblog.com"
+}
+
+
+### ─────────────────────────────────────────────────────────────────
+###                       PASSWORD
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
+### Change password
+### PATCH /users/:id/password
+### Requires: JWT auth cookie (owner only)
+### Body: { currentPassword, newPassword }
+### Returns: { message: "Password changed successfully" }
+### ─────────────────────────────────────────────────────────────────
+PATCH http://localhost:8080/users/1/password
+Content-Type: application/json
+
+{
+  "currentPassword": "oldPassword123",
+  "newPassword": "newSecurePassword456"
+}
+
+
+### ─────────────────────────────────────────────────────────────────
+###                    DELETE ACCOUNT
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
+### Delete account
+### DELETE /users/:id
+### Requires: JWT auth cookie (owner only)
+### Returns: 204 No Content
+### Warning: This action is irreversible!
+### ─────────────────────────────────────────────────────────────────
+DELETE http://localhost:8080/users/1

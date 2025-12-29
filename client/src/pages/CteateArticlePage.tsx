@@ -29,7 +29,8 @@ export const CreateArticlePage = () => {
         tags,
         handleTagClick,
         removeTag,
-        lastFocusedTextarea,
+        handleFieldFocus,
+        handleSelectionChange,
         fileInputRef,
         handleSubmit,
     } = useCreateArticle();
@@ -71,6 +72,11 @@ export const CreateArticlePage = () => {
                         type="text"
                         value={title}
                         onChange={e => setTitle(e.target.value)}
+                        onFocus={handleFieldFocus}
+                        onSelect={handleSelectionChange}
+                        onClick={handleSelectionChange}
+                        onKeyUp={handleSelectionChange}
+                        data-field-type="title"
                         placeholder={t("articles.articleTitle")}
                         className="w-full text-3xl font-bold bg-transparent border border-gray-300 dark:border-gray-600 px-4 py-2 rounded-lg focus:outline-none focus:ring-0 dark:text-gray-100"
                     />
@@ -79,6 +85,11 @@ export const CreateArticlePage = () => {
                     <textarea
                         value={description}
                         onChange={e => setDescription(e.target.value)}
+                        onFocus={handleFieldFocus}
+                        onSelect={handleSelectionChange}
+                        onClick={handleSelectionChange}
+                        onKeyUp={handleSelectionChange}
+                        data-field-type="description"
                         placeholder={t("articles.descriptionPlaceholder")}
                         rows={2}
                         className="w-full resize-none bg-transparent border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg focus:outline-none focus:ring-0 dark:text-gray-200"
@@ -87,7 +98,6 @@ export const CreateArticlePage = () => {
 
                 <SectionsEditor
                     sections={sections}
-                    lastFocusedTextarea={lastFocusedTextarea}
                     showEmojiPicker={showEmojiPicker}
                     addSection={addSection}
                     removeSection={removeSection}
@@ -97,6 +107,8 @@ export const CreateArticlePage = () => {
                     handleTagClick={handleTagClick}
                     tags={tags}
                     removeTag={removeTag}
+                    handleFieldFocus={handleFieldFocus}
+                    handleSelectionChange={handleSelectionChange}
                 />
 
             </div>

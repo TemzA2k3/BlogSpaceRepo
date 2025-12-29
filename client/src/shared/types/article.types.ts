@@ -28,7 +28,6 @@ export interface ArticleAuthor {
 
 export interface SectionsEditorProps {
     sections: ArticleSections[]
-    lastFocusedTextarea: React.MutableRefObject<HTMLTextAreaElement | null>
     showEmojiPicker: boolean
     addSection: () => void
     removeSection: (id: number) => void
@@ -38,6 +37,8 @@ export interface SectionsEditorProps {
     handleTagClick: () => void
     tags: string[]
     removeTag: (index: number) => void
+    handleFieldFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void
+    handleSelectionChange: (e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => void
 }
 
 export interface ArticlesState extends Paggination {

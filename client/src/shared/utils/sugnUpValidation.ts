@@ -6,8 +6,6 @@ export const initialValues = {
   rememberMe: false,
 };
 
-const minPassLength = 6;
-
 export const getValidationSchema = (t: (key: string, options?: any) => string) => {
   return Yup.object({
     fname: Yup.string()

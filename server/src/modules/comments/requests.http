@@ -1,6 +1,153 @@
-POST http://localhost:8080/comments/article/8
+### ═══════════════════════════════════════════════════════════════
+### COMMENTS MODULE
+### ═══════════════════════════════════════════════════════════════
+
+
+### ─────────────────────────────────────────────────────────────────
+###                    ARTICLE COMMENTS
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
+### Create article comment
+### POST /comments/article/:id
+### Requires: JWT auth cookie
+### Body: { content, parentId? }
+### Returns: Created comment
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/comments/article/1
 Content-Type: application/json
 
 {
-    "content": "asldjaskdnjkashdjkhaskjdhakjshdjash" 
+  "content": "This is a great article!"
 }
+
+### ─────────────────────────────────────────────────────────────────
+### Create article comment (reply to another comment)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/comments/article/1
+Content-Type: application/json
+
+{
+  "content": "I agree with your point!",
+  "parentId": 5
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Get article comments
+### GET /comments/article/:id
+### Query params:
+###   - offset: number (default: 0)
+###   - limit: number (default: 5)
+### Returns: Array of comments with author info
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/comments/article/1
+
+### ─────────────────────────────────────────────────────────────────
+### Get article comments (with pagination)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/comments/article/1?offset=0&limit=5
+
+### ─────────────────────────────────────────────────────────────────
+### Get article comments (page 2)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/comments/article/1?offset=5&limit=5
+
+### ─────────────────────────────────────────────────────────────────
+### Get article comments (load more)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/comments/article/1?offset=10&limit=10
+
+
+### ─────────────────────────────────────────────────────────────────
+###                      POST COMMENTS
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
+### Create post comment
+### POST /comments/post/:id
+### Requires: JWT auth cookie
+### Body: { content, parentId? }
+### Returns: Created comment
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/comments/post/1
+Content-Type: application/json
+
+{
+  "content": "Nice post!"
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Create post comment (reply to another comment)
+### ─────────────────────────────────────────────────────────────────
+POST http://localhost:8080/comments/post/1
+Content-Type: application/json
+
+{
+  "content": "Thanks for sharing this!",
+  "parentId": 10
+}
+
+### ─────────────────────────────────────────────────────────────────
+### Get post comments
+### GET /comments/post/:id
+### Query params:
+###   - offset: number (default: 0)
+###   - limit: number (default: 5)
+### Returns: Array of comments with author info
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/comments/post/1
+
+### ─────────────────────────────────────────────────────────────────
+### Get post comments (with pagination)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/comments/post/1?offset=0&limit=5
+
+### ─────────────────────────────────────────────────────────────────
+### Get post comments (page 2)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/comments/post/1?offset=5&limit=5
+
+
+### ─────────────────────────────────────────────────────────────────
+###                        REPLIES
+### ─────────────────────────────────────────────────────────────────
+
+### ─────────────────────────────────────────────────────────────────
+### Get comment replies (for articles)
+### GET /comments/:id/replies
+### Query params:
+###   - offset: number (default: 0)
+###   - limit: number (default: 3)
+### Returns: Array of reply comments
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/comments/5/replies
+
+### ─────────────────────────────────────────────────────────────────
+### Get comment replies (with pagination)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/comments/5/replies?offset=0&limit=3
+
+### ─────────────────────────────────────────────────────────────────
+### Get comment replies (load more)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/comments/5/replies?offset=3&limit=3
+
+### ─────────────────────────────────────────────────────────────────
+### Get post comment replies
+### GET /comments/post/:id/replies
+### Query params:
+###   - offset: number (default: 0)
+###   - limit: number (default: 3)
+### Returns: Array of reply comments
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/comments/post/10/replies
+
+### ─────────────────────────────────────────────────────────────────
+### Get post comment replies (with pagination)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/comments/post/10/replies?offset=0&limit=3
+
+### ─────────────────────────────────────────────────────────────────
+### Get post comment replies (load more)
+### ─────────────────────────────────────────────────────────────────
+GET http://localhost:8080/comments/post/10/replies?offset=3&limit=5

@@ -9,26 +9,35 @@ const initialState: ArticlesState = {
     isLoading: false,
     error: null,
     offset: 0,
-    limit: 21,
+    limit: 20,
     hasMore: true,
 };
 
 export const fetchArticles = createAsyncThunk<
-    ArticlePreview[],
-    void,
+    { articles: ArticlePreview[]; isNewSearch: boolean },
+    { search?: string; isNewSearch?: boolean },
     { state: { articles: ArticlesState } }
 >(
     "articles/fetchAll",
-    async (_, { getState, rejectWithValue }) => {
+    async ({ search, isNewSearch = false }, { getState, rejectWithValue }) => {
         try {
             const { offset, limit } = getState().articles;
 
+            const params = new URLSearchParams({
+                limit: String(limit),
+                offset: isNewSearch ? "0" : String(offset),
+            });
+
+            if (search && search.trim()) {
+                params.append("search", search.trim());
+            }
+
             const data = await apiRequest<ArticlePreview[]>(
-                `/articles?limit=${limit}&offset=${offset}`,
+                `/articles?${params.toString()}`,
                 "GET",
             );
 
-            return data || [];
+            return { articles: data || [], isNewSearch };
         } catch (err: any) {
             return rejectWithValue(err.message || "Ошибка при загрузке статей");
         }
@@ -55,28 +64,26 @@ export const createArticle = createAsyncThunk<
 const articlesSlice = createSlice({
     name: "articles",
     initialState,
-    reducers: {
-        clearArticles(state) {
-            state.articles = [];
-            state.offset = 0;
-            state.hasMore = true;
-        },
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(fetchArticles.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
             })
-            .addCase(fetchArticles.fulfilled, (state, action: PayloadAction<ArticlePreview[]>) => {
+            .addCase(fetchArticles.fulfilled, (state, action) => {
                 state.isLoading = false;
+                
+                const { articles, isNewSearch } = action.payload;
 
-                if (action.payload.length < state.limit) {
-                    state.hasMore = false;
+                if (isNewSearch) {
+                    state.articles = articles;
+                    state.offset = state.limit;
+                    state.hasMore = articles.length >= state.limit;
+                } else {
+                    state.articles.push(...articles);
+                    state.offset += state.limit;
                 }
-
-                state.articles.push(...action.payload);
-                state.offset += state.limit;
             })
             .addCase(fetchArticles.rejected, (state, action) => {
                 state.isLoading = false;
@@ -99,5 +106,4 @@ const articlesSlice = createSlice({
     },
 });
 
-export const { clearArticles } = articlesSlice.actions;
 export default articlesSlice.reducer;

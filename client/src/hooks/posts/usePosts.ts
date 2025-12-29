@@ -14,13 +14,11 @@ export const usePosts = () => {
     const { posts, loading, error, hasMore } = useAppSelector(state => state.posts);
     const { showAlert } = useAlert();
 
+    const [recommendationsLoading, setRecommendationsLoading] = useState<boolean>(false)
     const [recommendations, setRecommendations] = useState<RecommendationsResponse>({
         trendingTopics: [],
         suggestedUsers: [],
     });
-
-    console.log(recommendations);
-
 
     useEffect(() => {
         dispatch(resetPosts());
@@ -33,16 +31,22 @@ export const usePosts = () => {
     };
 
     useEffect(() => {
-        getPostsRecommendations()
-            .then((data) => {
+        const fetchRecommendations = async () => {
+            setRecommendationsLoading(true);
+            try {
+                const data = await getPostsRecommendations();
                 if (data) {
                     setRecommendations(data);
                 }
-            })
-            .catch((err: any) =>
-                showAlert(err.message || t("posts.recommendationsError"), "error")
-            );
-    }, [t]);
+            } catch (err: any) {
+                showAlert(err.message || t("posts.recommendationsError"), "error");
+            } finally {
+                setRecommendationsLoading(false);
+            }
+        };
+    
+        fetchRecommendations();
+    }, []);
 
 
     useEffect(() => {
@@ -57,5 +61,6 @@ export const usePosts = () => {
         hasMore,
         fetchNextPosts,
         recommendations,
+        recommendationsLoading
     };
 };

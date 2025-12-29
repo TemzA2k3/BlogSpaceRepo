@@ -38,7 +38,6 @@ export class PostsRecommendationsService {
 
     async getSuggestedUsers(currentUserId?: number, limit = 3) {
         if (currentUserId) {
-            // Сначала получаем пользователей, на которых текущий юзер уже подписан
             const followingIds = await this.relationRepository
                 .createQueryBuilder("relation")
                 .select("relation.targetUserId")
@@ -64,13 +63,18 @@ export class PostsRecommendationsService {
                 lastName: u.lastName
             }));
         } else {
+            // Используем addSelect для подсчёта и сортировки
             const users = await this.userRepository
                 .createQueryBuilder("user")
-                .leftJoin("user.relationsTo", "followers", "followers.type = :type", { type: RelationType.FOLLOW })
-                .loadRelationCountAndMap("user.followersCount", "user.relationsTo", "followersCount", qb =>
-                    qb.andWhere("followers.type = :type", { type: RelationType.FOLLOW })
+                .leftJoin(
+                    "user_relations",
+                    "followers",
+                    "followers.targetUserId = user.id AND followers.type = :type",
+                    { type: RelationType.FOLLOW }
                 )
-                .orderBy("followersCount", "DESC")
+                .addSelect("COUNT(followers.id)", "followers_count")
+                .groupBy("user.id")
+                .orderBy("followers_count", "DESC")
                 .limit(limit)
                 .getMany();
     
@@ -83,7 +87,6 @@ export class PostsRecommendationsService {
             }));
         }
     }
-    
 
     async getRecommendations(currentUserId?: number) {
         const [trendingTopics, suggestedUsers] = await Promise.all([

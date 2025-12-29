@@ -1,40 +1,49 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+
 import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
-import { fetchArticles, clearArticles } from "@/store/slices/articleSlice";
+import { useDebounce } from "@/hooks/debounce/useDebounce";
+
+import { fetchArticles } from "@/store/slices/articleSlice";
 
 export const useArticles = () => {
     const dispatch = useAppDispatch();
+    const [searchParams, setSearchParams] = useSearchParams();
     const { articles, isLoading, error, hasMore } = useAppSelector(state => state.articles);
     const { showAlert } = useAlert();
 
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState(() => searchParams.get("search") || "");
+    
+    const debouncedSearch = useDebounce(searchTerm, 500);
+    const prevSearchRef = useRef<string | null>(null);
 
     useEffect(() => {
-        dispatch(clearArticles());
-        dispatch(fetchArticles());
-    }, [dispatch]);
+        if (debouncedSearch) {
+            setSearchParams({ search: debouncedSearch }, { replace: true });
+        } else {
+            setSearchParams({}, { replace: true });
+        }
+    }, [debouncedSearch, setSearchParams]);
+
+    useEffect(() => {
+        const isNewSearch = prevSearchRef.current !== debouncedSearch;
+        prevSearchRef.current = debouncedSearch;
+
+        dispatch(fetchArticles({ search: debouncedSearch, isNewSearch }));
+    }, [debouncedSearch, dispatch]);
 
     useEffect(() => {
         if (error) showAlert(error, "error");
-    }, [error]);
+    }, [error, showAlert]);
 
     const fetchNextArticles = () => {
         if (isLoading || !hasMore) return;
-        dispatch(fetchArticles());
+        dispatch(fetchArticles({ search: debouncedSearch, isNewSearch: false }));
     };
 
-    const filteredArticles = articles.filter(article => {
-        const term = searchTerm.toLowerCase();
-        return Object.values(article).some(value => {
-            if (typeof value === "string") return value.toLowerCase().includes(term);
-            if (Array.isArray(value)) return value.some(item => item.name?.toLowerCase().includes(term));
-            return false;
-        });
-    });
-
     return {
-        articles: filteredArticles,
+        articles,
         searchTerm,
         setSearchTerm,
         isLoading,

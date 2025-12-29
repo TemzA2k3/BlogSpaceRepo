@@ -10,6 +10,8 @@ import { ChatModule } from './modules/chat/chat.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { ContactModule } from './modules/contact/contact.module';
 
+import { HealthController } from './modules/health/health.controller';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -32,5 +34,6 @@ import { ContactModule } from './modules/contact/contact.module';
     ContactModule,
   ],
   providers: [],
+  controllers: [HealthController],
 })
 export class AppModule {}
