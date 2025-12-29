@@ -33,6 +33,7 @@ export const EmojiPicker = ({ onSelect, show, onClose }: EmojiPickerProps) => {
             {EMOJIS.map((emoji, idx) => (
                 <button
                     key={idx}
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => onSelect(emoji)}
                     className="text-lg hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
                 >

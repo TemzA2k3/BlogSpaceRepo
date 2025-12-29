@@ -1,4 +1,5 @@
 import { type FC, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -63,14 +64,14 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
         };
     }, [isOpen, onClose]);
 
-    return (
+    return createPortal(
         <>
             {/* Backdrop overlay */}
             <div
                 className={`
-                    fixed inset-0 bg-black/50 backdrop-blur-sm z-40
+                    fixed inset-0 bg-black/50 backdrop-blur-sm z-[9998]
                     transition-opacity duration-300
-                    ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"}
+                    ${isOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}
                 `}
                 onClick={onClose}
             />
@@ -79,7 +80,7 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
             <div
                 ref={menuRef}
                 className={`
-                    fixed top-0 left-0 h-screen w-72 bg-white dark:bg-gray-900 z-50 
+                    fixed top-0 left-0 h-screen w-72 bg-white dark:bg-gray-900 z-[9999]
                     shadow-2xl transform transition-transform duration-300 ease-out
                     flex flex-col
                     ${isOpen ? "translate-x-0" : "-translate-x-full"}
@@ -201,6 +202,7 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                     )}
                 </div>
             </div>
-        </>
+        </>,
+        document.body
     );
 };

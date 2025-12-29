@@ -9,6 +9,8 @@ import { createArticle } from "@/store/slices/articleSlice";
 
 import type { ArticleSections } from "@/shared/types/article.types";
 
+type FocusableElement = HTMLInputElement | HTMLTextAreaElement;
+
 export const useCreateArticle = () => {
     const { t } = useTranslation();
     const { currentUser } = useAppSelector((state) => state.auth);
@@ -26,8 +28,23 @@ export const useCreateArticle = () => {
     const [tags, setTags] = useState<string[]>([]);
     const [validationError, setValidationError] = useState<string | null>(null);
 
-    const lastFocusedTextarea = useRef<HTMLTextAreaElement | null>(null);
+    // Универсальный ref для любого поля ввода
+    const lastFocusedElement = useRef<FocusableElement | null>(null);
+    const cursorPosition = useRef<number>(0);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Обработчик фокуса для всех полей
+    const handleFieldFocus = (e: React.FocusEvent<FocusableElement>) => {
+        lastFocusedElement.current = e.target;
+        cursorPosition.current = e.target.selectionStart ?? e.target.value.length;
+    };
+
+    // Сохранение позиции курсора при изменении выделения
+    const handleSelectionChange = (e: React.SyntheticEvent<FocusableElement>) => {
+        const target = e.currentTarget;
+        cursorPosition.current = target.selectionStart ?? target.value.length;
+        lastFocusedElement.current = target;
+    };
 
     const addSection = () => setSections(prev => [...prev, { id: Date.now(), title: "", content: "" }]);
     const removeSection = (id: number) => setSections(prev => prev.length > 1 ? prev.filter(s => s.id !== id) : prev);
@@ -39,26 +56,58 @@ export const useCreateArticle = () => {
     const removeImage = () => setCoverImage(null);
 
     const toggleEmojiPicker = () => setShowEmojiPicker(prev => !prev);
+
     const addEmoji = (emoji: string) => {
-        const textarea = lastFocusedTextarea.current;
-        if (!textarea) return;
-        const sectionId = Number(textarea.dataset.sectionId);
-        const pos = textarea.selectionStart;
-        const section = sections.find(s => s.id === sectionId);
-        if (!section) return;
-        const newContent = section.content.slice(0, pos) + emoji + section.content.slice(pos);
-        updateSection(sectionId, "content", newContent);
+        const element = lastFocusedElement.current;
+        if (!element) return;
+
+        const start = cursorPosition.current;
+        const currentValue = element.value;
+        const newValue = currentValue.slice(0, start) + emoji + currentValue.slice(start);
+
+        // Определяем тип поля по data-атрибутам
+        const fieldType = element.dataset.fieldType;
+        const sectionId = element.dataset.sectionId;
+        const sectionField = element.dataset.field as "title" | "content" | undefined;
+
+        if (fieldType === "title") {
+            setTitle(newValue);
+        } else if (fieldType === "description") {
+            setDescription(newValue);
+        } else if (sectionId && sectionField) {
+            updateSection(Number(sectionId), sectionField, newValue);
+        }
+
+        // Обновляем позицию курсора
+        const newCursorPos = start + emoji.length;
+        cursorPosition.current = newCursorPos;
+
+        // Восстанавливаем фокус и позицию курсора после рендера
+        setTimeout(() => {
+            if (element) {
+                element.focus();
+                element.setSelectionRange(newCursorPos, newCursorPos);
+            }
+        }, 0);
+
+        setShowEmojiPicker(false);
     };
 
     const handleTagClick = () => {
-        const textarea = lastFocusedTextarea.current;
-        if (!textarea) return;
-        const sectionId = Number(textarea.dataset.sectionId);
-        const section = sections.find(s => s.id === sectionId);
+        const element = lastFocusedElement.current;
+        if (!element) return;
+
+        const sectionId = element.dataset.sectionId;
+        const sectionField = element.dataset.field;
+
+        // Теги работают только для content секций
+        if (!sectionId || sectionField !== "content") return;
+
+        const section = sections.find(s => s.id === Number(sectionId));
         if (!section) return;
 
-        const { selectionStart, selectionEnd } = textarea;
-        if (selectionStart === selectionEnd) return;
+        const { selectionStart, selectionEnd } = element;
+        if (selectionStart === null || selectionEnd === null || selectionStart === selectionEnd) return;
 
         const selectedText = section.content.slice(selectionStart, selectionEnd).trim();
         if (!selectedText) return;
@@ -71,7 +120,7 @@ export const useCreateArticle = () => {
         }
 
         updateSection(
-            sectionId,
+            Number(sectionId),
             "content",
             section.content.slice(0, selectionStart) + section.content.slice(selectionEnd)
         );
@@ -125,7 +174,8 @@ export const useCreateArticle = () => {
         tags,
         handleTagClick,
         removeTag: (idx: number) => setTags(prev => prev.filter((_, i) => i !== idx)),
-        lastFocusedTextarea,
+        handleFieldFocus,
+        handleSelectionChange,
         fileInputRef,
         handleSubmit,
     };

@@ -8,7 +8,6 @@ import type { SectionsEditorProps } from "@/shared/types/article.types"
 
 export const SectionsEditor: FC<SectionsEditorProps> = ({
     sections,
-    lastFocusedTextarea,
     showEmojiPicker,
     addSection,
     removeSection,
@@ -18,6 +17,8 @@ export const SectionsEditor: FC<SectionsEditorProps> = ({
     handleTagClick,
     tags,
     removeTag,
+    handleFieldFocus,
+    handleSelectionChange,
 }) => {
     const { t } = useTranslation();
 
@@ -37,6 +38,12 @@ export const SectionsEditor: FC<SectionsEditorProps> = ({
                         type="text"
                         value={section.title}
                         onChange={e => updateSection(section.id, "title", e.target.value)}
+                        onFocus={handleFieldFocus}
+                        onSelect={handleSelectionChange}
+                        onClick={handleSelectionChange}
+                        onKeyUp={handleSelectionChange}
+                        data-section-id={section.id}
+                        data-field="title"
                         placeholder={t("articles.sectionTitle")}
                         className="w-full text-xl font-semibold dark:text-gray-100 bg-transparent border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg focus:outline-none focus:ring-0"
                     />
@@ -44,8 +51,12 @@ export const SectionsEditor: FC<SectionsEditorProps> = ({
                     <textarea
                         value={section.content}
                         onChange={e => updateSection(section.id, "content", e.target.value)}
-                        onFocus={e => (lastFocusedTextarea.current = e.target)}
+                        onFocus={handleFieldFocus}
+                        onSelect={handleSelectionChange}
+                        onClick={handleSelectionChange}
+                        onKeyUp={handleSelectionChange}
                         data-section-id={section.id}
+                        data-field="content"
                         placeholder={t("articles.sectionContent")}
                         className="w-full bg-transparent dark:text-gray-200 border border-gray-300 dark:border-gray-600 px-3 py-3 rounded-lg resize-none min-h-[120px] focus:outline-none focus:ring-0"
                     />
