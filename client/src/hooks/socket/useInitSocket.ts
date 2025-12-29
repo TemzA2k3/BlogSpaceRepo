@@ -90,5 +90,8 @@ export const useInitSocket = () => {
         socket: currentUser ? getSocket() : null,
         connected,
         usersStatus,
+        setUserStatus: (userId: number, online: boolean) => {
+            setUsersStatus(prev => ({ ...prev, [userId]: online }));
+        },
     };
 };

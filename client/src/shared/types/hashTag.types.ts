@@ -10,4 +10,4 @@ export interface HashTagProps {
 
 export interface HashTagsDisplayProps {
     tags: HashTag[];
-  }
+}

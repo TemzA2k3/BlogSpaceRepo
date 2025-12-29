@@ -3,24 +3,26 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [
-    ConfigModule,
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        host: config.get<string>('DB_HOST'),
-        port: Number(config.get<string>('DB_PORT')),
-        username: config.get<string>('DB_USER'),
-        password: config.get<string>('DB_PASSWORD'),
-        database: config.get<string>('DB_NAME'),
-        autoLoadEntities: true,
-        // logging: true,
-        synchronize: true, // для dev
-      }),
-    }),
-  ],
-  exports: [TypeOrmModule],
+    imports: [
+        ConfigModule,
+        TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: (config: ConfigService) => ({
+                type: 'postgres',
+                host: config.get<string>('DB_HOST'),
+                port: Number(config.get<string>('DB_PORT')),
+                username: config.get<string>('DB_USER'),
+                password: config.get<string>('DB_PASSWORD'),
+                database: config.get<string>('DB_NAME'),
+                autoLoadEntities: true,
+                // synchronize только в dev, НИКОГДА в prod!
+                synchronize: config.get<string>('NODE_ENV') !== 'production',
+                // Логирование только в dev
+                logging: config.get<string>('NODE_ENV') !== 'production',
+            }),
+        }),
+    ],
+    exports: [TypeOrmModule],
 })
-export class DatabaseModule {}
+export class DatabaseModule { }
