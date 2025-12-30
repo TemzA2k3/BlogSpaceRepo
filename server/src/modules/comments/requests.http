@@ -14,7 +14,7 @@
 ### Body: { content, parentId? }
 ### Returns: Created comment
 ### ─────────────────────────────────────────────────────────────────
-POST http://localhost:8080/comments/article/1
+POST http://localhost:8080/api/comments/article/1
 Content-Type: application/json
 
 {
@@ -24,7 +24,7 @@ Content-Type: application/json
 ### ─────────────────────────────────────────────────────────────────
 ### Create article comment (reply to another comment)
 ### ─────────────────────────────────────────────────────────────────
-POST http://localhost:8080/comments/article/1
+POST http://localhost:8080/api/comments/article/1
 Content-Type: application/json
 
 {
@@ -40,22 +40,22 @@ Content-Type: application/json
 ###   - limit: number (default: 5)
 ### Returns: Array of comments with author info
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/comments/article/1
+GET http://localhost:8080/api/comments/article/1
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get article comments (with pagination)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/comments/article/1?offset=0&limit=5
+GET http://localhost:8080/api/comments/article/1?offset=0&limit=5
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get article comments (page 2)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/comments/article/1?offset=5&limit=5
+GET http://localhost:8080/api/comments/article/1?offset=5&limit=5
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get article comments (load more)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/comments/article/1?offset=10&limit=10
+GET http://localhost:8080/api/comments/article/1?offset=10&limit=10
 
 
 ### ─────────────────────────────────────────────────────────────────
@@ -69,7 +69,7 @@ GET http://localhost:8080/comments/article/1?offset=10&limit=10
 ### Body: { content, parentId? }
 ### Returns: Created comment
 ### ─────────────────────────────────────────────────────────────────
-POST http://localhost:8080/comments/post/1
+POST http://localhost:8080/api/comments/post/1
 Content-Type: application/json
 
 {
@@ -79,7 +79,7 @@ Content-Type: application/json
 ### ─────────────────────────────────────────────────────────────────
 ### Create post comment (reply to another comment)
 ### ─────────────────────────────────────────────────────────────────
-POST http://localhost:8080/comments/post/1
+POST http://localhost:8080/api/comments/post/1
 Content-Type: application/json
 
 {
@@ -95,17 +95,17 @@ Content-Type: application/json
 ###   - limit: number (default: 5)
 ### Returns: Array of comments with author info
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/comments/post/1
+GET http://localhost:8080/api/comments/post/1
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get post comments (with pagination)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/comments/post/1?offset=0&limit=5
+GET http://localhost:8080/api/comments/post/1?offset=0&limit=5
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get post comments (page 2)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/comments/post/1?offset=5&limit=5
+GET http://localhost:8080/api/comments/post/1?offset=5&limit=5
 
 
 ### ─────────────────────────────────────────────────────────────────
@@ -120,17 +120,17 @@ GET http://localhost:8080/comments/post/1?offset=5&limit=5
 ###   - limit: number (default: 3)
 ### Returns: Array of reply comments
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/comments/5/replies
+GET http://localhost:8080/api/comments/5/replies
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get comment replies (with pagination)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/comments/5/replies?offset=0&limit=3
+GET http://localhost:8080/api/comments/5/replies?offset=0&limit=3
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get comment replies (load more)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/comments/5/replies?offset=3&limit=3
+GET http://localhost:8080/api/comments/5/replies?offset=3&limit=3
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get post comment replies
@@ -140,14 +140,14 @@ GET http://localhost:8080/comments/5/replies?offset=3&limit=3
 ###   - limit: number (default: 3)
 ### Returns: Array of reply comments
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/comments/post/10/replies
+GET http://localhost:8080/api/comments/post/10/replies
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get post comment replies (with pagination)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/comments/post/10/replies?offset=0&limit=3
+GET http://localhost:8080/api/comments/post/10/replies?offset=0&limit=3
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get post comment replies (load more)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/comments/post/10/replies?offset=3&limit=5
+GET http://localhost:8080/api/comments/post/10/replies?offset=3&limit=5

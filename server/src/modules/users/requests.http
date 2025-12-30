@@ -13,12 +13,12 @@
 ### Optional: JWT auth cookie (for isFollowing status)
 ### Returns: User profile with stats
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/users/1
+GET http://localhost:8080/api/users/1
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get user profile data (different user)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/users/14
+GET http://localhost:8080/api/users/14
 
 
 ### ─────────────────────────────────────────────────────────────────
@@ -33,7 +33,7 @@ GET http://localhost:8080/users/14
 ###   - avatar: file (max 2MB)
 ### Returns: Updated user with new avatar
 ### ─────────────────────────────────────────────────────────────────
-PATCH http://localhost:8080/users/avatar
+PATCH http://localhost:8080/api/users/avatar
 Content-Type: multipart/form-data; boundary=boundary123
 
 --boundary123
@@ -49,7 +49,7 @@ Content-Type: image/jpeg
 ### Requires: JWT auth cookie
 ### Returns: Updated user without avatar
 ### ─────────────────────────────────────────────────────────────────
-DELETE http://localhost:8080/users/avatar
+DELETE http://localhost:8080/api/users/avatar
 
 
 ### ─────────────────────────────────────────────────────────────────
@@ -63,12 +63,12 @@ DELETE http://localhost:8080/users/avatar
 ### Returns: 204 No Content
 ### Note: Cannot follow yourself
 ### ─────────────────────────────────────────────────────────────────
-POST http://localhost:8080/users/2/follow
+POST http://localhost:8080/api/users/2/follow
 
 ### ─────────────────────────────────────────────────────────────────
 ### Follow user (different user)
 ### ─────────────────────────────────────────────────────────────────
-POST http://localhost:8080/users/5/follow
+POST http://localhost:8080/api/users/5/follow
 
 ### ─────────────────────────────────────────────────────────────────
 ### Unfollow user
@@ -76,12 +76,12 @@ POST http://localhost:8080/users/5/follow
 ### Requires: JWT auth cookie
 ### Returns: 204 No Content
 ### ─────────────────────────────────────────────────────────────────
-DELETE http://localhost:8080/users/2/unfollow
+DELETE http://localhost:8080/api/users/2/unfollow
 
 ### ─────────────────────────────────────────────────────────────────
 ### Unfollow user (different user)
 ### ─────────────────────────────────────────────────────────────────
-DELETE http://localhost:8080/users/5/unfollow
+DELETE http://localhost:8080/api/users/5/unfollow
 
 
 ### ─────────────────────────────────────────────────────────────────
@@ -97,22 +97,22 @@ DELETE http://localhost:8080/users/5/unfollow
 ###   - limit: number (default: 20)
 ### Returns: Array of users matching query
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/users/search/users?query=john
+GET http://localhost:8080/api/users/search/users?query=john
 
 ### ─────────────────────────────────────────────────────────────────
 ### Search users (with pagination)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/users/search/users?query=john&offset=0&limit=20
+GET http://localhost:8080/api/users/search/users?query=john&offset=0&limit=20
 
 ### ─────────────────────────────────────────────────────────────────
 ### Search users (page 2)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/users/search/users?query=john&offset=20&limit=20
+GET http://localhost:8080/api/users/search/users?query=john&offset=20&limit=20
 
 ### ─────────────────────────────────────────────────────────────────
 ### Search users (different query)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/users/search/users?query=zxc
+GET http://localhost:8080/api/users/search/users?query=zxc
 
 
 ### ─────────────────────────────────────────────────────────────────
@@ -127,22 +127,22 @@ GET http://localhost:8080/users/search/users?query=zxc
 ###   - limit: number (default: 20)
 ### Returns: Array of users who follow this user
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/users/1/followers
+GET http://localhost:8080/api/users/1/followers
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get user followers (with pagination)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/users/1/followers?offset=0&limit=20
+GET http://localhost:8080/api/users/1/followers?offset=0&limit=20
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get user followers (page 2)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/users/1/followers?offset=20&limit=20
+GET http://localhost:8080/api/users/1/followers?offset=20&limit=20
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get user followers (different user)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/users/6/followers
+GET http://localhost:8080/api/users/6/followers
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get user following
@@ -152,22 +152,22 @@ GET http://localhost:8080/users/6/followers
 ###   - limit: number (default: 20)
 ### Returns: Array of users this user follows
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/users/1/following
+GET http://localhost:8080/api/users/1/following
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get user following (with pagination)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/users/1/following?offset=0&limit=20
+GET http://localhost:8080/api/users/1/following?offset=0&limit=20
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get user following (page 2)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/users/1/following?offset=20&limit=20
+GET http://localhost:8080/api/users/1/following?offset=20&limit=20
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get user following (different user)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/users/6/following
+GET http://localhost:8080/api/users/6/following
 
 
 ### ─────────────────────────────────────────────────────────────────
@@ -180,7 +180,7 @@ GET http://localhost:8080/users/6/following
 ### Requires: JWT auth cookie (owner only)
 ### Returns: User settings object
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/users/1/settings
+GET http://localhost:8080/api/users/1/settings
 
 ### ─────────────────────────────────────────────────────────────────
 ### Update user settings (full update)
@@ -189,7 +189,7 @@ GET http://localhost:8080/users/1/settings
 ### Body: UpdateSettingsDto
 ### Returns: Updated settings
 ### ─────────────────────────────────────────────────────────────────
-PATCH http://localhost:8080/users/1/settings
+PATCH http://localhost:8080/api/users/1/settings
 Content-Type: application/json
 
 {
@@ -205,7 +205,7 @@ Content-Type: application/json
 ### ─────────────────────────────────────────────────────────────────
 ### Update user settings (partial - name only)
 ### ─────────────────────────────────────────────────────────────────
-PATCH http://localhost:8080/users/1/settings
+PATCH http://localhost:8080/api/users/1/settings
 Content-Type: application/json
 
 {
@@ -216,7 +216,7 @@ Content-Type: application/json
 ### ─────────────────────────────────────────────────────────────────
 ### Update user settings (bio and location)
 ### ─────────────────────────────────────────────────────────────────
-PATCH http://localhost:8080/users/1/settings
+PATCH http://localhost:8080/api/users/1/settings
 Content-Type: application/json
 
 {
@@ -227,7 +227,7 @@ Content-Type: application/json
 ### ─────────────────────────────────────────────────────────────────
 ### Update user settings (privacy toggle)
 ### ─────────────────────────────────────────────────────────────────
-PATCH http://localhost:8080/users/1/settings
+PATCH http://localhost:8080/api/users/1/settings
 Content-Type: application/json
 
 {
@@ -237,7 +237,7 @@ Content-Type: application/json
 ### ─────────────────────────────────────────────────────────────────
 ### Update user settings (website)
 ### ─────────────────────────────────────────────────────────────────
-PATCH http://localhost:8080/users/1/settings
+PATCH http://localhost:8080/api/users/1/settings
 Content-Type: application/json
 
 {
@@ -256,7 +256,7 @@ Content-Type: application/json
 ### Body: { currentPassword, newPassword }
 ### Returns: { message: "Password changed successfully" }
 ### ─────────────────────────────────────────────────────────────────
-PATCH http://localhost:8080/users/1/password
+PATCH http://localhost:8080/api/users/1/password
 Content-Type: application/json
 
 {
@@ -276,4 +276,4 @@ Content-Type: application/json
 ### Returns: 204 No Content
 ### Warning: This action is irreversible!
 ### ─────────────────────────────────────────────────────────────────
-DELETE http://localhost:8080/users/1
+DELETE http://localhost:8080/api/users/1

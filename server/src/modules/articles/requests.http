@@ -14,7 +14,7 @@
 ###   - coverImage: file (optional, max 5MB)
 ### Returns: Created article
 ### ─────────────────────────────────────────────────────────────────
-POST http://localhost:8080/articles
+POST http://localhost:8080/api/articles
 Content-Type: multipart/form-data; boundary=boundary123
 
 --boundary123
@@ -43,7 +43,7 @@ Content-Type: image/jpeg
 ### ─────────────────────────────────────────────────────────────────
 ### Create article (without cover image)
 ### ─────────────────────────────────────────────────────────────────
-POST http://localhost:8080/articles
+POST http://localhost:8080/api/articles
 Content-Type: multipart/form-data; boundary=boundary123
 
 --boundary123
@@ -68,17 +68,17 @@ Content-Disposition: form-data; name="sections"
 ###   - offset: number (default: 0)
 ### Returns: Array of articles
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/articles
+GET http://localhost:8080/api/articles
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get all articles (with pagination)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/articles?limit=10&offset=0
+GET http://localhost:8080/api/articles?limit=10&offset=0
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get all articles (page 2)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/articles?limit=10&offset=10
+GET http://localhost:8080/api/articles?limit=10&offset=10
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get article by ID
@@ -86,12 +86,12 @@ GET http://localhost:8080/articles?limit=10&offset=10
 ### Optional: JWT auth cookie (for likedByCurrentUser, savedByCurrentUser)
 ### Returns: Article with full data
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/articles/1
+GET http://localhost:8080/api/articles/1
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get article by ID (different article)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/articles/5
+GET http://localhost:8080/api/articles/5
 
 ### ─────────────────────────────────────────────────────────────────
 ### Toggle article like
@@ -99,12 +99,12 @@ GET http://localhost:8080/articles/5
 ### Requires: JWT auth cookie
 ### Returns: Updated like status
 ### ─────────────────────────────────────────────────────────────────
-PATCH http://localhost:8080/articles/1/like
+PATCH http://localhost:8080/api/articles/1/like
 
 ### ─────────────────────────────────────────────────────────────────
 ### Toggle article like (different article)
 ### ─────────────────────────────────────────────────────────────────
-PATCH http://localhost:8080/articles/5/like
+PATCH http://localhost:8080/api/articles/5/like
 
 ### ─────────────────────────────────────────────────────────────────
 ### Toggle article save
@@ -112,9 +112,9 @@ PATCH http://localhost:8080/articles/5/like
 ### Requires: JWT auth cookie
 ### Returns: Updated save status
 ### ─────────────────────────────────────────────────────────────────
-PATCH http://localhost:8080/articles/1/save
+PATCH http://localhost:8080/api/articles/1/save
 
 ### ─────────────────────────────────────────────────────────────────
 ### Toggle article save (different article)
 ### ─────────────────────────────────────────────────────────────────
-PATCH http://localhost:8080/articles/5/save
+PATCH http://localhost:8080/api/articles/5/save

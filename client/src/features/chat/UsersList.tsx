@@ -84,7 +84,7 @@ export const UsersList: FC<UsersListProps> = ({
             {currentUser && (
                 <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                     <ModalContentUsersList
-                        fetchData={() => fetchUserFollowing(currentUser.id)}
+                        fetchData={(offset, limit) => fetchUserFollowing(currentUser.id, offset, limit)}
                         title={t("chat.userSubscriptions")}
                         onChatCreated={handleChatCreated}
                     />

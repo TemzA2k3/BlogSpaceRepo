@@ -14,7 +14,7 @@
 ### Body: { targetUserId }
 ### Returns: Created chat or existing chat
 ### ─────────────────────────────────────────────────────────────────
-POST http://localhost:8080/chat
+POST http://localhost:8080/api/chat
 Content-Type: application/json
 
 {
@@ -24,7 +24,7 @@ Content-Type: application/json
 ### ─────────────────────────────────────────────────────────────────
 ### Create chat (with different user)
 ### ─────────────────────────────────────────────────────────────────
-POST http://localhost:8080/chat
+POST http://localhost:8080/api/chat
 Content-Type: application/json
 
 {
@@ -37,7 +37,7 @@ Content-Type: application/json
 ### Requires: JWT auth cookie
 ### Returns: Array of chats with last message and unread count
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/chat
+GET http://localhost:8080/api/chat
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get chat messages
@@ -48,17 +48,17 @@ GET http://localhost:8080/chat
 ###   - limit: number (default: 30)
 ### Returns: Array of messages
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/chat/1/messages
+GET http://localhost:8080/api/chat/1/messages
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get chat messages (with pagination)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/chat/1/messages?offset=0&limit=30
+GET http://localhost:8080/api/chat/1/messages?offset=0&limit=30
 
 ### ─────────────────────────────────────────────────────────────────
 ### Get chat messages (page 2)
 ### ─────────────────────────────────────────────────────────────────
-GET http://localhost:8080/chat/1/messages?offset=30&limit=30
+GET http://localhost:8080/api/chat/1/messages?offset=30&limit=30
 
 ### ─────────────────────────────────────────────────────────────────
 ### Delete chat
@@ -66,12 +66,12 @@ GET http://localhost:8080/chat/1/messages?offset=30&limit=30
 ### Requires: JWT auth cookie
 ### Returns: 204 No Content
 ### ─────────────────────────────────────────────────────────────────
-DELETE http://localhost:8080/chat/1
+DELETE http://localhost:8080/api/chat/1
 
 ### ─────────────────────────────────────────────────────────────────
 ### Delete chat (different chat)
 ### ─────────────────────────────────────────────────────────────────
-DELETE http://localhost:8080/chat/5
+DELETE http://localhost:8080/api/chat/5
 
 
 ### ─────────────────────────────────────────────────────────────────

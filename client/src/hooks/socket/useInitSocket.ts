@@ -76,7 +76,7 @@ export const useInitSocket = () => {
             socket.off("initialOnlineUsers", onInitialUsers);
             socket.off("userStatusChanged", onUserStatusChanged);
         };
-    }, [currentUser, showAlert, t]);
+    }, [currentUser]);
 
     useEffect(() => {
         if (!currentUser) {

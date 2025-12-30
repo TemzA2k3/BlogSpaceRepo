@@ -33,7 +33,7 @@ export interface UsersListProps {
 }
 
 export interface ModalContentUsersListProps {
-    fetchData: () => Promise<UserCardProps[]>;
+    fetchData: (offset: number, limit: number) => Promise<UserCardProps[]>;
     title?: string;
     blankIcon?: string;
     blankTitle?: string;
