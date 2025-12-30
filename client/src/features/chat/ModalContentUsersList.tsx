@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useAlert } from "@/app/providers/alert/AlertProvider";
@@ -11,7 +11,7 @@ import { createChat } from "@/shared/services/createChat";
 import type { UserCardProps } from "@/shared/types/user.types";
 import type { ChatUser, ModalContentUsersListProps } from "@/shared/types/chat.types";
 
-const LIMIT = 20;
+import { LIMIT_FOLLOWERS } from "@/shared/constants/limit.followers-modal";
 
 export const ModalContentUsersList: React.FC<ModalContentUsersListProps> = ({
     fetchData,
@@ -23,6 +23,7 @@ export const ModalContentUsersList: React.FC<ModalContentUsersListProps> = ({
 }) => {
     const { t } = useTranslation();
     const { showAlert } = useAlert();
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const [data, setData] = useState<UserCardProps[]>([]);
     const [loading, setLoading] = useState(true);
@@ -40,7 +41,7 @@ export const ModalContentUsersList: React.FC<ModalContentUsersListProps> = ({
                 setLoadingMore(true);
             }
 
-            const res = await fetchData(currentOffset, LIMIT);
+            const res = await fetchData(currentOffset, LIMIT_FOLLOWERS);
 
             if (isInitial) {
                 setData(res);
@@ -48,7 +49,7 @@ export const ModalContentUsersList: React.FC<ModalContentUsersListProps> = ({
                 setData(prev => [...prev, ...res]);
             }
 
-            setHasMore(res.length === LIMIT);
+            setHasMore(res.length === LIMIT_FOLLOWERS);
             setOffset(currentOffset + res.length);
         } catch (e: any) {
             setError(e.message || t("chat.loadingError"));
@@ -92,23 +93,33 @@ export const ModalContentUsersList: React.FC<ModalContentUsersListProps> = ({
     if (loading) return <Loader />;
 
     return (
-        <div className="flex flex-col gap-4 p-4">
-            {title && <h2 className="text-xl font-semibold">{title}</h2>}
+        <div className="flex flex-col gap-3 md:gap-4 pt-6 md:pt-4">
+            {title && (
+                <h2 className="text-lg md:text-xl font-semibold px-1">
+                    {title}
+                </h2>
+            )}
 
             {data.length > 0 ? (
-                <div className="flex flex-col gap-3 max-h-96 overflow-y-auto">
+                <div
+                    ref={containerRef}
+                    className="flex flex-col gap-2 md:gap-3 max-h-[60vh] md:max-h-96 overflow-y-auto"
+                >
                     {data.map(user => (
                         <div
                             key={user.id}
-                            className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl shadow hover:shadow-lg transition-transform duration-200 flex justify-between items-center"
+                            className="bg-gray-50 dark:bg-darkbg p-3 md:p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3"
                         >
                             <UserCard {...user} />
 
                             <button
                                 onClick={() => handleCreateChat(user)}
                                 disabled={creatingChatId === user.id}
-                                className="ml-4 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm"
+                                className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
                             >
+                                {creatingChatId === user.id && (
+                                    <i className="fa fa-spinner fa-spin" />
+                                )}
                                 {creatingChatId === user.id ? t("chat.creating") : t("chat.write")}
                             </button>
                         </div>
@@ -119,6 +130,7 @@ export const ModalContentUsersList: React.FC<ModalContentUsersListProps> = ({
                     <InfiniteObserver
                         onIntersect={handleLoadMore}
                         enabled={hasMore && !loadingMore}
+                        root={containerRef.current}
                         rootMargin="100px"
                     />
                 </div>

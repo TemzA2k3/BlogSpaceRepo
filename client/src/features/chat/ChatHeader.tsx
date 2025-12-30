@@ -13,6 +13,7 @@ export const ChatHeader: FC<ChatHeaderProps> = ({
     typing,
     onDeleteChat,
     deleting = false,
+    onBack,
 }) => {
     const { t } = useTranslation();
     const [showDropdown, setShowDropdown] = useState(false);
@@ -47,8 +48,18 @@ export const ChatHeader: FC<ChatHeaderProps> = ({
 
     return (
         <>
-            <div className="h-16 border-b border-gray-200 dark:border-gray-700 px-6 flex items-center justify-between bg-gray-50 dark:bg-gray-800">
+            <div className="h-16 border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 flex items-center justify-between bg-gray-50 dark:bg-gray-800">
                 <div className="flex items-center gap-3">
+                    {/* Кнопка назад — только на мобильных */}
+                    {onBack && (
+                        <button
+                            onClick={onBack}
+                            className="md:hidden h-9 w-9 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-colors"
+                        >
+                            <i className="fa fa-arrow-left" />
+                        </button>
+                    )}
+
                     <div className="relative">
                         <img
                             src={getAvatarUrl(firstName, lastName, avatar)}
@@ -62,7 +73,9 @@ export const ChatHeader: FC<ChatHeaderProps> = ({
                         />
                     </div>
                     <div>
-                        <h2 className="font-semibold">{firstName + ' ' + lastName}</h2>
+                        <h2 className="font-semibold text-sm md:text-base truncate max-w-[150px] md:max-w-none">
+                            {firstName + ' ' + lastName}
+                        </h2>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
                             {typing ? t("chat.typing") : online ? t("chat.online") : t("chat.offline")}
                         </p>

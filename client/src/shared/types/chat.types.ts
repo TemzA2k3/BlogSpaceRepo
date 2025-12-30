@@ -56,6 +56,7 @@ export interface ChatHeaderProps {
     typing?: boolean;
     onDeleteChat?: () => void;
     deleting?: boolean;
+    onBack?: () => void;
 }
 
 export interface ChatMessageProps {

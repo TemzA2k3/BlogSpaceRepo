@@ -26,27 +26,33 @@ export const useChats = (socket: Socket | null, currentUserId: number | null) =>
         fetchChats();
     }, [fetchChats]);
 
-
-    const handleSelectUser = (user: ChatUser) => {
+    const handleSelectUser = (user: ChatUser | null) => {
         setLoading(true);
-        if (socket && currentUserId && selectedUser?.chatId && user.chatId !== selectedUser.chatId) {
+        
+        if (socket && currentUserId && selectedUser?.chatId && user?.chatId !== selectedUser.chatId) {
             socket.emit("leaveChat", selectedUser.chatId);
         }
-
+    
         setSelectedUser(user);
-        setSearchParams({ chat_id: String(user.chatId) });
-
-        setUsersList(prev =>
-            prev.map(u =>
-                u.chatId === user.chatId ? { ...u, unread: 0 } : u
-            )
-        );
-
-        if (socket && currentUserId) {
-            socket.emit("markAsRead", { chatId: user.chatId, userId: currentUserId });
+        
+        if (user) {
+            setSearchParams({ chat_id: String(user.chatId) });
+    
+            setUsersList(prev =>
+                prev.map(u =>
+                    u.chatId === user.chatId ? { ...u, unread: 0 } : u
+                )
+            );
+    
+            if (socket && currentUserId) {
+                socket.emit("markAsRead", { chatId: user.chatId, userId: currentUserId });
+            }
+    
+            socket?.emit("joinChat", user.chatId);
+        } else {
+            setSearchParams({});
         }
-
-        socket?.emit("joinChat", user.chatId);
+        
         setLoading(false);
     };
 

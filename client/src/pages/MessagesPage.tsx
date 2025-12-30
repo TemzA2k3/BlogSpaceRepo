@@ -17,7 +17,6 @@ import { useChatSocket } from '@/hooks/chat/useChatSocket';
 import { useMessageSocket } from '@/hooks/chat/useMessageSocket';
 import { useTypingStatus } from '@/hooks/chat/useTypingStatus';
 
-
 export const MessagesPage = () => {
     const { t } = useTranslation();
     const { currentUser } = useAppSelector(state => state.auth);
@@ -39,7 +38,6 @@ export const MessagesPage = () => {
         setMessages,
         fetchMoreMessages,
         hasMore,
-        // loading,
     } = useChatMessages(selectedUser);
 
     const { sendMessage } = useChatSocket({
@@ -49,6 +47,7 @@ export const MessagesPage = () => {
         setMessages,
         setUsersList
     });
+
     const { markMessageAsRead } = useMessageSocket({
         socket,
         currentUserId: currentUser?.id ?? null,
@@ -77,21 +76,34 @@ export const MessagesPage = () => {
         }
     };
 
+    const handleBack = () => {
+        handleSelectUser(null);
+    };
 
     if (loading) return <Loader />;
 
     return (
         <div className="flex h-auto w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
-            <UsersList
-                users={filteredUsers}
-                setUsers={setUsersList}
-                selectedUser={selectedUser}
-                setSelectedUser={handleSelectUser}
-                searchQuery=""
-                setSearchQuery={() => { }}
-            />
+            <div className={`
+                ${selectedUser ? 'hidden md:flex' : 'flex'} 
+                w-full md:w-80 
+                border-r border-gray-200 dark:border-gray-700 
+                flex-col bg-gray-50 dark:bg-gray-800
+            `}>
+                <UsersList
+                    users={filteredUsers}
+                    setUsers={setUsersList}
+                    selectedUser={selectedUser}
+                    setSelectedUser={handleSelectUser}
+                    searchQuery=""
+                    setSearchQuery={() => { }}
+                />
+            </div>
 
-            <div className="flex-1 flex flex-col relative h-[calc(100vh-64px)]">
+            <div className={`
+                ${selectedUser ? 'flex' : 'hidden md:flex'} 
+                flex-1 flex-col relative h-[calc(100vh-64px)]
+            `}>
                 {!selectedUser || !filteredUsers.length ? (
                     <div className="absolute inset-0 flex items-center justify-center">
                         <BlankData
@@ -111,6 +123,7 @@ export const MessagesPage = () => {
                             typing={selectedUser.typing}
                             onDeleteChat={onDeleteChat}
                             deleting={deleting}
+                            onBack={handleBack}
                         />
 
                         <ChatMessages

@@ -1,0 +1,1 @@
+export const LIMIT_FOLLOWERS = 20;

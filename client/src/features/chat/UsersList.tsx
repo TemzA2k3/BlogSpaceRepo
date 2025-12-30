@@ -34,13 +34,11 @@ export const UsersList: FC<UsersListProps> = ({
         });
 
         setIsModalOpen(false);
-
         setSelectedUser(user);
-    }, [setUsers]);
-
+    }, [setUsers, setSelectedUser]);
 
     return (
-        <div className="w-80 border-r border-gray-200 dark:border-gray-700 flex flex-col bg-gray-50 dark:bg-gray-800">
+        <div className="flex flex-col h-full">
             <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col gap-4">
                 <h1 className="text-2xl font-bold">{t("header.messages")}</h1>
                 <div className="flex gap-2">
@@ -59,7 +57,7 @@ export const UsersList: FC<UsersListProps> = ({
                 </div>
             </div>
 
-            <div className="flex-1 flex flex-col p-2">
+            <div className="flex-1 flex flex-col p-2 overflow-y-auto">
                 {noUsers ? (
                     <div className="flex flex-col items-center justify-center flex-1">
                         <BlankData
