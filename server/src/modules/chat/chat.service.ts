@@ -73,28 +73,54 @@ export class ChatService {
         return result;
     }
 
-
-    async getAllUserChats(userId: number) {
-        const chats = await this.chatRepository
+    async getAllUserChats(userId: number, offset = 0, limit = 20, search?: string) {
+        const queryBuilder = this.chatRepository
             .createQueryBuilder('chat')
             .innerJoin('chat.participants', 'participant', 'participant.id = :userId', { userId })
             .leftJoinAndSelect('chat.participants', 'participants')
             .leftJoinAndSelect('chat.messages', 'messages')
-            .leftJoinAndSelect('messages.sender', 'sender')
+            .leftJoinAndSelect('messages.sender', 'sender');
+    
+            if (search && search.trim()) {
+                const searchTerm = `%${search.trim().toLowerCase()}%`;
+                queryBuilder.andWhere(
+                    `EXISTS (
+                        SELECT 1 FROM chat_users cu
+                        INNER JOIN users u ON u.id = cu.user_id
+                        WHERE cu.chat_id = chat.id
+                        AND u.id != :userId
+                        AND (
+                            LOWER(u."firstName") LIKE :search 
+                            OR LOWER(u."lastName") LIKE :search
+                            OR LOWER(CONCAT(u."firstName", ' ', u."lastName")) LIKE :search
+                        )
+                    )`,
+                    { userId, search: searchTerm }
+                );
+            }
+    
+        const chats = await queryBuilder
+            .orderBy('chat.createdAt', 'DESC')
+            .skip(offset)
+            .take(limit)
             .getMany();
-
+    
         const result = chats.map(chat => {
             const otherUser = chat.participants.find(u => u.id !== userId);
             if (!otherUser) return null;
-
-            const lastMsg = chat.messages?.length
-                ? chat.messages[chat.messages.length - 1]
+    
+            const sortedMessages = chat.messages?.sort(
+                (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            ) || [];
+    
+            const lastMsg = sortedMessages.length
+                ? sortedMessages[sortedMessages.length - 1]
                 : null;
-
-            const unreadCount = chat.messages?.filter(
+    
+            const unreadCount = sortedMessages.filter(
                 m => m.sender.id !== userId && !m.isRead
-            ).length || 0;
-
+            ).length;
+    
             return {
                 id: otherUser.id,
                 chatId: chat.id,
@@ -103,16 +129,11 @@ export class ChatService {
                 avatar: otherUser.avatar || null,
                 lastMessage: lastMsg ? lastMsg.text : null,
                 time: lastMsg ? lastMsg.createdAt : null,
-                    // new Date().toLocaleTimeString('en-GB', {
-                    //     hour: '2-digit',
-                    //     minute: '2-digit',
-                    //     hour12: false
-                    // }) : null,
                 unread: unreadCount,
                 online: false,
             };
         });
-
+    
         return result.filter(Boolean);
     }
 

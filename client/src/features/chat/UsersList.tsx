@@ -1,4 +1,4 @@
-import { type FC, useState, useCallback } from 'react';
+import { type FC, useState, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppSelector } from '@/hooks/redux/reduxHooks';
@@ -9,10 +9,14 @@ import { ModalContentUsersList } from './ModalContentUsersList';
 
 import { BlankData } from '@/shared/components/BlankData';
 import { Modal } from '@/shared/components/Modal';
+import { Loader } from '@/shared/components/Loader';
+import { InfiniteObserver } from '@/shared/components/InfiniteObserver';
 
 import { fetchUserFollowing } from '@/shared/services/fetchUserSubs';
 
 import type { ChatUser, UsersListProps } from '@/shared/types/chat.types';
+
+import "@/app/styles/scroll.css"
 
 export const UsersList: FC<UsersListProps> = ({
     users,
@@ -21,10 +25,15 @@ export const UsersList: FC<UsersListProps> = ({
     setSelectedUser,
     searchQuery,
     setSearchQuery,
+    loadingMore,
+    hasMore,
+    fetchMoreChats,
+    searching,
 }) => {
     const { t } = useTranslation();
     const { currentUser } = useAppSelector(state => state.auth);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
     const noUsers = users.length === 0;
 
     const handleChatCreated = useCallback((user: ChatUser) => {
@@ -38,8 +47,8 @@ export const UsersList: FC<UsersListProps> = ({
     }, [setUsers, setSelectedUser]);
 
     return (
-        <div className="flex flex-col h-full">
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col gap-4">
+        <div className="flex flex-col h-full min-h-0">
+            <div className="shrink-0 p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col gap-4">
                 <h1 className="text-2xl font-bold">{t("header.messages")}</h1>
                 <div className="flex gap-2">
                     <SearchInput
@@ -57,25 +66,43 @@ export const UsersList: FC<UsersListProps> = ({
                 </div>
             </div>
 
-            <div className="flex-1 flex flex-col p-2 overflow-y-auto">
-                {noUsers ? (
-                    <div className="flex flex-col items-center justify-center flex-1">
+            <div
+                ref={containerRef}
+                className="flex-1 min-h-0 overflow-y-auto p-2 custom-scroll"
+            >
+                {searching ? (
+                    <div className="flex justify-center py-4">
+                        <Loader />
+                    </div>
+                ) : noUsers ? (
+                    <div className="flex flex-col items-center justify-center h-full">
                         <BlankData
                             icon="🔍"
-                            title={t("chat.noUsers")}
-                            message={t("chat.noUsersHint")}
+                            title={searchQuery ? t("chat.noSearchResults") : t("chat.noUsers")}
+                            message={searchQuery ? t("chat.tryAnotherSearch") : t("chat.noUsersHint")}
                             bordered={false}
                         />
                     </div>
                 ) : (
-                    users.map(user => (
-                        <UserItem
-                            key={user.id}
-                            user={user}
-                            isSelected={selectedUser?.id === user.id}
-                            onClick={() => setSelectedUser(user)}
+                    <>
+                        {users.map(user => (
+                            <UserItem
+                                key={user.id}
+                                user={user}
+                                isSelected={selectedUser?.id === user.id}
+                                onClick={() => setSelectedUser(user)}
+                            />
+                        ))}
+
+                        {loadingMore && <Loader />}
+
+                        <InfiniteObserver
+                            onIntersect={fetchMoreChats ?? (() => { })}
+                            enabled={hasMore && !loadingMore}
+                            root={containerRef.current}
+                            rootMargin="100px"
                         />
-                    ))
+                    </>
                 )}
             </div>
 

@@ -9,6 +9,8 @@ import { formatDate, groupMessagesByDate } from "@/shared/utils/timeFormatter";
 
 import type { ChatMessagesProps } from "@/shared/types/chat.types";
 
+import "@/app/styles/scroll.css"
+
 export const ChatMessages = ({
     messages,
     selectedUser,
@@ -81,7 +83,7 @@ export const ChatMessages = ({
     }, [selectedUser?.id]);
 
     return (
-        <div ref={containerRef} className="flex-1 overflow-y-auto px-6 relative">
+        <div ref={containerRef} className="flex-1 overflow-y-auto px-6 relative custom-scroll">
             {isEmpty ? (
                 <div className="absolute inset-0 flex items-center justify-center">
                     <BlankData

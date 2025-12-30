@@ -13,6 +13,8 @@ import type { ChatUser, ModalContentUsersListProps } from "@/shared/types/chat.t
 
 import { LIMIT_FOLLOWERS } from "@/shared/constants/limit.followers-modal";
 
+import "@/app/styles/scroll.css"
+
 export const ModalContentUsersList: React.FC<ModalContentUsersListProps> = ({
     fetchData,
     title,
@@ -103,7 +105,7 @@ export const ModalContentUsersList: React.FC<ModalContentUsersListProps> = ({
             {data.length > 0 ? (
                 <div
                     ref={containerRef}
-                    className="flex flex-col gap-2 md:gap-3 max-h-[60vh] md:max-h-96 overflow-y-auto"
+                    className="flex flex-col gap-2 md:gap-3 max-h-[60vh] md:max-h-96 overflow-y-auto custom-scroll"
                 >
                     {data.map(user => (
                         <div

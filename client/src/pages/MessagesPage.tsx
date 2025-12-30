@@ -27,17 +27,23 @@ export const MessagesPage = () => {
         usersList,
         selectedUser,
         loading,
+        loadingMore,
+        searching,
         deleting,
+        hasMore: hasMoreChats,
+        searchQuery,
+        setSearchQuery,
         setUsersList,
         handleSelectUser,
         handleDeleteChat,
+        fetchMoreChats,
     } = useChats(socket, currentUser?.id ?? null);
 
     const {
         messages,
         setMessages,
         fetchMoreMessages,
-        hasMore,
+        hasMore: hasMoreMessages
     } = useChatMessages(selectedUser);
 
     const { sendMessage } = useChatSocket({
@@ -56,11 +62,6 @@ export const MessagesPage = () => {
     });
 
     useTypingStatus({ socket, setUsersList });
-
-    const filteredUsers = useMemo(() =>
-        usersList.filter(user => `${user.firstName} ${user.lastName}`.toLowerCase().includes('')),
-        [usersList]
-    );
 
     const currentMessages = useMemo(() =>
         selectedUser ? messages[selectedUser.chatId] || [] : [],
@@ -83,28 +84,33 @@ export const MessagesPage = () => {
     if (loading) return <Loader />;
 
     return (
-        <div className="flex h-auto w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+        <div className="flex h-[calc(100vh-64px)] w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
             <div className={`
                 ${selectedUser ? 'hidden md:flex' : 'flex'} 
                 w-full md:w-80 
                 border-r border-gray-200 dark:border-gray-700 
                 flex-col bg-gray-50 dark:bg-gray-800
+                h-full
             `}>
                 <UsersList
-                    users={filteredUsers}
+                    users={usersList}
                     setUsers={setUsersList}
                     selectedUser={selectedUser}
                     setSelectedUser={handleSelectUser}
-                    searchQuery=""
-                    setSearchQuery={() => { }}
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    loadingMore={loadingMore}
+                    hasMore={hasMoreChats}
+                    fetchMoreChats={fetchMoreChats}
+                    searching={searching}
                 />
             </div>
 
             <div className={`
                 ${selectedUser ? 'flex' : 'hidden md:flex'} 
-                flex-1 flex-col relative h-[calc(100vh-64px)]
+                flex-1 flex-col relative h-full
             `}>
-                {!selectedUser || !filteredUsers.length ? (
+                {!selectedUser ? (
                     <div className="absolute inset-0 flex items-center justify-center">
                         <BlankData
                             icon="💬"
@@ -131,7 +137,7 @@ export const MessagesPage = () => {
                             selectedUser={selectedUser}
                             markMessageAsRead={markMessageAsRead}
                             fetchMoreMessages={fetchMoreMessages}
-                            hasMore={hasMore}
+                            hasMore={hasMoreMessages}
                         />
 
                         <ChatInput

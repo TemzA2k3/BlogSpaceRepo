@@ -30,6 +30,10 @@ export interface UsersListProps {
     setSelectedUser: (user: ChatUser) => void;
     searchQuery: string;
     setSearchQuery: (query: string) => void;
+    loadingMore?: boolean;
+    hasMore?: boolean;
+    fetchMoreChats?: () => void;
+    searching?: boolean;
 }
 
 export interface ModalContentUsersListProps {

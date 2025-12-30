@@ -37,8 +37,18 @@ export class ChatController {
 
     @Get()
     @UseGuards(JwtAuthGuard)
-    getAllUserChats(@UserReq() user: JwtPayload) {
-        return this.chatService.getAllUserChats(user.userId);
+    getAllUserChats(
+        @UserReq() user: JwtPayload,
+        @Query('offset') offset?: string,
+        @Query('limit') limit?: string,
+        @Query('search') search?: string,
+    ) {
+        return this.chatService.getAllUserChats(
+            user.userId,
+            Number(offset) || 0,
+            Number(limit) || 20,
+            search,
+        );
     }
 
     @Delete(':id')
