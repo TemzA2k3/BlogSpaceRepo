@@ -57,12 +57,6 @@ export const initialResetPasswordValues = {
 
 export const getResetPasswordSchema = (t: (key: string, options?: any) => string) => {
     return Yup.object({
-        email: Yup.string()
-            .matches(
-                /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
-                t("forms.invalidEmail")
-            )
-            .required(t("forms.required")),
         password: Yup.string()
             .min(6, t("forms.passwordMinLength", { count: 6 }))
             .required(t("forms.passwordsRequired")),

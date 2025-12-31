@@ -27,7 +27,7 @@ export const ResetPasswordPage = () => {
     const formik = useFormik({
         initialValues: initialResetPasswordValues,
         validationSchema: getResetPasswordSchema(t),
-        onSubmit: async (values, { setSubmitting }) => {
+        onSubmit: async (values, { setSubmitting }) => {            
             try {
                 await sendNewPassword(token!, values.password);
                 showAlert(t("forms.resetPasswordSuccess"), "success");
