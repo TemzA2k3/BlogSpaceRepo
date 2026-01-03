@@ -11,6 +11,8 @@ import { router } from "@/app/providers/router/router";
 import { useAppDispatch } from "@/hooks/redux/reduxHooks";
 import { getMe } from "@/store/slices/authSlice";
 
+import "@/app/styles/overscroll.css";
+
 export const App = () => {
     const dispatch = useAppDispatch();
 
