@@ -12,11 +12,18 @@ async function bootstrap() {
     const configService = app.get(ConfigService);
     const logger = new Logger('Bootstrap');
 
-    // Глобальный префикс для API
+    const clientUrl = configService.get<string>('CLIENT_URL');
+    app.enableCors({
+        origin: clientUrl || 'http://localhost:3000',
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Requested-With'],
+        preflightContinue: false,
+        optionsSuccessStatus: 204,
+    });
+
     app.setGlobalPrefix('api');
 
-    // Статические файлы (uploads)
-    // В Docker: /app/uploads, локально: ../uploads от dist
     const uploadsPath =
         process.env.NODE_ENV === 'production'
             ? join(process.cwd(), 'uploads')
@@ -27,15 +34,6 @@ async function bootstrap() {
     });
 
     app.use(cookieParser());
-
-    // CORS — берём из переменных окружения
-    const clientUrl = configService.get<string>('CLIENT_URL');
-    app.enableCors({
-        origin: clientUrl || 'http://localhost:3000',
-        credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Requested-With'],
-    });
 
     app.useGlobalPipes(
         new ValidationPipe({
