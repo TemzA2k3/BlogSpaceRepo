@@ -43,8 +43,8 @@ async function bootstrap() {
         }),
     );
 
-    const port = configService.get<number>('PORT') || 8080;
-    await app.listen(port);
+    const port = process.env.PORT || 8080;
+    await app.listen(port, '0.0.0.0');
 
     logger.log(`Application running on port ${port}`);
     logger.log(`CORS enabled for: ${clientUrl || 'http://localhost:3000'}`);
