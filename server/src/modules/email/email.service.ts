@@ -1,32 +1,21 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 @Injectable()
 export class EmailService {
-    private transporter;
+    private resend: Resend;
     private readonly logger = new Logger(EmailService.name);
 
     constructor() {
-        this.transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port: Number(process.env.SMTP_PORT),
-            secure: false,
-            auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS,
-            },
-            connectionTimeout: 10000,
-            greetingTimeout: 10000,
-            socketTimeout: 15000,
-        });
+        this.resend = new Resend(process.env.RESEND_API_KEY);
     }
 
     async sendMail(to: string, subject: string, html: string, from?: string) {
         try {
             this.logger.log(`Sending email to ${to}`);
 
-            await this.transporter.sendMail({
-                from: from || `"BlogSpace" <${process.env.SMTP_USER}>`,
+            await this.resend.emails.send({
+                from: from || 'BlogSpace <onboarding@resend.dev>',
                 to,
                 subject,
                 html,
