@@ -16,8 +16,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
                 password: config.get<string>('DB_PASSWORD'),
                 database: config.get<string>('DB_NAME'),
                 autoLoadEntities: true,
-                // synchronize только в dev, НИКОГДА в prod!
-                synchronize: true,// config.get<string>('NODE_ENV') !== 'production',
+                synchronize: config.get<string>('NODE_ENV') !== 'production',
                 // Логирование только в dev
                 logging: config.get<string>('NODE_ENV') !== 'production',
             }),
