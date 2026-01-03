@@ -17,7 +17,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
                 database: config.get<string>('DB_NAME'),
                 autoLoadEntities: true,
                 // synchronize только в dev, НИКОГДА в prod!
-                synchronize: config.get<string>('NODE_ENV') !== 'production',
+                synchronize: true,// config.get<string>('NODE_ENV') !== 'production',
                 // Логирование только в dev
                 logging: config.get<string>('NODE_ENV') !== 'production',
             }),
