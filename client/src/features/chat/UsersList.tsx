@@ -16,8 +16,6 @@ import { fetchUserFollowing } from '@/shared/services/fetchUserSubs';
 
 import type { ChatUser, UsersListProps } from '@/shared/types/chat.types';
 
-import "@/app/styles/scroll.css"
-
 export const UsersList: FC<UsersListProps> = ({
     users,
     setUsers,

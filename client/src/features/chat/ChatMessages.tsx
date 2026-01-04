@@ -9,8 +9,6 @@ import { formatDate, groupMessagesByDate } from "@/shared/utils/timeFormatter";
 
 import type { ChatMessagesProps } from "@/shared/types/chat.types";
 
-import "@/app/styles/scroll.css"
-
 export const ChatMessages = ({
     messages,
     selectedUser,
@@ -83,9 +81,9 @@ export const ChatMessages = ({
     }, [selectedUser?.id]);
 
     return (
-        <div ref={containerRef} className="flex-1 overflow-y-auto px-6 relative custom-scroll">
+        <div ref={containerRef} className="flex-1 overflow-y-auto px-3 md:px-6 relative custom-scroll">
             {isEmpty ? (
-                <div className="absolute inset-0 flex items-center justify-center">
+                <div className="absolute inset-0 flex items-center justify-center p-4">
                     <BlankData
                         icon="💬"
                         title={t("chat.noMessages")}
@@ -95,7 +93,7 @@ export const ChatMessages = ({
                     />
                 </div>
             ) : (
-                <div className="space-y-6 mx-auto">
+                <div className="space-y-4 md:space-y-6 mx-auto py-2">
                     <InfiniteObserver
                         root={containerRef.current}
                         rootMargin="200px 0px 0px 0px"
@@ -104,13 +102,13 @@ export const ChatMessages = ({
                     />
                     {Object.entries(grouped).map(([dateKey, msgs]) => (
                         <div key={dateKey}>
-                            <div className="flex justify-center my-4">
-                                <div className="bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-full text-sm">
+                            <div className="flex justify-center my-3 md:my-4">
+                                <div className="bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2.5 md:px-3 py-1 rounded-full text-xs md:text-sm">
                                     {formatDate(dateKey)}
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className="space-y-3 md:space-y-4">
                                 {msgs.map(msg => (
                                     <ChatMessage
                                         key={msg.id}

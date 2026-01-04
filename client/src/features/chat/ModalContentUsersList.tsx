@@ -13,8 +13,6 @@ import type { ChatUser, ModalContentUsersListProps } from "@/shared/types/chat.t
 
 import { LIMIT_FOLLOWERS } from "@/shared/constants/limit.followers-modal";
 
-import "@/app/styles/scroll.css"
-
 export const ModalContentUsersList: React.FC<ModalContentUsersListProps> = ({
     fetchData,
     title,

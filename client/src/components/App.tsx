@@ -11,10 +11,12 @@ import { router } from "@/app/providers/router/router";
 import { useAppDispatch } from "@/hooks/redux/reduxHooks";
 import { getMe } from "@/store/slices/authSlice";
 
-import "@/app/styles/overscroll.css";
+import { useViewportHeight } from "@/hooks/layouts/useViewportHeight";
 
 export const App = () => {
     const dispatch = useAppDispatch();
+    
+    useViewportHeight();
 
     useEffect(() => {
         dispatch(getMe())

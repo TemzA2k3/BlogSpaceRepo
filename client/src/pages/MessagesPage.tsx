@@ -84,7 +84,10 @@ export const MessagesPage = () => {
     if (loading) return <Loader />;
 
     return (
-        <div className="flex h-[calc(100vh-64px)] w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+        <div
+            className="flex w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100"
+            style={{ height: 'calc(var(--vh, 100vh) - 64px)' }}
+        >
             <div className={`
                 ${selectedUser ? 'hidden md:flex' : 'flex'} 
                 w-full md:w-80 

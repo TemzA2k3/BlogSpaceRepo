@@ -14,8 +14,6 @@ import { BlankData } from "@/shared/components/BlankData";
 import { InfiniteObserver } from "@/shared/components/InfiniteObserver";
 import { getAvatarUrl } from "@/shared/utils/getImagesUrls";
 
-import "@/app/styles/scroll.css";
-
 export const PostsPage = () => {
     const { t } = useTranslation();
     const {
