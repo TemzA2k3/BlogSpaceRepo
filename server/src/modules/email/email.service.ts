@@ -20,6 +20,7 @@ export class EmailService {
     async sendMail(to: string, subject: string, html: string, from?: string) {
         try {
             this.logger.log(`Sending email to ${to}`);
+            this.logger.log(`From email: ${process.env.MAILERSEND_FROM_EMAIL}`);
 
             const sentFrom = new Sender(
                 process.env.MAILERSEND_FROM_EMAIL || 'noreply@trial-xxx.mlsender.net',
@@ -39,9 +40,14 @@ export class EmailService {
             this.logger.log(`Email sent successfully to ${to}`);
             return true;
         } catch (err: any) {
-            this.logger.error(`Failed to send email: ${err.message}`);
+            this.logger.error(`Full error object: ${JSON.stringify(err, Object.getOwnPropertyNames(err))}`);
+            
+            if (err.response) {
+                this.logger.error(`Response status: ${err.response.status}`);
+                this.logger.error(`Response data: ${JSON.stringify(err.response.data)}`);
+            }
+            
             throw new InternalServerErrorException('Failed to send email');
         }
     }
 }
-
