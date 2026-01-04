@@ -79,15 +79,16 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
             {/* Menu panel */}
             <div
                 ref={menuRef}
+                style={{ height: 'var(--vh, 100vh)' }}
                 className={`
-                    fixed top-0 left-0 h-screen w-72 bg-white dark:bg-gray-900 z-[9999]
+                    fixed top-0 left-0 w-72 bg-white dark:bg-gray-900 z-[9999]
                     shadow-2xl transform transition-transform duration-300 ease-out
                     flex flex-col
                     ${isOpen ? "translate-x-0" : "-translate-x-full"}
                 `}
             >
                 {/* Header */}
-                <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                <div className="shrink-0 p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                     <Link
                         to="/"
                         onClick={onClose}
@@ -112,7 +113,7 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                 {currentUser && (
                     <div
                         onClick={handleProfileClick}
-                        className="p-4 border-b border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                        className="shrink-0 p-4 border-b border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                     >
                         <div className="flex items-center gap-3">
                             <img
@@ -138,7 +139,7 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                 )}
 
                 {/* Navigation links */}
-                <nav className="flex-1 p-3 overflow-y-auto">
+                <nav className="flex-1 min-h-0 p-3 overflow-y-auto">
                     <div className="space-y-1">
                         {links.map((link) => (
                             <Link
@@ -169,7 +170,7 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                 </nav>
 
                 {/* Footer actions */}
-                <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+                <div className="shrink-0 border-t border-gray-200 dark:border-gray-700 p-4 safe-area-bottom">
                     {currentUser ? (
                         <Button
                             variant="primary"

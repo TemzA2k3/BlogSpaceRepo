@@ -31,22 +31,24 @@ export const Alert: FC<AlertProps> = ({
     return (
         <div
             className={`
-          fixed top-5 right-5 w-full max-w-sm flex transform transition-all duration-300
-          backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 shadow-lg z-50
-          ${type === "success" ? "text-green-900 dark:text-green-200" : "text-red-900 dark:text-red-200"}
-          ${visible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4 pointer-events-none"}
-        `}
+                fixed top-3 right-3 md:top-5 md:right-5 
+                w-[calc(100%-24px)] max-w-xs md:max-w-sm 
+                flex transform transition-all duration-300
+                backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 
+                shadow-lg rounded-lg z-50
+                ${type === "success" ? "text-green-900 dark:text-green-200" : "text-red-900 dark:text-red-200"}
+                ${visible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4 pointer-events-none"}
+            `}
             style={{ overflow: "hidden" }}
         >
-            <div className={`absolute left-0 top-0 h-full w-1 ${type === "success" ? "bg-green-600" : "bg-red-600"}`}></div>
-            <div className="flex-1 ml-3 p-5 break-words">{message}</div>
+            <div className={`absolute left-0 top-0 h-full w-1 rounded-l-lg ${type === "success" ? "bg-green-600" : "bg-red-600"}`} />
+            <div className="flex-1 ml-2 md:ml-3 p-3 md:p-5 text-sm md:text-base break-words">{message}</div>
             <button
                 onClick={() => setVisible(false)}
-                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors text-xl p-5"
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors text-lg md:text-xl p-3 md:p-5"
             >
                 &times;
             </button>
         </div>
     );
 };
-
