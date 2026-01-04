@@ -1,6 +1,7 @@
 import { useState, useRef, type ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
@@ -90,6 +91,12 @@ export const CreatePostPage = () => {
         setContent(newContent);
     };
 
+    const formatFileSize = (bytes: number) => {
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    };
+
     useEffect(() => {
         if (validationError) {
             showAlert(validationError, "error");
@@ -121,23 +128,50 @@ export const CreatePostPage = () => {
                     rows={6}
                 />
 
-                {image && (
-                    <div className="mt-4 pl-20 relative inline-block">
-                        <div className="relative w-48 h-48 rounded-xl overflow-hidden shadow-md border border-gray-200 dark:border-gray-600">
-                            <img
-                                src={URL.createObjectURL(image)}
-                                alt="preview"
-                                className="w-full h-full object-cover"
-                            />
-                            <button
-                                onClick={removeImage}
-                                className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 transition"
-                            >
-                                ×
-                            </button>
-                        </div>
-                    </div>
-                )}
+                <AnimatePresence>
+                    {image && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.2 }}
+                            className="mt-4 ml-20"
+                        >
+                            <div className="relative group inline-block">
+                                <div className="relative rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
+                                    <img
+                                        src={URL.createObjectURL(image)}
+                                        alt="preview"
+                                        className="max-w-full max-h-80 object-contain"
+                                    />
+                                    
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200" />
+                                    
+                                    <button
+                                        onClick={removeImage}
+                                        className="absolute top-3 right-3 w-8 h-8 bg-black/50 hover:bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 backdrop-blur-sm"
+                                    >
+                                        <i className="fa fa-times text-sm" />
+                                    </button>
+
+                                    <button
+                                        onClick={handleImageClick}
+                                        className="absolute top-3 right-14 w-8 h-8 bg-black/50 hover:bg-blue-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 backdrop-blur-sm"
+                                    >
+                                        <i className="fa fa-sync-alt text-sm" />
+                                    </button>
+                                </div>
+
+                                <div className="mt-2 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                    <i className="fa fa-image" />
+                                    <span className="truncate max-w-[200px]">{image.name}</span>
+                                    <span className="text-gray-400 dark:text-gray-500">•</span>
+                                    <span>{formatFileSize(image.size)}</span>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 <input
                     type="file"
