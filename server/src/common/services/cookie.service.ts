@@ -4,18 +4,24 @@ import { Response } from 'express';
 
 @Injectable()
 export class CookieService {
-    constructor(private readonly configService: ConfigService) { }
+    constructor(private readonly configService: ConfigService) {}
 
     private getCookieOptions() {
         const sameSite = this.configService.get<'lax' | 'strict' | 'none'>('JWT_COOKIE_SAME_SITE', 'lax');
         const secure = this.configService.get<string>('JWT_COOKIE_SECURE') === 'true';
 
-        return {
+        const options: any = {
             httpOnly: true,
             secure,
             sameSite,
             path: '/',
         };
+
+        if (sameSite === 'none' && secure) {
+            options.partitioned = true;
+        }
+
+        return options;
     }
 
     setAuthCookie(res: Response, token: string, remember: boolean) {
@@ -32,7 +38,6 @@ export class CookieService {
 
     clearAuthCookie(res: Response) {
         const cookieName = this.configService.get<string>('JWT_COOKIE_NAME', 'access_token');
-
         res.clearCookie(cookieName, this.getCookieOptions());
     }
 }

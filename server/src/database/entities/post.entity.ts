@@ -21,8 +21,8 @@ export class Post {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: 'text' })
-    content: string;
+    @Column({ type: 'text', nullable: true })
+    content?: string;
 
     @Column({ default: 0 })
     comments: number;
