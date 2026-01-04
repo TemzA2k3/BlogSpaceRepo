@@ -465,21 +465,18 @@ export class UsersService {
             throw new NotFoundException("User not found");
         }
     
-        // Verify current password
         const isPasswordValid = await this.passwordService.compare(dto.currentPassword, user.password);
     
         if (!isPasswordValid) {
             throw new BadRequestException("Current password is incorrect");
         }
     
-        // Check if new password is different
         const isSamePassword = await this.passwordService.compare(dto.newPassword, user.password);
     
         if (isSamePassword) {
             throw new BadRequestException("New password must be different from current password");
         }
     
-        // Hash and save new password
         user.password = await this.passwordService.hash(dto.newPassword);
         await this.userRepository.save(user);
     }

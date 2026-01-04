@@ -22,7 +22,6 @@ export class Chat {
     })
     participants: User[];
 
-    // сообщения
     @OneToMany(() => Message, (msg) => msg.chat)
     messages: Message[];
 

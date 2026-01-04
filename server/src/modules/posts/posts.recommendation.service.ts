@@ -12,7 +12,7 @@ export class PostsRecommendationsService {
         @InjectRepository(Post) private postRepository: Repository<Post>,
         @InjectRepository(User) private userRepository: Repository<User>,
         @InjectRepository(UserRelation) private relationRepository: Repository<UserRelation>,
-    ) {}
+    ) { }
 
     async getTrendingTopics(limit = 5) {
         const posts = await this.postRepository
@@ -44,17 +44,21 @@ export class PostsRecommendationsService {
                 .where("relation.sourceUserId = :currentUserId", { currentUserId })
                 .andWhere("relation.type = :type", { type: RelationType.FOLLOW })
                 .getRawMany<{ targetUserId: number }>();
-    
+
             const excludedIds = followingIds.map(f => f.targetUserId);
             excludedIds.push(currentUserId);
-    
-            const users = await this.userRepository
-                .createQueryBuilder("user")
-                .where("user.id NOT IN (:...excludedIds)", { excludedIds })
+
+            const query = this.userRepository.createQueryBuilder("user");
+
+            if (excludedIds.length > 0) {
+                query.where("user.id NOT IN (:...excludedIds)", { excludedIds });
+            }
+
+            const users = await query
                 .orderBy("RANDOM()")
                 .limit(limit)
                 .getMany();
-    
+
             return users.map(u => ({
                 id: u.id,
                 username: u.userName,
@@ -63,7 +67,6 @@ export class PostsRecommendationsService {
                 lastName: u.lastName
             }));
         } else {
-            // Используем addSelect для подсчёта и сортировки
             const users = await this.userRepository
                 .createQueryBuilder("user")
                 .leftJoin(
@@ -77,7 +80,7 @@ export class PostsRecommendationsService {
                 .orderBy("followers_count", "DESC")
                 .limit(limit)
                 .getMany();
-    
+
             return users.map(u => ({
                 id: u.id,
                 username: u.userName,

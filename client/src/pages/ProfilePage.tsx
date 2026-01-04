@@ -85,7 +85,6 @@ export const ProfilePage = () => {
                             {userData.userName}
                         </p>
 
-                        {/* Show location/website/bio only for public profiles */}
                         {!isPrivateProfile && (
                             <>
                                 <div className="mt-3 flex flex-wrap justify-center sm:justify-start gap-4 text-sm text-gray-600 dark:text-gray-400">
@@ -171,7 +170,6 @@ export const ProfilePage = () => {
                 </div>
             </section>
 
-            {/* Show private profile notice OR stats section */}
             {isPrivateProfile ? (
                 <BlankData
                     icon="🔒"

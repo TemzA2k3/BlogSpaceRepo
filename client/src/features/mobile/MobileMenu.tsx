@@ -66,7 +66,6 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
 
     return createPortal(
         <>
-            {/* Backdrop overlay */}
             <div
                 className={`
                     fixed inset-0 bg-black/50 backdrop-blur-sm z-[9998]
@@ -76,7 +75,6 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                 onClick={onClose}
             />
 
-            {/* Menu panel */}
             <div
                 ref={menuRef}
                 style={{ height: 'var(--vh, 100vh)' }}
@@ -87,7 +85,6 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                     ${isOpen ? "translate-x-0" : "-translate-x-full"}
                 `}
             >
-                {/* Header */}
                 <div className="shrink-0 p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                     <Link
                         to="/"
@@ -109,7 +106,6 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                     </button>
                 </div>
 
-                {/* User profile section (if logged in) */}
                 {currentUser && (
                     <div
                         onClick={handleProfileClick}
@@ -138,7 +134,6 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                     </div>
                 )}
 
-                {/* Navigation links */}
                 <nav className="flex-1 min-h-0 p-3 overflow-y-auto">
                     <div className="space-y-1">
                         {links.map((link) => (
@@ -154,7 +149,6 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                         ))}
                     </div>
 
-                    {/* Settings link (if logged in) */}
                     {currentUser && (
                         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                             <Link
@@ -169,7 +163,6 @@ export const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                     )}
                 </nav>
 
-                {/* Footer actions */}
                 <div className="shrink-0 border-t border-gray-200 dark:border-gray-700 p-4 safe-area-bottom">
                     {currentUser ? (
                         <Button

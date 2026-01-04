@@ -13,9 +13,9 @@
     "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./src",   // теперь алиас начинается от src
+    "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"]        // @/ указывает на src/
+      "@/*": ["*"]
     },
     "incremental": true,
     "skipLibCheck": true,

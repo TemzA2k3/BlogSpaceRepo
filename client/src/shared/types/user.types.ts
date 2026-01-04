@@ -14,7 +14,6 @@ export interface User {
     website?: string;
     createdAt?: string;
 
-    // Settings fields
     isPublicProfile?: boolean;
     whoCanMessage?: "everyone" | "followers" | "nobody";
     displayLanguage?: string;
@@ -27,7 +26,6 @@ export interface AuthState {
     error: string | null;
     initialized: boolean;
 
-    // Settings state
     settingsLoading: boolean;
     settingsUpdating: boolean;
     settingsError: string | null;

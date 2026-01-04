@@ -99,7 +99,6 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ settings, updating, 
                 subtitle={t("settings.myProfileSubtitle")}
             />
 
-            {/* Avatar Section */}
             <div className="px-6 py-6 border-b border-gray-100 dark:border-gray-800">
                 <div className="flex items-center gap-4">
                     <div className="relative">
@@ -194,7 +193,6 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ settings, updating, 
                 </SettingRow>
             </SettingGroup>
 
-            {/* Edit Modal */}
             {editingField && fieldConfig && (
                 <EditFieldModal
                     title={fieldConfig.title}

@@ -28,18 +28,15 @@ export const useCreateArticle = () => {
     const [tags, setTags] = useState<string[]>([]);
     const [validationError, setValidationError] = useState<string | null>(null);
 
-    // Универсальный ref для любого поля ввода
     const lastFocusedElement = useRef<FocusableElement | null>(null);
     const cursorPosition = useRef<number>(0);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Обработчик фокуса для всех полей
     const handleFieldFocus = (e: React.FocusEvent<FocusableElement>) => {
         lastFocusedElement.current = e.target;
         cursorPosition.current = e.target.selectionStart ?? e.target.value.length;
     };
 
-    // Сохранение позиции курсора при изменении выделения
     const handleSelectionChange = (e: React.SyntheticEvent<FocusableElement>) => {
         const target = e.currentTarget;
         cursorPosition.current = target.selectionStart ?? target.value.length;
@@ -65,7 +62,6 @@ export const useCreateArticle = () => {
         const currentValue = element.value;
         const newValue = currentValue.slice(0, start) + emoji + currentValue.slice(start);
 
-        // Определяем тип поля по data-атрибутам
         const fieldType = element.dataset.fieldType;
         const sectionId = element.dataset.sectionId;
         const sectionField = element.dataset.field as "title" | "content" | undefined;
@@ -78,11 +74,9 @@ export const useCreateArticle = () => {
             updateSection(Number(sectionId), sectionField, newValue);
         }
 
-        // Обновляем позицию курсора
         const newCursorPos = start + emoji.length;
         cursorPosition.current = newCursorPos;
 
-        // Восстанавливаем фокус и позицию курсора после рендера
         setTimeout(() => {
             if (element) {
                 element.focus();
@@ -100,7 +94,6 @@ export const useCreateArticle = () => {
         const sectionId = element.dataset.sectionId;
         const sectionField = element.dataset.field;
 
-        // Теги работают только для content секций
         if (!sectionId || sectionField !== "content") return;
 
         const section = sections.find(s => s.id === Number(sectionId));

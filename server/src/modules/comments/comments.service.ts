@@ -84,7 +84,6 @@ export class CommentsService {
             parentComment = foundParent;
         }
 
-        // 4. Создать комментарий
         const newCommentEntity = this.commentRepository.create({
             content,
             user,
@@ -282,7 +281,6 @@ export class CommentsService {
         return this.mapToDto(fullComment, !!parentId);
     }
 
-    // Получение ответов на комментарий поста
     async getPostCommentReplies(
         parentId: number,
         limit: number,

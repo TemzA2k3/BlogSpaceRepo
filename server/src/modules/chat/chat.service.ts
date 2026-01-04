@@ -32,7 +32,6 @@ export class ChatService {
             throw new NotFoundException('Пользователь не найден');
         }
 
-        // Проверяем, есть ли уже чат между этими пользователями
         let chat = await this.chatRepository
             .createQueryBuilder('chat')
             .leftJoin('chat.participants', 'user')
@@ -243,11 +242,6 @@ export class ChatService {
         });
 
         await this.messageRepository.save(message);
-
-        // const formattedTime = new Date(message.createdAt).toLocaleTimeString('ru-RU', {
-        //     hour: '2-digit',
-        //     minute: '2-digit',
-        // });
 
         return {
             id: message.id,

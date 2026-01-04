@@ -72,7 +72,6 @@ export class User {
     @Column({ type: 'varchar', nullable: true })
     website?: string;
 
-    // Settings fields
     @Column({ default: true })
     isPublicProfile: boolean;
 

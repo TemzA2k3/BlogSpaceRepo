@@ -123,7 +123,6 @@ export const AboutPage = () => {
 
     return (
         <div className="space-y-16 py-8">
-            {/* Hero Section */}
             <section>
                 <motion.div
                     initial="hidden"
@@ -155,7 +154,6 @@ export const AboutPage = () => {
                 </motion.div>
             </section>
 
-            {/* Mission Section */}
             <section className="bg-white dark:bg-gray-800 rounded-3xl p-8 sm:p-12 border border-gray-200 dark:border-gray-700">
                 <motion.div
                     initial="hidden"
@@ -193,7 +191,6 @@ export const AboutPage = () => {
                 </motion.div>
             </section>
 
-            {/* Values Section */}
             <section>
                 <motion.div
                     initial="hidden"
@@ -218,7 +215,6 @@ export const AboutPage = () => {
                 </motion.div>
             </section>
 
-            {/* Timeline Section */}
             <section className="bg-white dark:bg-gray-800 rounded-3xl p-8 sm:p-12 border border-gray-200 dark:border-gray-700">
                 <motion.div
                     initial="hidden"
@@ -247,7 +243,6 @@ export const AboutPage = () => {
                 </motion.div>
             </section>
 
-            {/* Team Section */}
             <section>
                 <motion.div
                     initial="hidden"
@@ -272,7 +267,6 @@ export const AboutPage = () => {
                 </motion.div>
             </section>
 
-            {/* Contact CTA Section */}
             <section>
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -281,7 +275,6 @@ export const AboutPage = () => {
                     transition={{ duration: 0.5 }}
                     className="bg-neutral-900 dark:bg-neutral-800 rounded-3xl p-8 sm:p-12 text-center text-white relative overflow-hidden"
                 >
-                    {/* Background decoration */}
                     <div className="absolute inset-0 opacity-5">
                         <div className="absolute top-0 left-0 w-40 h-40 bg-white rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
                         <div className="absolute bottom-0 right-0 w-60 h-60 bg-white rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
