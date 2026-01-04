@@ -117,7 +117,7 @@ export const CreateArticlePage = () => {
                 <button onClick={() => window.history.back()} className="w-full sm:w-auto rounded-full bg-gray-200 dark:bg-gray-700 px-6 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
                     {t("articles.cancel")}
                 </button>
-                <button onClick={handleSubmit} disabled={isLoading || !title.trim()} className="w-full sm:w-auto rounded-full bg-blue-500 px-6 py-2 text-white hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2">
+                <button onClick={handleSubmit} disabled={isLoading || !title.trim()} className="w-full sm:w-auto rounded-full bg-blue-500 px-6 py-2 text-white hover:bg-blue-600 disabled:opacity-50">
                     {isLoading && <i className="fa fa-spinner fa-spin" />}
                     {isLoading ? t("articles.publishing") : t("articles.publishArticle")}
                 </button>

@@ -17,7 +17,7 @@ export const ChatInput = ({ onSend, socket, currentUserId, selectedUserId }: Cha
     useTyping({ text, socket, currentUserId, selectedUserId });
 
     return (
-        <div className="border-t border-gray-200 dark:border-gray-700 px-3 py-3 md:px-4 md:py-4 bg-gray-50 dark:bg-gray-800 safe-area-bottom">
+        <div className="border-t border-gray-200 dark:border-gray-700 px-3 py-3 md:px-4 md:py-4 bg-gray-50 dark:bg-gray-800">
             <div className="flex items-end gap-2">
                 <input
                     type="text"
