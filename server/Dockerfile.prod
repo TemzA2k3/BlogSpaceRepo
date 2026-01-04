@@ -18,19 +18,15 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-RUN addgroup -S app && adduser -S app -G app
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package*.json ./
 
-COPY --from=build --chown=app:app /app/dist ./dist
-COPY --from=build --chown=app:app /app/node_modules ./node_modules
-COPY --from=build --chown=app:app /app/package*.json ./
-
-RUN mkdir -p uploads && chown -R app:app uploads
-
-USER app
+RUN mkdir -p uploads/avatars uploads/posts uploads/articles
 
 HEALTHCHECK --interval=30s --timeout=3s \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:5000/api/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/api/health || exit 1
 
-EXPOSE 5000
+EXPOSE 8080
 
 CMD ["node", "dist/main.js"]
