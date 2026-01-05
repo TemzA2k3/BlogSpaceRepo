@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { useAlert } from "@/app/providers/alert/AlertProvider";
+import { useAppSelector } from "../redux/reduxHooks";
 
 import { fetchPostById } from "@/shared/services/fetchPostDataById";
 import { fetchPostComments, fetchCommentReplies, createPostComment } from "@/shared/services/postComments";
@@ -15,6 +16,7 @@ export const usePost = (postId?: number) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { showAlert } = useAlert();
+    const { currentUser } = useAppSelector(state => state.auth)
 
     const [post, setPost] = useState<SpecificUserPost | null>(null);
     const [comments, setComments] = useState<Comment[]>([]);
@@ -90,12 +92,18 @@ export const usePost = (postId?: number) => {
                 );
             }
         } catch (err: any) {
-            showAlert(err.message || t("posts.repliesLoadError"));
+            showAlert(err.message || t("posts.repliesLoadError"), "error");
         }
     }, [comments]);
 
     const onSubmitComment = useCallback(
         async (content: string, parentId?: number): Promise<Comment | null> => {
+            if (!currentUser) {
+                navigate('/signin')
+
+                return null;
+            }
+
             if (!postId) return null;
 
             try {
@@ -111,7 +119,7 @@ export const usePost = (postId?: number) => {
 
                 return newComment;
             } catch (err: any) {
-                showAlert(err.message || t("posts.commentAddError"));
+                showAlert(err.message || t("posts.commentAddError"), "error");
                 return null;
             }
         },

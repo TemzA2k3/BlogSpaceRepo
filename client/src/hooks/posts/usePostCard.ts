@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "@/hooks/redux/reduxHooks";
 import { useAlert } from "@/app/providers/alert/AlertProvider";
@@ -15,6 +16,7 @@ export const usePostCard = (
 ) => {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const { showAlert } = useAlert();
     const { currentUser } = useAppSelector(state => state.auth);
 
@@ -32,7 +34,11 @@ export const usePostCard = (
     }, []);
 
     const handleToggleLike = async () => {
-        if (!currentUser) return;
+        if (!currentUser){
+            navigate("/signin");
+
+            return;
+        };
 
         try {
             const updatedPost = await dispatch(likePost(post.id)).unwrap();
@@ -43,7 +49,11 @@ export const usePostCard = (
     };
 
     const handleToggleSave = async () => {
-        if (!currentUser) return;
+        if (!currentUser){
+            navigate("/signin");
+
+            return;
+        };
 
         try {
             const updatedPost = await dispatch(toggleSavePost(post.id)).unwrap();

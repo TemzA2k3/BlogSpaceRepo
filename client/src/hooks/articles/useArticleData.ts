@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 import { useAlert } from "@/app/providers/alert/AlertProvider";
+import { useAppSelector } from "../redux/reduxHooks";
 
 import { fetchArticleData } from "@/shared/services/fetchArticleData";
 import { toggleArticleLike, toggleArticleSave } from "@/shared/services/toggleArticleActions";
@@ -14,6 +16,9 @@ import type { ArticleData } from "@/shared/types/article.types";
 
 export const useArticleData = (articleId?: string) => {
     const { t } = useTranslation();
+    const { currentUser } = useAppSelector(state => state.auth)
+    const navigate = useNavigate();
+
     const [articleData, setArticleData] = useState<ArticleData | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -49,6 +54,12 @@ export const useArticleData = (articleId?: string) => {
         async (content: string, parentId?: number) => {
             if (!articleData) return null;
 
+            if (!currentUser) {
+                navigate('/signin')
+    
+                return null;
+            }
+
             try {
                 const comment = await createArticleComment(articleData.id, {
                     content,
@@ -81,11 +92,11 @@ export const useArticleData = (articleId?: string) => {
 
                 return comment;
             } catch (err: any) {
-                showAlert(err.message || t("articles.commentError"));
+                showAlert(err.message || t("articles.commentError"), "error");
                 return null;
             }
         },
-        [articleData, t]
+        [articleData]
     );
 
     const loadComments = useCallback(async () => {
@@ -161,15 +172,20 @@ export const useArticleData = (articleId?: string) => {
                         : prev
                 );
             } catch (err: any) {
-                showAlert(err.message || t("articles.repliesError"));
+                showAlert(err.message || t("articles.repliesError"), "error");
             }
         },
-        [articleData, t]
+        [articleData]
     );
     
-
     const handleLike = useCallback(async () => {
         if (!articleData) return;
+
+        if (!currentUser) {
+            navigate('/signin')
+
+            return;
+        }
 
         try {
             const res = await toggleArticleLike(articleData.id);
@@ -181,12 +197,18 @@ export const useArticleData = (articleId?: string) => {
                     : prev
             );
         } catch (err: any) {
-            showAlert(err.message);
+            showAlert(err.message, "error");
         }
     }, [articleData]);
 
     const handleSave = useCallback(async () => {
         if (!articleData) return;
+
+        if (!currentUser) {
+            navigate('/signin')
+
+            return;
+        }
 
         try {
             const res = await toggleArticleSave(articleData.id);
@@ -198,7 +220,7 @@ export const useArticleData = (articleId?: string) => {
                     : prev
             );
         } catch (err: any) {
-            showAlert(err.message);
+            showAlert(err.message, "error");
         }
     }, [articleData]);
 

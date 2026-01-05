@@ -62,7 +62,7 @@
         "follow": "Follow",
         "message": "Message",
         "privateProfile": "This account is private",
-        "privateProfileMessage": "Follow this account to see their posts and activity",
+        "privateProfileMessage": "You can't see their activity",
         "activityStats": "Activity Statistics",
         "activityPeriod": "Activity over the last month"
     },
