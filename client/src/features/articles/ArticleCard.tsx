@@ -35,7 +35,9 @@ export const ArticleCard: FC<ArticlePreview> = ({
             </div>
 
             <div className="flex flex-col flex-grow p-6">
-                <h3 className="text-xl font-semibold mb-2 line-clamp-1">{title}</h3>
+            <h3 className="text-xl font-semibold mb-2">
+                {title.length > 50 ? `${title.slice(0, 50)}...` : title}
+            </h3>
 
                 <p className="text-sm mb-3">
                     {t("articles.author")}:{" "}
